@@ -1,0 +1,8 @@
+{
+    "ProjectId": "1",
+    "Name": "cfn-contract-test-workflow-renamed",
+    "Tags": ["cloudformation", "updated"],
+    "Actions": "[{\"id\": \"trigger_node\", \"name\": \"Trigger\", \"type\": \"trigger\", \"config\": {\"type\": \"event\", \"filters\": {\"events\": [{\"id\": \"signed_up\", \"name\": \"signed_up\", \"type\": \"events\"}]}}}, {\"id\": \"delay_node\", \"name\": \"Wait a day\", \"type\": \"delay\", \"config\": {\"delay_duration\": \"1d\"}}, {\"id\": \"exit_node\", \"name\": \"Exit\", \"type\": \"exit\", \"config\": {\"reason\": \"Default exit\"}}]",
+    "Edges": "[{\"from\": \"trigger_node\", \"to\": \"delay_node\", \"type\": \"continue\"}, {\"from\": \"delay_node\", \"to\": \"exit_node\", \"type\": \"continue\"}]",
+    "TriggerMasking": {"Hash": "{person.id}", "Ttl": 86400}
+}

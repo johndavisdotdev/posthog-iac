@@ -1,0 +1,6 @@
+{
+    "ProjectId": "1",
+    "Provider": "openai",
+    "Name": "cfn-contract-test-provider-key",
+    "ApiKey": "sk-cfn-contract-test-placeholder"
+}

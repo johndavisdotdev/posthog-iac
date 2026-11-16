@@ -1,0 +1,11 @@
+{
+    "ProjectId": "1",
+    "Type": "destination",
+    "Name": "cfn-contract-test-hog-function-renamed",
+    "Enabled": false,
+    "Hog": "fetch(inputs.url, {'method': 'POST', 'headers': {'Authorization': f'Bearer {inputs.token}'}, 'body': {'event': event.event}})",
+    "InputsSchema": "[{\"key\": \"url\", \"type\": \"string\", \"label\": \"Webhook URL\", \"required\": true}, {\"key\": \"token\", \"type\": \"string\", \"label\": \"Bearer token\", \"secret\": true}]",
+    "Inputs": "{\"url\": {\"value\": \"https://example.com/posthog-hook-v2\"}}",
+    "SecretInputs": "{\"token\": {\"value\": \"contract-test-token-2\"}}",
+    "Masking": {"Hash": "{person.id}", "Ttl": 3600}
+}

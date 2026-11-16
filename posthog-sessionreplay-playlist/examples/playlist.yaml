@@ -1,0 +1,40 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >-
+  Creates a saved session replay filter view and an empty curated collection.
+  Requires the PostHog::SessionReplay::Playlist type to be registered and
+  configured with SetTypeConfiguration (ApiKey).
+
+Parameters:
+  ProjectId:
+    Type: String
+    Description: PostHog project ID.
+
+Resources:
+  LongSessions:
+    Type: PostHog::SessionReplay::Playlist
+    Properties:
+      ProjectId: !Ref ProjectId
+      Type: filters
+      Name: Long sessions
+      Description: Sessions longer than a minute in the last week
+      Pinned: true
+      Filters:
+        Fn::ToJsonString:
+          date_from: -7d
+          filter_test_accounts: true
+          duration:
+            - key: duration
+              type: recording
+              value: 60
+              operator: gt
+
+  BugReports:
+    Type: PostHog::SessionReplay::Playlist
+    Properties:
+      ProjectId: !Ref ProjectId
+      Type: collection
+      Name: Bug reports
+
+Outputs:
+  LongSessionsShortId:
+    Value: !GetAtt LongSessions.ShortId

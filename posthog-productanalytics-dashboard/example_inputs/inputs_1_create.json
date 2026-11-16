@@ -1,0 +1,9 @@
+{
+    "ProjectId": "1",
+    "Name": "cfn-contract-test-dashboard",
+    "Description": "Created by the CloudFormation contract tests",
+    "Tags": [
+        "cloudformation"
+    ],
+    "Filters": "{\"date_from\": \"-30d\"}"
+}

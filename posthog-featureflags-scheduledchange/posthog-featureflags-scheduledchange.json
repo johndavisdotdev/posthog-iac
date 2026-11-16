@@ -1,0 +1,148 @@
+{
+    "typeName": "PostHog::FeatureFlags::ScheduledChange",
+    "description": "A PostHog scheduled change: a change to a feature flag (enable/disable, add a release condition, update variants) applied automatically at a set time, once or on a recurring schedule.",
+    "sourceUrl": "https://github.com/johndavisdev/posthog-iac",
+    "documentationUrl": "https://posthog.com/docs/feature-flags/scheduled-flag-changes",
+    "definitions": {},
+    "typeConfiguration": {
+        "properties": {
+            "ApiKey": {
+                "description": "PostHog personal API key (phx_...) with the scopes this resource type needs. Pass it with a dynamic reference such as {{resolve:ssm-secure:/posthog/api-key}} when calling SetTypeConfiguration; never put it in plain text.",
+                "type": "string",
+                "minLength": 1
+            },
+            "BaseUrl": {
+                "description": "PostHog API host. Leave unset for PostHog Cloud US (https://us.posthog.com); use https://eu.posthog.com for PostHog Cloud EU, or your instance URL when self-hosting.",
+                "type": "string"
+            }
+        },
+        "additionalProperties": false,
+        "required": [
+            "ApiKey"
+        ]
+    },
+    "properties": {
+        "ProjectId": {
+            "description": "ID of the PostHog project the scheduled change belongs to.",
+            "type": "string",
+            "minLength": 1
+        },
+        "Id": {
+            "description": "The PostHog scheduled change ID.",
+            "type": "string"
+        },
+        "RecordId": {
+            "description": "ID of the record to modify, e.g. the feature flag ID.",
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+        },
+        "ModelName": {
+            "description": "Type of record to modify. Only `FeatureFlag` is supported (the default).",
+            "type": "string",
+            "enum": [
+                "FeatureFlag"
+            ]
+        },
+        "Payload": {
+            "description": "The change to apply, as a JSON object (use Fn::ToJsonString) with an `operation` and a `value`. Operations: `update_status` (value: true/false to enable/disable the flag), `add_release_condition` (value: object with `groups`, `payloads` and `multivariate`), `update_variants` (value: object with `variants` and `payloads`).",
+            "type": "string",
+            "minLength": 1
+        },
+        "ScheduledAt": {
+            "description": "ISO 8601 date-time when the change should be applied, e.g. 2026-06-01T14:00:00Z.",
+            "type": "string",
+            "minLength": 1
+        },
+        "IsRecurring": {
+            "description": "Whether the schedule repeats. Only the `update_status` operation supports recurring schedules.",
+            "type": "boolean"
+        },
+        "RecurrenceInterval": {
+            "description": "How often the schedule repeats. Required when IsRecurring is true.",
+            "type": "string",
+            "enum": [
+                "daily",
+                "weekly",
+                "monthly",
+                "yearly"
+            ]
+        },
+        "CronExpression": {
+            "description": "Cron expression for a recurring schedule, as an alternative to RecurrenceInterval.",
+            "type": "string",
+            "maxLength": 100
+        },
+        "EndDate": {
+            "description": "Optional ISO 8601 date-time after which a recurring schedule stops executing.",
+            "type": "string"
+        },
+        "ExecutedAt": {
+            "description": "When the change was applied (for a one-off change). Unset until it runs.",
+            "type": "string"
+        },
+        "LastExecutedAt": {
+            "description": "When a recurring schedule last ran.",
+            "type": "string"
+        },
+        "FailureReason": {
+            "description": "Why the last execution failed, if it did.",
+            "type": "string"
+        },
+        "Timezone": {
+            "description": "Time zone PostHog evaluates the schedule in (the project's time zone).",
+            "type": "string"
+        },
+        "CreatedAt": {
+            "description": "ISO 8601 creation timestamp.",
+            "type": "string"
+        },
+        "UpdatedAt": {
+            "description": "ISO 8601 timestamp of the last update.",
+            "type": "string"
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "ProjectId",
+        "RecordId",
+        "Payload",
+        "ScheduledAt"
+    ],
+    "readOnlyProperties": [
+        "/properties/Id",
+        "/properties/ExecutedAt",
+        "/properties/LastExecutedAt",
+        "/properties/FailureReason",
+        "/properties/Timezone",
+        "/properties/CreatedAt",
+        "/properties/UpdatedAt"
+    ],
+    "primaryIdentifier": [
+        "/properties/ProjectId",
+        "/properties/Id"
+    ],
+    "tagging": {
+        "taggable": false
+    },
+    "handlers": {
+        "create": {
+            "permissions": []
+        },
+        "read": {
+            "permissions": []
+        },
+        "update": {
+            "permissions": []
+        },
+        "delete": {
+            "permissions": []
+        },
+        "list": {
+            "permissions": []
+        }
+    },
+    "createOnlyProperties": [
+        "/properties/ProjectId"
+    ]
+}

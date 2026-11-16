@@ -1,0 +1,7 @@
+{
+    "ProjectId": "1",
+    "Name": "cfn-contract-test-template-renamed",
+    "Tags": ["cloudformation", "updated"],
+    "Sensitive": true,
+    "Content": "{\"templating\": \"liquid\", \"email\": {\"subject\": \"Your login code\", \"text\": \"Your code is {{ event.properties.code }}\"}}"
+}

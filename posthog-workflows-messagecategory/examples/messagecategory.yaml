@@ -1,0 +1,25 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >-
+  Creates a PostHog messaging category. Requires the
+  PostHog::Workflows::MessageCategory type to be registered and configured with
+  SetTypeConfiguration (ApiKey).
+
+Parameters:
+  ProjectId:
+    Type: String
+    Description: PostHog project ID.
+
+Resources:
+  Newsletter:
+    Type: PostHog::Workflows::MessageCategory
+    Properties:
+      ProjectId: !Ref ProjectId
+      Key: newsletter
+      Name: Newsletter
+      Description: Monthly product newsletter sent from the marketing workflow
+      PublicDescription: News about the product, once a month
+      CategoryType: marketing
+
+Outputs:
+  CategoryId:
+    Value: !GetAtt Newsletter.Id

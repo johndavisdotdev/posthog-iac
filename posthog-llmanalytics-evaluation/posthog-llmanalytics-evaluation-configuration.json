@@ -1,0 +1,56 @@
+{
+    "properties": {
+        "ApiKey": {
+            "description": "PostHog personal API key (phx_...) with the scopes this resource type needs. Pass it with a dynamic reference such as {{resolve:ssm-secure:/posthog/api-key}} when calling SetTypeConfiguration; never put it in plain text.",
+            "type": "string",
+            "minLength": 1
+        },
+        "BaseUrl": {
+            "description": "PostHog API host. Leave unset for PostHog Cloud US (https://us.posthog.com); use https://eu.posthog.com for PostHog Cloud EU, or your instance URL when self-hosting.",
+            "type": "string"
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "ApiKey"
+    ],
+    "definitions": {
+        "ModelConfiguration": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "Provider": {
+                    "description": "LLM provider of the judge model.",
+                    "type": "string",
+                    "enum": [
+                        "openai",
+                        "anthropic",
+                        "gemini",
+                        "openrouter",
+                        "fireworks",
+                        "azure_openai",
+                        "together_ai",
+                        "minimax",
+                        "system_one",
+                        "openai_compatible"
+                    ]
+                },
+                "Model": {
+                    "description": "Model ID, e.g. gpt-4.1-mini.",
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 100
+                },
+                "ProviderKeyId": {
+                    "description": "Optional ID of a project provider key (PostHog::LLMAnalytics::ProviderKey) to run the evaluation with. It must use the same provider.",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "Provider",
+                "Model"
+            ]
+        }
+    },
+    "typeName": "PostHog::LLMAnalytics::Evaluation"
+}

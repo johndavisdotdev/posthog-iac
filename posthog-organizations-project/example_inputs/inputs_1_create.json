@@ -1,0 +1,9 @@
+{
+    "OrganizationId": "00000000-0000-0000-0000-000000000000",
+    "Name": "cfn-contract-test-project",
+    "ProductDescription": "Created by the CloudFormation contract tests",
+    "Tags": ["cloudformation"],
+    "Timezone": "Europe/London",
+    "AnonymizeIps": true,
+    "TestAccountFilters": "[{\"key\": \"email\", \"value\": \"@example.com\", \"operator\": \"not_icontains\", \"type\": \"person\"}]"
+}

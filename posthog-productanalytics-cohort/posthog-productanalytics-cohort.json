@@ -1,0 +1,110 @@
+{
+    "typeName": "PostHog::ProductAnalytics::Cohort",
+    "description": "A PostHog cohort: a named group of persons defined by property and behavioral filters (or a HogQL query), used to filter insights, target feature flags and build audiences.",
+    "sourceUrl": "https://github.com/johndavisdev/posthog-iac",
+    "documentationUrl": "https://posthog.com/docs/data/cohorts",
+    "definitions": {},
+    "typeConfiguration": {
+        "properties": {
+            "ApiKey": {
+                "description": "PostHog personal API key (phx_...) with the scopes this resource type needs. Pass it with a dynamic reference such as {{resolve:ssm-secure:/posthog/api-key}} when calling SetTypeConfiguration; never put it in plain text.",
+                "type": "string",
+                "minLength": 1
+            },
+            "BaseUrl": {
+                "description": "PostHog API host. Leave unset for PostHog Cloud US (https://us.posthog.com); use https://eu.posthog.com for PostHog Cloud EU, or your instance URL when self-hosting.",
+                "type": "string"
+            }
+        },
+        "additionalProperties": false,
+        "required": [
+            "ApiKey"
+        ]
+    },
+    "properties": {
+        "ProjectId": {
+            "description": "ID of the PostHog project the cohort belongs to.",
+            "type": "string",
+            "minLength": 1
+        },
+        "Id": {
+            "description": "The PostHog cohort ID.",
+            "type": "string"
+        },
+        "Name": {
+            "description": "Name of the cohort.",
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 400
+        },
+        "Description": {
+            "description": "Human-readable description of the cohort.",
+            "type": "string",
+            "maxLength": 1000
+        },
+        "Filters": {
+            "description": "Cohort membership filters as JSON (use Fn::ToJsonString): an object with a `properties` filter group, e.g. {\"properties\": {\"type\": \"OR\", \"values\": [{\"type\": \"AND\", \"values\": [{\"key\": \"email\", \"type\": \"person\", \"value\": \"@example.com\", \"operator\": \"icontains\"}]}]}}.",
+            "type": "string"
+        },
+        "Query": {
+            "description": "HogQL query that defines the cohort's members, as JSON (use Fn::ToJsonString). Used instead of Filters for query-based cohorts.",
+            "type": "string"
+        },
+        "IsStatic": {
+            "description": "Whether the cohort is static (a fixed list of persons, filled in PostHog) rather than computed from Filters. Cannot be changed after creation.",
+            "type": "boolean"
+        },
+        "CohortType": {
+            "description": "Type of cohort. PostHog derives it from the filters when not set.",
+            "type": "string",
+            "enum": [
+                "static",
+                "person_property",
+                "behavioral",
+                "realtime",
+                "analytical"
+            ]
+        },
+        "CreatedAt": {
+            "description": "ISO 8601 creation timestamp.",
+            "type": "string"
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "ProjectId",
+        "Name"
+    ],
+    "readOnlyProperties": [
+        "/properties/Id",
+        "/properties/CreatedAt"
+    ],
+    "primaryIdentifier": [
+        "/properties/ProjectId",
+        "/properties/Id"
+    ],
+    "tagging": {
+        "taggable": false
+    },
+    "handlers": {
+        "create": {
+            "permissions": []
+        },
+        "read": {
+            "permissions": []
+        },
+        "update": {
+            "permissions": []
+        },
+        "delete": {
+            "permissions": []
+        },
+        "list": {
+            "permissions": []
+        }
+    },
+    "createOnlyProperties": [
+        "/properties/ProjectId",
+        "/properties/IsStatic"
+    ]
+}

@@ -1,0 +1,8 @@
+{
+    "ProjectId": "1",
+    "Name": "cfn-contract-test-workflow",
+    "Description": "Created by the CloudFormation contract tests",
+    "Tags": ["cloudformation"],
+    "Actions": "[{\"id\": \"trigger_node\", \"name\": \"Trigger\", \"type\": \"trigger\", \"config\": {\"type\": \"event\", \"filters\": {\"events\": [{\"id\": \"signed_up\", \"name\": \"signed_up\", \"type\": \"events\"}]}}}, {\"id\": \"exit_node\", \"name\": \"Exit\", \"type\": \"exit\", \"config\": {\"reason\": \"Default exit\"}}]",
+    "Edges": "[{\"from\": \"trigger_node\", \"to\": \"exit_node\", \"type\": \"continue\"}]"
+}

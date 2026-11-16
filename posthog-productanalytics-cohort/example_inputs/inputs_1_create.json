@@ -1,0 +1,6 @@
+{
+    "ProjectId": "1",
+    "Name": "cfn-contract-test-cohort",
+    "Description": "Created by the CloudFormation contract tests",
+    "Filters": "{\"properties\": {\"type\": \"OR\", \"values\": [{\"type\": \"AND\", \"values\": [{\"key\": \"email\", \"type\": \"person\", \"value\": \"@example.com\", \"operator\": \"icontains\"}]}]}}"
+}

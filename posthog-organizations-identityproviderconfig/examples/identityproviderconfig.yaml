@@ -1,0 +1,54 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >-
+  Claims an email domain and configures SAML SSO plus SCIM provisioning for it.
+  The SCIM bearer token is written to a Secrets Manager secret. Requires the
+  PostHog::Organizations::Domain and PostHog::Organizations::IdentityProviderConfig
+  types to be registered and configured with SetTypeConfiguration (ApiKey).
+
+Parameters:
+  OrganizationId:
+    Type: String
+    Description: PostHog organization ID (UUID).
+  DomainName:
+    Type: String
+    Description: Email domain, e.g. example.com.
+  SamlEntityId:
+    Type: String
+  SamlAcsUrl:
+    Type: String
+  SamlCertificateSecretName:
+    Type: String
+    Description: Secrets Manager secret holding the IdP signing certificate (PEM).
+
+Resources:
+  CompanyDomain:
+    Type: PostHog::Organizations::Domain
+    Properties:
+      OrganizationId: !Ref OrganizationId
+      Domain: !Ref DomainName
+
+  ScimToken:
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: PostHog SCIM bearer token (written by the PostHog resource handler)
+
+  Okta:
+    Type: PostHog::Organizations::IdentityProviderConfig
+    Properties:
+      OrganizationId: !Ref OrganizationId
+      Name: Okta production
+      ConfigScope: saml
+      DomainScope: selected
+      OrganizationDomainIds:
+        - !GetAtt CompanyDomain.Id
+      SamlEntityId: !Ref SamlEntityId
+      SamlAcsUrl: !Ref SamlAcsUrl
+      SamlX509Cert: !Sub "{{resolve:secretsmanager:${SamlCertificateSecretName}}}"
+      ScimEnabled: true
+      ScimBearerTokenSecretArn: !Ref ScimToken
+
+Outputs:
+  SamlRelayState:
+    Value: !GetAtt Okta.SamlRelayState
+  ScimBaseUrl:
+    Value: !GetAtt Okta.ScimBaseUrl

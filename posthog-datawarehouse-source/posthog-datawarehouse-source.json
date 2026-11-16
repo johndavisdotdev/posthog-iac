@@ -1,0 +1,153 @@
+{
+    "typeName": "PostHog::DataWarehouse::Source",
+    "description": "A PostHog data warehouse source: a connection to an external system (e.g. Postgres, Stripe, Hubspot) whose tables PostHog syncs into the data warehouse or queries live.",
+    "sourceUrl": "https://github.com/johndavisdev/posthog-iac",
+    "documentationUrl": "https://posthog.com/docs/cdp/sources",
+    "definitions": {},
+    "typeConfiguration": {
+        "properties": {
+            "ApiKey": {
+                "description": "PostHog personal API key (phx_...) with the scopes this resource type needs. Pass it with a dynamic reference such as {{resolve:ssm-secure:/posthog/api-key}} when calling SetTypeConfiguration; never put it in plain text.",
+                "type": "string",
+                "minLength": 1
+            },
+            "BaseUrl": {
+                "description": "PostHog API host. Leave unset for PostHog Cloud US (https://us.posthog.com); use https://eu.posthog.com for PostHog Cloud EU, or your instance URL when self-hosting.",
+                "type": "string"
+            }
+        },
+        "additionalProperties": false,
+        "required": [
+            "ApiKey"
+        ]
+    },
+    "properties": {
+        "ProjectId": {
+            "description": "ID of the PostHog project the source belongs to.",
+            "type": "string",
+            "minLength": 1
+        },
+        "Id": {
+            "description": "The PostHog source ID (UUID).",
+            "type": "string"
+        },
+        "SourceType": {
+            "description": "The source type, e.g. Postgres, Stripe, Hubspot. Changing it replaces the source.",
+            "type": "string",
+            "minLength": 1
+        },
+        "Payload": {
+            "description": "Connection credentials and settings as a JSON object (use Fn::ToJsonString). Keys depend on SourceType. Add a 'schemas' array to pick which tables sync; omit it and every discovered table syncs with default settings. Write-only: never read back. Changing it later sends the new values (without 'schemas') as the source's job inputs.",
+            "type": "string",
+            "minLength": 1
+        },
+        "Prefix": {
+            "description": "Prefix added to the table names PostHog creates in HogQL. Does not filter which tables are imported.",
+            "type": "string",
+            "maxLength": 100
+        },
+        "Description": {
+            "description": "Human-readable description.",
+            "type": "string",
+            "maxLength": 400
+        },
+        "AccessMethod": {
+            "description": "Connection mode: `warehouse` (import, the default) or `direct` (live query). Changing it replaces the source.",
+            "type": "string",
+            "enum": [
+                "warehouse",
+                "direct"
+            ]
+        },
+        "DirectQueryEnabled": {
+            "description": "Whether a synced source should also be live-queryable via direct connection. Ignored for pure direct-query sources.",
+            "type": "boolean"
+        },
+        "DestinationIds": {
+            "description": "IDs of the destinations every table on this source writes to. Omit to write to the PostHog warehouse only. Set on create only and never read back.",
+            "type": "array",
+            "insertionOrder": false,
+            "uniqueItems": true,
+            "items": {
+                "type": "string"
+            }
+        },
+        "AutoSyncNewSchemas": {
+            "description": "Automatically enable syncing for schemas discovered on this source after creation. Not supported for direct-query sources.",
+            "type": "boolean"
+        },
+        "AutoSyncSchemaPatterns": {
+            "description": "fnmatch-style globs (`*` and `?`), e.g. `raw_*`, restricting which newly discovered schema names auto-sync. Empty means every new schema qualifies. Only used when AutoSyncNewSchemas is true.",
+            "type": "array",
+            "insertionOrder": false,
+            "uniqueItems": true,
+            "items": {
+                "type": "string",
+                "maxLength": 250
+            }
+        },
+        "Status": {
+            "description": "Sync status of the source, e.g. Running, Completed, Error.",
+            "type": "string"
+        },
+        "LatestError": {
+            "description": "Latest sync error, if any.",
+            "type": "string"
+        },
+        "LastRunAt": {
+            "description": "ISO 8601 timestamp of the last sync run.",
+            "type": "string"
+        },
+        "CreatedAt": {
+            "description": "ISO 8601 creation timestamp.",
+            "type": "string"
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "ProjectId",
+        "SourceType",
+        "Payload"
+    ],
+    "readOnlyProperties": [
+        "/properties/Id",
+        "/properties/Status",
+        "/properties/LatestError",
+        "/properties/LastRunAt",
+        "/properties/CreatedAt"
+    ],
+    "primaryIdentifier": [
+        "/properties/ProjectId",
+        "/properties/Id"
+    ],
+    "tagging": {
+        "taggable": false
+    },
+    "handlers": {
+        "create": {
+            "permissions": []
+        },
+        "read": {
+            "permissions": []
+        },
+        "update": {
+            "permissions": []
+        },
+        "delete": {
+            "permissions": []
+        },
+        "list": {
+            "permissions": []
+        }
+    },
+    "createOnlyProperties": [
+        "/properties/ProjectId",
+        "/properties/SourceType",
+        "/properties/AccessMethod",
+        "/properties/DestinationIds"
+    ],
+    "writeOnlyProperties": [
+        "/properties/Payload",
+        "/properties/DestinationIds"
+    ]
+}

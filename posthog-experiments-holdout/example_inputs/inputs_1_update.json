@@ -1,0 +1,5 @@
+{
+    "ProjectId": "1",
+    "Name": "cfn-contract-test-holdout-renamed",
+    "Filters": "[{\"properties\": [{\"key\": \"email\", \"value\": \"@example.com\", \"operator\": \"icontains\", \"type\": \"person\"}], \"rollout_percentage\": 5}]"
+}

@@ -1,0 +1,7 @@
+{
+    "ProjectId": "1",
+    "SourceType": "Postgres",
+    "Payload": "{\"host\": \"db.example.com\", \"port\": 5432, \"database\": \"app\", \"user\": \"posthog_reader\", \"password\": \"example-password\", \"schema\": \"public\", \"schemas\": [{\"name\": \"orders\", \"should_sync\": true, \"sync_type\": \"full_refresh\"}]}",
+    "Prefix": "cfn_",
+    "Description": "Created by the CloudFormation contract tests"
+}

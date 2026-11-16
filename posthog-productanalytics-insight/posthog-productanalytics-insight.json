@@ -1,0 +1,127 @@
+{
+    "typeName": "PostHog::ProductAnalytics::Insight",
+    "description": "A saved PostHog insight: a query (trends, funnel, retention, paths, SQL, ...) with a name, optionally shown on one or more dashboards. Computed results are never part of the resource.",
+    "sourceUrl": "https://github.com/johndavisdev/posthog-iac",
+    "documentationUrl": "https://posthog.com/docs/product-analytics/insights",
+    "definitions": {},
+    "typeConfiguration": {
+        "properties": {
+            "ApiKey": {
+                "description": "PostHog personal API key (phx_...) with the scopes this resource type needs. Pass it with a dynamic reference such as {{resolve:ssm-secure:/posthog/api-key}} when calling SetTypeConfiguration; never put it in plain text.",
+                "type": "string",
+                "minLength": 1
+            },
+            "BaseUrl": {
+                "description": "PostHog API host. Leave unset for PostHog Cloud US (https://us.posthog.com); use https://eu.posthog.com for PostHog Cloud EU, or your instance URL when self-hosting.",
+                "type": "string"
+            }
+        },
+        "additionalProperties": false,
+        "required": [
+            "ApiKey"
+        ]
+    },
+    "properties": {
+        "ProjectId": {
+            "description": "ID of the PostHog project the insight belongs to.",
+            "type": "string",
+            "minLength": 1
+        },
+        "Id": {
+            "description": "The PostHog insight ID.",
+            "type": "string"
+        },
+        "ShortId": {
+            "description": "The insight's short ID, as used in PostHog URLs (/insights/<ShortId>).",
+            "type": "string"
+        },
+        "Name": {
+            "description": "Name of the insight. When unset, PostHog shows the derived name.",
+            "type": "string",
+            "maxLength": 400
+        },
+        "DerivedName": {
+            "description": "Fallback name generated from the query, shown when Name is unset.",
+            "type": "string",
+            "maxLength": 400
+        },
+        "Description": {
+            "description": "Human-readable description of the insight.",
+            "type": "string",
+            "maxLength": 400
+        },
+        "Query": {
+            "description": "The insight's query as JSON (use Fn::ToJsonString), usually an InsightVizNode wrapping a TrendsQuery, FunnelsQuery, RetentionQuery, etc., or a DataVisualizationNode wrapping a HogQLQuery. E.g. {\"kind\": \"InsightVizNode\", \"source\": {\"kind\": \"TrendsQuery\", \"series\": [{\"kind\": \"EventsNode\", \"event\": \"$pageview\"}]}}.",
+            "type": "string"
+        },
+        "Tags": {
+            "description": "Tags on the insight.",
+            "type": "array",
+            "insertionOrder": false,
+            "uniqueItems": true,
+            "items": {
+                "type": "string"
+            }
+        },
+        "Favorited": {
+            "description": "Whether the insight is favorited.",
+            "type": "boolean"
+        },
+        "Dashboards": {
+            "description": "IDs of the dashboards (PostHog::ProductAnalytics::Dashboard) the insight is shown on. Removing an ID removes the insight's tile from that dashboard.",
+            "type": "array",
+            "insertionOrder": false,
+            "uniqueItems": true,
+            "items": {
+                "type": "string"
+            }
+        },
+        "CreatedAt": {
+            "description": "ISO 8601 creation timestamp.",
+            "type": "string"
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "ProjectId",
+        "Query"
+    ],
+    "readOnlyProperties": [
+        "/properties/Id",
+        "/properties/ShortId",
+        "/properties/CreatedAt"
+    ],
+    "primaryIdentifier": [
+        "/properties/ProjectId",
+        "/properties/Id"
+    ],
+    "tagging": {
+        "taggable": false
+    },
+    "handlers": {
+        "create": {
+            "permissions": []
+        },
+        "read": {
+            "permissions": []
+        },
+        "update": {
+            "permissions": []
+        },
+        "delete": {
+            "permissions": []
+        },
+        "list": {
+            "permissions": []
+        }
+    },
+    "createOnlyProperties": [
+        "/properties/ProjectId"
+    ],
+    "additionalIdentifiers": [
+        [
+            "/properties/ProjectId",
+            "/properties/ShortId"
+        ]
+    ]
+}

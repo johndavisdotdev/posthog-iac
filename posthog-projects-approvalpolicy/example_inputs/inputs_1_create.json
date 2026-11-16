@@ -1,0 +1,6 @@
+{
+    "ProjectId": "1",
+    "ActionKey": "feature_flag.update",
+    "ApproverConfig": "{\"users\": [1], \"quorum\": 1}",
+    "Enabled": true
+}

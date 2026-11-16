@@ -1,0 +1,25 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >-
+  Joins Stripe customers onto PostHog persons by email, so they can be queried
+  as persons.stripe_customer. Requires the PostHog::DataWarehouse::ViewLink
+  type to be registered and configured with SetTypeConfiguration (ApiKey).
+
+Parameters:
+  ProjectId:
+    Type: String
+    Description: PostHog project ID.
+
+Resources:
+  PersonStripeCustomer:
+    Type: PostHog::DataWarehouse::ViewLink
+    Properties:
+      ProjectId: !Ref ProjectId
+      SourceTableName: persons
+      SourceTableKey: properties.email
+      JoiningTableName: stripe_customer
+      JoiningTableKey: email
+      FieldName: stripe_customer
+
+Outputs:
+  JoinId:
+    Value: !GetAtt PersonStripeCustomer.Id

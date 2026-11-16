@@ -1,0 +1,7 @@
+{
+    "ProjectId": "1",
+    "Name": "cfn_contract_test_view",
+    "Query": "{\"kind\": \"HogQLQuery\", \"query\": \"SELECT event, count() AS cnt FROM events WHERE event != '$pageleave' GROUP BY event\"}",
+    "Description": "Updated by the CloudFormation contract tests",
+    "SyncFrequency": "24hour"
+}

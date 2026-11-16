@@ -1,0 +1,52 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >-
+  Creates a PostHog LLM analytics evaluation that uses an LLM judge to check
+  that answers from gpt-4.1 are polite, on 20% of generations. Requires the
+  PostHog::LLMAnalytics::Evaluation type to be registered and configured with
+  SetTypeConfiguration (ApiKey).
+
+Parameters:
+  ProjectId:
+    Type: String
+    Description: PostHog project ID.
+  ProviderKeyId:
+    Type: String
+    Description: ID of an OpenAI provider key in the project (PostHog::LLMAnalytics::ProviderKey).
+
+Resources:
+  Politeness:
+    Type: PostHog::LLMAnalytics::Evaluation
+    Properties:
+      ProjectId: !Ref ProjectId
+      Name: Politeness
+      Description: Checks that the assistant stays polite
+      Enabled: true
+      EvaluationType: llm_judge
+      EvaluationConfig:
+        Fn::ToJsonString:
+          prompt: >-
+            Return true if the assistant's answer is polite and respectful,
+            false otherwise.
+      OutputType: boolean
+      OutputConfig:
+        Fn::ToJsonString:
+          allows_na: false
+      Conditions:
+        Fn::ToJsonString:
+          - id: gpt-4-1
+            rollout_percentage: 20
+            properties:
+              - key: $ai_model
+                value: gpt-4.1
+                operator: exact
+                type: event
+      ModelConfiguration:
+        Provider: openai
+        Model: gpt-4.1-mini
+        ProviderKeyId: !Ref ProviderKeyId
+
+Outputs:
+  EvaluationId:
+    Value: !GetAtt Politeness.Id
+  Status:
+    Value: !GetAtt Politeness.Status

@@ -1,0 +1,185 @@
+{
+    "typeName": "PostHog::DataWarehouse::SavedQuery",
+    "description": "A PostHog data warehouse saved query (view): a named HogQL query that can be queried like a table and optionally materialized on a schedule.",
+    "sourceUrl": "https://github.com/johndavisdev/posthog-iac",
+    "documentationUrl": "https://posthog.com/docs/data-warehouse/views",
+    "definitions": {
+        "Incremental": {
+            "type": "object",
+            "additionalProperties": false,
+            "description": "Incremental materialization settings.",
+            "properties": {
+                "Enabled": {
+                    "description": "Whether runs update the table incrementally instead of rebuilding it.",
+                    "type": "boolean"
+                },
+                "IncrementalKey": {
+                    "description": "Output column whose advancing value marks rows as new. Each run reads only rows at or after the last run's highest value for it.",
+                    "type": "string",
+                    "minLength": 1
+                },
+                "UniqueKey": {
+                    "description": "Output columns that identify a row, used to match recomputed rows against stored ones. Must include every GROUP BY column.",
+                    "type": "array",
+                    "insertionOrder": true,
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "LookbackSeconds": {
+                    "description": "How far back before the last run's high point to re-read, so late-arriving data is picked up. Only applies when the incremental key is a date or time.",
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 2592000
+                }
+            },
+            "required": [
+                "IncrementalKey",
+                "UniqueKey"
+            ]
+        }
+    },
+    "typeConfiguration": {
+        "properties": {
+            "ApiKey": {
+                "description": "PostHog personal API key (phx_...) with the scopes this resource type needs. Pass it with a dynamic reference such as {{resolve:ssm-secure:/posthog/api-key}} when calling SetTypeConfiguration; never put it in plain text.",
+                "type": "string",
+                "minLength": 1
+            },
+            "BaseUrl": {
+                "description": "PostHog API host. Leave unset for PostHog Cloud US (https://us.posthog.com); use https://eu.posthog.com for PostHog Cloud EU, or your instance URL when self-hosting.",
+                "type": "string"
+            }
+        },
+        "additionalProperties": false,
+        "required": [
+            "ApiKey"
+        ]
+    },
+    "properties": {
+        "ProjectId": {
+            "description": "ID of the PostHog project the saved query belongs to.",
+            "type": "string",
+            "minLength": 1
+        },
+        "Id": {
+            "description": "The PostHog saved query ID (UUID).",
+            "type": "string"
+        },
+        "Name": {
+            "description": "Unique name for the view. Used as the table name in HogQL queries.",
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+        },
+        "Query": {
+            "description": "HogQL query definition as a JSON object (use Fn::ToJsonString) with a \"kind\" key (always \"HogQLQuery\") and a \"query\" key containing the SQL string, e.g. {\"kind\": \"HogQLQuery\", \"query\": \"SELECT event, count() AS cnt FROM events GROUP BY event\"}.",
+            "type": "string",
+            "minLength": 1
+        },
+        "Description": {
+            "description": "What this view represents: what one row is, what the view includes or leaves out, and when to use it.",
+            "type": "string"
+        },
+        "SyncFrequency": {
+            "description": "How often to materialize this view, or `never` to pause scheduled materialization. Leave unset for no scheduled materialization.",
+            "type": "string",
+            "enum": [
+                "never",
+                "15min",
+                "30min",
+                "1hour",
+                "6hour",
+                "12hour",
+                "24hour",
+                "7day",
+                "30day"
+            ]
+        },
+        "Incremental": {
+            "description": "Update the materialized table in place instead of rebuilding it. Leave unset to rebuild the whole table on every run.",
+            "$ref": "#/definitions/Incremental"
+        },
+        "FolderId": {
+            "description": "Optional folder ID used to organize this view in the SQL editor sidebar.",
+            "type": "string"
+        },
+        "IsTest": {
+            "description": "Whether this view is for testing only and will auto-expire.",
+            "type": "boolean"
+        },
+        "AcknowledgeBreakingChanges": {
+            "description": "Confirm an update that removes columns used by downstream views. Without it such an update is refused. Write-only.",
+            "type": "boolean"
+        },
+        "Status": {
+            "description": "Materialization status: Cancelled, Modified, Completed, Failed, Running or Skipped.",
+            "type": "string"
+        },
+        "IsMaterialized": {
+            "description": "Whether the view is materialized.",
+            "type": "boolean"
+        },
+        "LastRunAt": {
+            "description": "ISO 8601 timestamp of the last materialization run.",
+            "type": "string"
+        },
+        "LatestError": {
+            "description": "Latest materialization error, if any.",
+            "type": "string"
+        },
+        "CreatedAt": {
+            "description": "ISO 8601 creation timestamp.",
+            "type": "string"
+        },
+        "UpdatedAt": {
+            "description": "ISO 8601 last-update timestamp.",
+            "type": "string"
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "ProjectId",
+        "Name",
+        "Query"
+    ],
+    "readOnlyProperties": [
+        "/properties/Id",
+        "/properties/Status",
+        "/properties/IsMaterialized",
+        "/properties/LastRunAt",
+        "/properties/LatestError",
+        "/properties/CreatedAt",
+        "/properties/UpdatedAt"
+    ],
+    "primaryIdentifier": [
+        "/properties/ProjectId",
+        "/properties/Id"
+    ],
+    "tagging": {
+        "taggable": false
+    },
+    "handlers": {
+        "create": {
+            "permissions": []
+        },
+        "read": {
+            "permissions": []
+        },
+        "update": {
+            "permissions": []
+        },
+        "delete": {
+            "permissions": []
+        },
+        "list": {
+            "permissions": []
+        }
+    },
+    "createOnlyProperties": [
+        "/properties/ProjectId"
+    ],
+    "writeOnlyProperties": [
+        "/properties/AcknowledgeBreakingChanges"
+    ]
+}

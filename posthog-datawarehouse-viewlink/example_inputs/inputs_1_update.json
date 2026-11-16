@@ -1,0 +1,9 @@
+{
+    "ProjectId": "1",
+    "SourceTableName": "events",
+    "SourceTableKey": "lower(distinct_id)",
+    "JoiningTableName": "persons",
+    "JoiningTableKey": "properties.email",
+    "FieldName": "cfn_contract_test_person",
+    "Configuration": "{\"experiments_optimized\": false}"
+}

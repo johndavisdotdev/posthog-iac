@@ -1,0 +1,110 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`serializes every destination type 1`] = `
+{
+  "azureBlob": {
+    "config": {
+      "compression": "gzip",
+      "container_name": "exports",
+      "file_format": "JSONLines",
+      "prefix": "posthog/",
+    },
+    "integration": undefined,
+    "secrets": {
+      "connection_string": "{{resolve:secretsmanager:posthog/dest:SecretString:conn::}}",
+    },
+    "type": "AzureBlob",
+  },
+  "bigQuery": {
+    "config": {
+      "client_email": "sa@gcp-proj.iam.gserviceaccount.com",
+      "dataset_id": "posthog",
+      "project_id": "gcp-proj",
+      "table_id": "events",
+      "use_json_type": true,
+    },
+    "integration": undefined,
+    "secrets": {
+      "private_key": "{{resolve:secretsmanager:posthog/dest:SecretString:key::}}",
+      "private_key_id": "{{resolve:secretsmanager:posthog/dest:SecretString:kid::}}",
+    },
+    "type": "BigQuery",
+  },
+  "databricks": {
+    "config": {
+      "catalog": "main",
+      "client_id": "sp-id",
+      "http_path": "/sql/1.0/warehouses/abc",
+      "schema": "posthog",
+      "server_hostname": "dbc-1.cloud.databricks.com",
+      "table_name": "events",
+      "use_variant_type": true,
+    },
+    "integration": undefined,
+    "secrets": {
+      "client_secret": "{{resolve:secretsmanager:posthog/dest:SecretString:cs::}}",
+    },
+    "type": "Databricks",
+  },
+  "postgres": {
+    "config": {
+      "database": "app",
+      "has_self_signed_cert": true,
+      "host": "db.example.com",
+      "port": 5432,
+      "schema": "analytics",
+      "table_name": "events",
+      "user": "posthog",
+    },
+    "integration": undefined,
+    "secrets": {
+      "password": "{{resolve:secretsmanager:posthog/dest:SecretString:password::}}",
+    },
+    "type": "Postgres",
+  },
+  "raw": {
+    "config": {
+      "bucket_name": "b",
+      "endpoint_url": "https://minio.example.com",
+    },
+    "integration": "5",
+    "secrets": {
+      "aws_secret_access_key": "{{resolve:secretsmanager:posthog/dest:SecretString:sk::}}",
+    },
+    "type": "S3Compatible",
+  },
+  "redshift": {
+    "config": {
+      "database": "dev",
+      "host": "rs.example.com",
+      "port": 5439,
+      "properties_data_type": "super",
+      "table_name": "events",
+      "user": "posthog",
+    },
+    "integration": undefined,
+    "secrets": {
+      "password": "{{resolve:secretsmanager:posthog/dest:SecretString:password::}}",
+    },
+    "type": "Redshift",
+  },
+  "snowflake": {
+    "config": {
+      "account": "xy12345",
+      "authentication_type": "keypair",
+      "database": "ANALYTICS",
+      "role": "LOADER",
+      "schema": "POSTHOG",
+      "table_name": "EVENTS",
+      "user": "posthog",
+      "warehouse": "LOAD",
+    },
+    "integration": undefined,
+    "secrets": {
+      "private_key": "{{resolve:secretsmanager:posthog/dest:SecretString:key::}}",
+      "private_key_passphrase": "{{resolve:secretsmanager:posthog/dest:SecretString:pass::}}",
+    },
+    "type": "Snowflake",
+  },
+}
+`;

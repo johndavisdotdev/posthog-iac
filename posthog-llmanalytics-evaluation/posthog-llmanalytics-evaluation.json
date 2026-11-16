@@ -1,0 +1,195 @@
+{
+    "typeName": "PostHog::LLMAnalytics::Evaluation",
+    "description": "A PostHog LLM analytics evaluation: scores LLM generations, traces or sessions with an LLM judge, Hog code or sentiment classification.",
+    "sourceUrl": "https://github.com/johndavisdev/posthog-iac",
+    "documentationUrl": "https://posthog.com/docs/llm-analytics/evaluations",
+    "definitions": {
+        "ModelConfiguration": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "Provider": {
+                    "description": "LLM provider of the judge model.",
+                    "type": "string",
+                    "enum": [
+                        "openai",
+                        "anthropic",
+                        "gemini",
+                        "openrouter",
+                        "fireworks",
+                        "azure_openai",
+                        "together_ai",
+                        "minimax",
+                        "system_one",
+                        "openai_compatible"
+                    ]
+                },
+                "Model": {
+                    "description": "Model ID, e.g. gpt-4.1-mini.",
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 100
+                },
+                "ProviderKeyId": {
+                    "description": "Optional ID of a project provider key (PostHog::LLMAnalytics::ProviderKey) to run the evaluation with. It must use the same provider.",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "Provider",
+                "Model"
+            ]
+        }
+    },
+    "typeConfiguration": {
+        "properties": {
+            "ApiKey": {
+                "description": "PostHog personal API key (phx_...) with the scopes this resource type needs. Pass it with a dynamic reference such as {{resolve:ssm-secure:/posthog/api-key}} when calling SetTypeConfiguration; never put it in plain text.",
+                "type": "string",
+                "minLength": 1
+            },
+            "BaseUrl": {
+                "description": "PostHog API host. Leave unset for PostHog Cloud US (https://us.posthog.com); use https://eu.posthog.com for PostHog Cloud EU, or your instance URL when self-hosting.",
+                "type": "string"
+            }
+        },
+        "additionalProperties": false,
+        "required": [
+            "ApiKey"
+        ]
+    },
+    "properties": {
+        "ProjectId": {
+            "description": "ID of the PostHog project the evaluation belongs to.",
+            "type": "string",
+            "minLength": 1
+        },
+        "Id": {
+            "description": "The PostHog evaluation ID (UUID).",
+            "type": "string"
+        },
+        "Name": {
+            "description": "Name of the evaluation.",
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 400
+        },
+        "Description": {
+            "description": "Description of what this evaluation checks.",
+            "type": "string"
+        },
+        "DirectoryId": {
+            "description": "ID of the directory (folder) containing the evaluation. Omit to keep it at the top level.",
+            "type": "string"
+        },
+        "Enabled": {
+            "description": "Whether the evaluation runs automatically on new $ai_generation events. Defaults to false.",
+            "type": "boolean"
+        },
+        "EvaluationType": {
+            "description": "`llm_judge` scores outputs with an LLM against a prompt; `hog` runs deterministic Hog code; `sentiment` classifies user-message sentiment (English only).",
+            "type": "string",
+            "enum": [
+                "llm_judge",
+                "hog",
+                "sentiment"
+            ]
+        },
+        "EvaluationConfig": {
+            "description": "Evaluation configuration as a JSON object (use Fn::ToJsonString). For `llm_judge`: {\"prompt\": \"...\"} plus optional `judge_method` (`llm` or `decision`), `include_media` and `reasoning_level`; for `hog`: {\"source\": \"<Hog code>\"}; for `sentiment`: {\"source\": \"user_messages\"}.",
+            "type": "string"
+        },
+        "OutputType": {
+            "description": "Output format: `boolean` (pass/fail), `numeric` (finite score), `categorical` (category keys) or `sentiment`.",
+            "type": "string",
+            "enum": [
+                "boolean",
+                "numeric",
+                "categorical",
+                "sentiment"
+            ]
+        },
+        "OutputConfig": {
+            "description": "Output configuration as a JSON object (use Fn::ToJsonString). Boolean: `allows_na`, `true_is_failure`, `decision_threshold`; numeric: `min`, `max`, `step`, `passing_rule` ({operator: gte|lte, threshold}); categorical: `options` ([{key, label}]), `selection_mode` (single|multiple), `passing_rule` ({categories}).",
+            "type": "string"
+        },
+        "Conditions": {
+            "description": "Trigger conditions as a JSON array (use Fn::ToJsonString). OR between condition sets, AND within each. Each set is {\"id\": \"<stable id>\", \"rollout_percentage\": 0-100 (default 100), \"properties\": [<event or person property filters>]}.",
+            "type": "string"
+        },
+        "Target": {
+            "description": "What the evaluation runs on: `generation` (default, each matching $ai_generation event), `trace` (the whole trace once) or `session` (the whole $ai_session_id session once).",
+            "type": "string",
+            "enum": [
+                "generation",
+                "trace",
+                "session"
+            ]
+        },
+        "TargetConfig": {
+            "description": "Settle configuration for `trace` and `session` targets as a JSON object (use Fn::ToJsonString): {\"strategy\": \"fixed_window\", \"window_seconds\": N} or {\"strategy\": \"inactivity\", \"quiet_period_seconds\": N, \"max_age_seconds\": N}. Omit for `generation`; PostHog fills in omitted fields with per-target defaults.",
+            "type": "string"
+        },
+        "ModelConfiguration": {
+            "description": "Provider and model of the LLM judge. Required for `llm_judge` evaluations; leave it out for `hog` and `sentiment`.",
+            "$ref": "#/definitions/ModelConfiguration"
+        },
+        "Status": {
+            "description": "Current status: `active`, `paused` or `error`.",
+            "type": "string"
+        },
+        "StatusReason": {
+            "description": "Why PostHog disabled the evaluation, when Status is `error` (e.g. provider_key_invalid).",
+            "type": "string"
+        },
+        "CreatedAt": {
+            "description": "ISO 8601 creation timestamp.",
+            "type": "string"
+        },
+        "UpdatedAt": {
+            "description": "ISO 8601 timestamp of the last update.",
+            "type": "string"
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "ProjectId",
+        "Name",
+        "EvaluationType",
+        "OutputType"
+    ],
+    "readOnlyProperties": [
+        "/properties/Id",
+        "/properties/Status",
+        "/properties/StatusReason",
+        "/properties/CreatedAt",
+        "/properties/UpdatedAt"
+    ],
+    "primaryIdentifier": [
+        "/properties/ProjectId",
+        "/properties/Id"
+    ],
+    "tagging": {
+        "taggable": false
+    },
+    "handlers": {
+        "create": {
+            "permissions": []
+        },
+        "read": {
+            "permissions": []
+        },
+        "update": {
+            "permissions": []
+        },
+        "delete": {
+            "permissions": []
+        },
+        "list": {
+            "permissions": []
+        }
+    },
+    "createOnlyProperties": [
+        "/properties/ProjectId"
+    ]
+}

@@ -1,0 +1,6 @@
+{
+    "ProjectId": "1",
+    "Name": "cfn-contract-test-early-access-renamed",
+    "Stage": "concept",
+    "ImageUrl": "https://example.com/early-access.png"
+}

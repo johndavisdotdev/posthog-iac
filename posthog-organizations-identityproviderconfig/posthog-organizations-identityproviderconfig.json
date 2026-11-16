@@ -1,0 +1,213 @@
+{
+    "typeName": "PostHog::Organizations::IdentityProviderConfig",
+    "description": "A PostHog identity provider configuration: SAML, OIDC, SCIM or ID-JAG (XAA) settings for an organization, applied to all or selected organization domains.",
+    "sourceUrl": "https://github.com/johndavisdev/posthog-iac",
+    "documentationUrl": "https://posthog.com/docs/settings/sso",
+    "definitions": {},
+    "typeConfiguration": {
+        "properties": {
+            "ApiKey": {
+                "description": "PostHog personal API key (phx_...) with the scopes this resource type needs. Pass it with a dynamic reference such as {{resolve:ssm-secure:/posthog/api-key}} when calling SetTypeConfiguration; never put it in plain text.",
+                "type": "string",
+                "minLength": 1
+            },
+            "BaseUrl": {
+                "description": "PostHog API host. Leave unset for PostHog Cloud US (https://us.posthog.com); use https://eu.posthog.com for PostHog Cloud EU, or your instance URL when self-hosting.",
+                "type": "string"
+            }
+        },
+        "additionalProperties": false,
+        "required": [
+            "ApiKey"
+        ]
+    },
+    "properties": {
+        "OrganizationId": {
+            "description": "ID (UUID) of the PostHog organization the configuration belongs to.",
+            "type": "string",
+            "minLength": 1
+        },
+        "Id": {
+            "description": "The PostHog identity provider configuration ID (UUID).",
+            "type": "string"
+        },
+        "Name": {
+            "description": "Display name for this configuration, e.g. Okta production.",
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 255
+        },
+        "DomainScope": {
+            "description": "Domains this configuration applies to: all organization domains, or the domains in OrganizationDomainIds (selected). Unset behaves like selected.",
+            "type": "string",
+            "enum": [
+                "all",
+                "selected"
+            ]
+        },
+        "ConfigScope": {
+            "description": "Feature configured by this configuration: saml, oidc, scim or xaa.",
+            "type": "string",
+            "enum": [
+                "saml",
+                "oidc",
+                "scim",
+                "xaa"
+            ]
+        },
+        "OrganizationDomainIds": {
+            "description": "IDs of the organization domains (PostHog::Organizations::Domain Id) this configuration applies to.",
+            "type": "array",
+            "insertionOrder": false,
+            "uniqueItems": true,
+            "items": {
+                "type": "string"
+            }
+        },
+        "OidcIssuerUrl": {
+            "description": "OIDC HTTPS issuer URL. Must exactly match the issuer in the OIDC discovery document.",
+            "type": "string",
+            "maxLength": 512
+        },
+        "OidcClientId": {
+            "description": "Client ID of the organization's OIDC application.",
+            "type": "string",
+            "maxLength": 512
+        },
+        "OidcClientSecret": {
+            "description": "OIDC client secret. Write-only: never returned. Removing it from the template removes the saved secret. Pass it with a dynamic reference such as {{resolve:secretsmanager:...}}.",
+            "type": "string",
+            "maxLength": 4096
+        },
+        "SamlEntityId": {
+            "description": "SAML IdP entity ID (issuer).",
+            "type": "string",
+            "maxLength": 512
+        },
+        "SamlAcsUrl": {
+            "description": "SAML single sign-on URL the IdP redirects to.",
+            "type": "string",
+            "maxLength": 512
+        },
+        "SamlX509Cert": {
+            "description": "SAML IdP X.509 signing certificate (PEM). Write-only: never read back.",
+            "type": "string"
+        },
+        "ScimEnabled": {
+            "description": "Whether SCIM provisioning is enabled. Enabling it generates a bearer token, which is written to ScimBearerTokenSecretArn; disabling it clears the token.",
+            "type": "boolean"
+        },
+        "ScimBearerTokenSecretArn": {
+            "description": "ARN (or name) of an existing AWS Secrets Manager secret. When SCIM is enabled, PostHog returns the SCIM bearer token once and the handler writes it to this secret as a new version. Required when ScimEnabled is true.",
+            "type": "string"
+        },
+        "IdJagIssuerUrl": {
+            "description": "Trusted IdP issuer URL for ID-JAG (XAA). Required to enable ID-JAG.",
+            "type": "string",
+            "maxLength": 512
+        },
+        "IdJagJwksUrl": {
+            "description": "Override JWKS URL for ID-JAG. Defaults to OIDC discovery on the issuer URL.",
+            "type": "string",
+            "maxLength": 512
+        },
+        "IdJagAllowedClients": {
+            "description": "Allowed ID-JAG client IDs. Empty allows any client ID.",
+            "type": "array",
+            "insertionOrder": false,
+            "uniqueItems": true,
+            "items": {
+                "type": "string",
+                "maxLength": 256
+            }
+        },
+        "SamlRelayState": {
+            "description": "Stable UUID sent as SAML RelayState to route authentication responses to this configuration.",
+            "type": "string"
+        },
+        "ScimBaseUrl": {
+            "description": "SCIM base URL for this configuration.",
+            "type": "string"
+        },
+        "HasSaml": {
+            "description": "Whether SAML is fully configured.",
+            "type": "boolean"
+        },
+        "HasOidc": {
+            "description": "Whether OIDC has an issuer, client ID and client secret.",
+            "type": "boolean"
+        },
+        "HasOidcClientSecret": {
+            "description": "Whether an OIDC client secret is saved.",
+            "type": "boolean"
+        },
+        "HasScim": {
+            "description": "Whether SCIM is enabled and a bearer token is set.",
+            "type": "boolean"
+        },
+        "HasIdJag": {
+            "description": "Whether ID-JAG (XAA) is configured.",
+            "type": "boolean"
+        },
+        "CreatedAt": {
+            "description": "ISO 8601 creation timestamp.",
+            "type": "string"
+        },
+        "UpdatedAt": {
+            "description": "ISO 8601 timestamp of the last update.",
+            "type": "string"
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "OrganizationId",
+        "Name"
+    ],
+    "readOnlyProperties": [
+        "/properties/Id",
+        "/properties/SamlRelayState",
+        "/properties/ScimBaseUrl",
+        "/properties/HasSaml",
+        "/properties/HasOidc",
+        "/properties/HasOidcClientSecret",
+        "/properties/HasScim",
+        "/properties/HasIdJag",
+        "/properties/CreatedAt",
+        "/properties/UpdatedAt"
+    ],
+    "createOnlyProperties": [
+        "/properties/OrganizationId"
+    ],
+    "writeOnlyProperties": [
+        "/properties/OidcClientSecret",
+        "/properties/SamlX509Cert"
+    ],
+    "primaryIdentifier": [
+        "/properties/OrganizationId",
+        "/properties/Id"
+    ],
+    "tagging": {
+        "taggable": false
+    },
+    "handlers": {
+        "create": {
+            "permissions": [
+                "secretsmanager:PutSecretValue"
+            ]
+        },
+        "read": {
+            "permissions": []
+        },
+        "update": {
+            "permissions": [
+                "secretsmanager:PutSecretValue"
+            ]
+        },
+        "delete": {
+            "permissions": []
+        },
+        "list": {
+            "permissions": []
+        }
+    }
+}

@@ -1,0 +1,16 @@
+{
+    "ProjectId": "1",
+    "Name": "cfn-contract-test-property-group",
+    "Description": "Created by the CloudFormation contract tests",
+    "Properties": [
+        {
+            "Name": "plan",
+            "PropertyType": "String",
+            "IsRequired": true
+        },
+        {
+            "Name": "amount",
+            "PropertyType": "Numeric"
+        }
+    ]
+}

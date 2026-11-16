@@ -1,0 +1,45 @@
+{
+    "properties": {
+        "ApiKey": {
+            "description": "PostHog personal API key (phx_...) with the scopes this resource type needs. Pass it with a dynamic reference such as {{resolve:ssm-secure:/posthog/api-key}} when calling SetTypeConfiguration; never put it in plain text.",
+            "type": "string",
+            "minLength": 1
+        },
+        "BaseUrl": {
+            "description": "PostHog API host. Leave unset for PostHog Cloud US (https://us.posthog.com); use https://eu.posthog.com for PostHog Cloud EU, or your instance URL when self-hosting.",
+            "type": "string"
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "ApiKey"
+    ],
+    "definitions": {
+        "Masking": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "Hash",
+                "Ttl"
+            ],
+            "properties": {
+                "Hash": {
+                    "description": "Hog expression used to compute the masking hash, e.g. {person.id}.",
+                    "type": "string",
+                    "minLength": 1
+                },
+                "Ttl": {
+                    "description": "Time-to-live in seconds (60 to 86400) during which repeat events with the same hash are masked.",
+                    "type": "integer",
+                    "minimum": 60,
+                    "maximum": 86400
+                },
+                "Threshold": {
+                    "description": "Optional number of matches before masking applies.",
+                    "type": "integer"
+                }
+            }
+        }
+    },
+    "typeName": "PostHog::CDP::HogFunction"
+}

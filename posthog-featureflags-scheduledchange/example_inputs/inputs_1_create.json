@@ -1,0 +1,6 @@
+{
+    "ProjectId": "1",
+    "RecordId": "1",
+    "Payload": "{\"operation\": \"update_status\", \"value\": true}",
+    "ScheduledAt": "2030-06-01T14:00:00Z"
+}

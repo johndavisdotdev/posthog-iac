@@ -1,0 +1,122 @@
+{
+    "typeName": "PostHog::ProductAnalytics::InsightVariable",
+    "description": "A PostHog SQL (insight) variable: a named, typed value that SQL insights reference as {variables.code_name}.",
+    "sourceUrl": "https://github.com/johndavisdev/posthog-iac",
+    "documentationUrl": "https://posthog.com/docs/sql/variables",
+    "definitions": {},
+    "typeConfiguration": {
+        "properties": {
+            "ApiKey": {
+                "description": "PostHog personal API key (phx_...) with the scopes this resource type needs. Pass it with a dynamic reference such as {{resolve:ssm-secure:/posthog/api-key}} when calling SetTypeConfiguration; never put it in plain text.",
+                "type": "string",
+                "minLength": 1
+            },
+            "BaseUrl": {
+                "description": "PostHog API host. Leave unset for PostHog Cloud US (https://us.posthog.com); use https://eu.posthog.com for PostHog Cloud EU, or your instance URL when self-hosting.",
+                "type": "string"
+            }
+        },
+        "additionalProperties": false,
+        "required": [
+            "ApiKey"
+        ]
+    },
+    "properties": {
+        "ProjectId": {
+            "description": "ID of the PostHog project the SQL variable belongs to.",
+            "type": "string",
+            "minLength": 1
+        },
+        "Id": {
+            "description": "The PostHog SQL variable ID (UUID).",
+            "type": "string"
+        },
+        "Name": {
+            "description": "Human-readable name of the variable. PostHog derives CodeName from it.",
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 400
+        },
+        "Type": {
+            "description": "Variable type. Controls how the value is rendered and substituted in HogQL: `String`, `Number`, `Boolean`, `List` or `Date`.",
+            "type": "string",
+            "enum": [
+                "String",
+                "Number",
+                "Boolean",
+                "List",
+                "Date"
+            ]
+        },
+        "DefaultValue": {
+            "description": "Default value used when a query references the variable. A plain string for String, Date and single-value List variables; a number such as \"42\" for Number; \"true\" or \"false\" for Boolean; a JSON array (use Fn::ToJsonString) for multi-value List variables.",
+            "type": "string"
+        },
+        "Values": {
+            "description": "Allowed values for List variables.",
+            "type": "array",
+            "insertionOrder": true,
+            "items": {
+                "type": "string"
+            }
+        },
+        "IsMulti": {
+            "description": "Whether a List variable accepts multiple selected values.",
+            "type": "boolean"
+        },
+        "ValuesQuery": {
+            "description": "HogQL query whose first result column supplies the allowed values of a List variable. An optional second column supplies display labels.",
+            "type": "string"
+        },
+        "ValuesQueryConnectionId": {
+            "description": "ID of the external data source connection ValuesQuery runs against. Leave unset to run it against PostHog.",
+            "type": "string"
+        },
+        "CodeName": {
+            "description": "Code-safe name used in HogQL as {variables.code_name}. Derived from Name.",
+            "type": "string"
+        },
+        "CreatedAt": {
+            "description": "ISO 8601 creation timestamp.",
+            "type": "string"
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "ProjectId",
+        "Name",
+        "Type"
+    ],
+    "readOnlyProperties": [
+        "/properties/Id",
+        "/properties/CodeName",
+        "/properties/CreatedAt"
+    ],
+    "createOnlyProperties": [
+        "/properties/ProjectId"
+    ],
+    "primaryIdentifier": [
+        "/properties/ProjectId",
+        "/properties/Id"
+    ],
+    "tagging": {
+        "taggable": false
+    },
+    "handlers": {
+        "create": {
+            "permissions": []
+        },
+        "read": {
+            "permissions": []
+        },
+        "update": {
+            "permissions": []
+        },
+        "delete": {
+            "permissions": []
+        },
+        "list": {
+            "permissions": []
+        }
+    }
+}

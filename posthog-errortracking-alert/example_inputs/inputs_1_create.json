@@ -1,0 +1,15 @@
+{
+    "ProjectId": "1",
+    "Name": "cfn-contract-test-alert",
+    "Triggers": ["issue_created"],
+    "Destinations": [
+        {
+            "ChannelType": "slack",
+            "IntegrationId": 1,
+            "Config": {
+                "Channel": "C0123ABCD",
+                "ChannelName": "#errors"
+            }
+        }
+    ]
+}

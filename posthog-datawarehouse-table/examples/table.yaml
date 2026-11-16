@@ -1,0 +1,31 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >-
+  Exposes Parquet files in S3 as a PostHog data warehouse table. Requires the
+  PostHog::DataWarehouse::Table type to be registered and configured with
+  SetTypeConfiguration (ApiKey).
+
+Parameters:
+  ProjectId:
+    Type: String
+    Description: PostHog project ID.
+  BucketCredentialSecret:
+    Type: String
+    Description: Name of a Secrets Manager secret with AccessKey and AccessSecret keys for the bucket.
+
+Resources:
+  Orders:
+    Type: PostHog::DataWarehouse::Table
+    Properties:
+      ProjectId: !Ref ProjectId
+      Name: orders
+      Format: Parquet
+      UrlPattern: https://my-bucket.s3.us-east-1.amazonaws.com/exports/orders/*.parquet
+      Credential:
+        AccessKey: !Sub "{{resolve:secretsmanager:${BucketCredentialSecret}:SecretString:AccessKey}}"
+        AccessSecret: !Sub "{{resolve:secretsmanager:${BucketCredentialSecret}:SecretString:AccessSecret}}"
+
+Outputs:
+  TableId:
+    Value: !GetAtt Orders.Id
+  HogqlName:
+    Value: !GetAtt Orders.HogqlName

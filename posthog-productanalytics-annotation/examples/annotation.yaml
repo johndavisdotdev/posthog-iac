@@ -1,0 +1,29 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >-
+  Marks a release on every insight in a PostHog project. Requires the
+  PostHog::ProductAnalytics::Annotation type to be registered and configured
+  with SetTypeConfiguration (ApiKey).
+
+Parameters:
+  ProjectId:
+    Type: String
+    Description: PostHog project ID.
+  ReleaseTime:
+    Type: String
+    Description: When the release went out (ISO 8601).
+    Default: "2026-05-01T12:00:00Z"
+
+Resources:
+  Release:
+    Type: PostHog::ProductAnalytics::Annotation
+    Properties:
+      ProjectId: !Ref ProjectId
+      Content: Released v2.0
+      DateMarker: !Ref ReleaseTime
+      Scope: project
+      CreationType: GIT
+      Emoji: "🚀"
+
+Outputs:
+  AnnotationId:
+    Value: !GetAtt Release.Id

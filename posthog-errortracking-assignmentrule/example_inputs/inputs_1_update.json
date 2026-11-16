@@ -1,0 +1,9 @@
+{
+    "ProjectId": "1",
+    "Filters": "{\"type\": \"OR\", \"values\": [{\"key\": \"$exception_types\", \"type\": \"event\", \"operator\": \"exact\", \"value\": [\"TypeError\", \"RangeError\"]}]}",
+    "Assignee": {
+        "Type": "user",
+        "Id": "1"
+    },
+    "OrderKey": 1
+}

@@ -1,0 +1,6 @@
+{
+    "ProjectId": "1",
+    "Name": "cfn-contract-test-holdout",
+    "Description": "Created by the CloudFormation contract tests",
+    "Filters": "[{\"properties\": [], \"rollout_percentage\": 10}]"
+}

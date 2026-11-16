@@ -1,0 +1,29 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >-
+  Creates a PostHog error tracking grouping rule. Requires the
+  PostHog::ErrorTracking::GroupingRule type to be registered and configured
+  with SetTypeConfiguration (ApiKey).
+
+Parameters:
+  ProjectId:
+    Type: String
+    Description: PostHog project ID.
+
+Resources:
+  ChunkLoadErrors:
+    Type: PostHog::ErrorTracking::GroupingRule
+    Properties:
+      ProjectId: !Ref ProjectId
+      Description: Group every chunk load error into one issue
+      Filters:
+        Fn::ToJsonString:
+          type: AND
+          values:
+            - key: $exception_types
+              type: event
+              operator: exact
+              value: [ChunkLoadError]
+
+Outputs:
+  GroupingRuleId:
+    Value: !GetAtt ChunkLoadErrors.Id

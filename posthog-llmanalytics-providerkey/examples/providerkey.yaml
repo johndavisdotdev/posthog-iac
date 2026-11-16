@@ -1,0 +1,32 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >-
+  Registers an OpenAI API key with PostHog LLM analytics and makes it the
+  project's active OpenAI key. The key is read from Secrets Manager with a
+  dynamic reference and is never returned by PostHog. Requires the
+  PostHog::LLMAnalytics::ProviderKey type to be registered and configured with
+  SetTypeConfiguration (ApiKey).
+
+Parameters:
+  ProjectId:
+    Type: String
+    Description: PostHog project ID.
+  OpenAIKeySecretName:
+    Type: String
+    Default: posthog/openai-api-key
+    Description: Name of the Secrets Manager secret holding the OpenAI API key.
+
+Resources:
+  OpenAIKey:
+    Type: PostHog::LLMAnalytics::ProviderKey
+    Properties:
+      ProjectId: !Ref ProjectId
+      Provider: openai
+      Name: OpenAI (production)
+      ApiKey: !Sub "{{resolve:secretsmanager:${OpenAIKeySecretName}}}"
+      SetAsActive: true
+
+Outputs:
+  ProviderKeyId:
+    Value: !GetAtt OpenAIKey.Id
+  MaskedKey:
+    Value: !GetAtt OpenAIKey.ApiKeyMasked

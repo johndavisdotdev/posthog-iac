@@ -1,0 +1,8 @@
+{
+    "ProjectId": "1",
+    "Name": "cfn-contract-test-sampling-rule-renamed",
+    "Enabled": false,
+    "RuleType": "rate_limit",
+    "ScopePathPattern": "^/health",
+    "Config": "{\"logs_per_second\": 100, \"filter_group\": {\"type\": \"AND\", \"values\": [{\"type\": \"AND\", \"values\": [{\"key\": \"service.name\", \"operator\": \"exact\", \"value\": \"cfn-contract-test\"}]}]}}"
+}

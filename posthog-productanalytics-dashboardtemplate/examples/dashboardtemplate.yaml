@@ -1,0 +1,54 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >-
+  Creates a PostHog dashboard template with one insight tile whose event is a
+  template variable. Requires the PostHog::ProductAnalytics::DashboardTemplate
+  type to be registered and configured with SetTypeConfiguration (ApiKey).
+
+Parameters:
+  ProjectId:
+    Type: String
+    Description: PostHog project ID.
+
+Resources:
+  SignupTemplate:
+    Type: PostHog::ProductAnalytics::DashboardTemplate
+    Properties:
+      ProjectId: !Ref ProjectId
+      TemplateName: Sign-up tracking
+      DashboardDescription: Daily sign-ups for a chosen event
+      Tags: [growth]
+      Scope: organization
+      DashboardFilters:
+        Fn::ToJsonString:
+          date_from: -30d
+      Variables:
+        Fn::ToJsonString:
+          - id: VARIABLE_1
+            name: Sign-up event
+            type: event
+            default:
+              id: signed_up
+            required: true
+            description: The event fired when a user signs up
+      Tiles:
+        Fn::ToJsonString:
+          - type: INSIGHT
+            name: Daily sign-ups
+            query:
+              kind: InsightVizNode
+              source:
+                kind: TrendsQuery
+                interval: day
+                series:
+                  - kind: EventsNode
+                    event: "{VARIABLE_1}"
+                    math: total
+            layouts:
+              sm: {x: 0, y: 0, w: 6, h: 5}
+            color: null
+      Customization:
+        TileSpacing: standard
+
+Outputs:
+  TemplateId:
+    Value: !GetAtt SignupTemplate.Id

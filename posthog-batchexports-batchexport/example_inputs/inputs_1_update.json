@@ -1,0 +1,12 @@
+{
+    "ProjectId": "1",
+    "Name": "cfn-contract-test-batch-export-renamed",
+    "Interval": "day",
+    "Paused": true,
+    "Timezone": "Europe/London",
+    "OffsetHour": 3,
+    "DestinationType": "AwsS3",
+    "DestinationIntegrationId": "1",
+    "DestinationConfig": "{\"bucket_name\": \"cfn-contract-test-bucket\", \"region\": \"us-east-1\", \"prefix\": \"posthog/v2/\", \"file_format\": \"Parquet\", \"compression\": \"zstd\"}",
+    "Filters": "[{\"key\": \"$browser\", \"operator\": \"exact\", \"type\": \"event\", \"value\": [\"Firefox\"]}]"
+}

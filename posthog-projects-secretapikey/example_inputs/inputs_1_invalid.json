@@ -1,0 +1,6 @@
+{
+    "ProjectId": "1",
+    "Label": "",
+    "Scopes": [],
+    "SecretsManagerSecretArn": "not-an-arn"
+}

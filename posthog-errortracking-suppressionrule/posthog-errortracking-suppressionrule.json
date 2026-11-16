@@ -1,0 +1,93 @@
+{
+    "typeName": "PostHog::ErrorTracking::SuppressionRule",
+    "description": "A PostHog error tracking suppression rule: incoming exceptions that match a property filter are dropped (optionally sampled) before they create or update issues.",
+    "sourceUrl": "https://github.com/johndavisdev/posthog-iac",
+    "documentationUrl": "https://posthog.com/docs/error-tracking",
+    "definitions": {},
+    "typeConfiguration": {
+        "properties": {
+            "ApiKey": {
+                "description": "PostHog personal API key (phx_...) with the scopes this resource type needs. Pass it with a dynamic reference such as {{resolve:ssm-secure:/posthog/api-key}} when calling SetTypeConfiguration; never put it in plain text.",
+                "type": "string",
+                "minLength": 1
+            },
+            "BaseUrl": {
+                "description": "PostHog API host. Leave unset for PostHog Cloud US (https://us.posthog.com); use https://eu.posthog.com for PostHog Cloud EU, or your instance URL when self-hosting.",
+                "type": "string"
+            }
+        },
+        "additionalProperties": false,
+        "required": [
+            "ApiKey"
+        ]
+    },
+    "properties": {
+        "ProjectId": {
+            "description": "ID of the PostHog project the rule belongs to.",
+            "type": "string",
+            "minLength": 1
+        },
+        "Id": {
+            "description": "The PostHog suppression rule ID (UUID).",
+            "type": "string"
+        },
+        "Filters": {
+            "description": "JSON (use Fn::ToJsonString). Property-group filter that defines which incoming error events are suppressed, e.g. {\"type\": \"AND\", \"values\": [{\"key\": \"$exception_values\", \"type\": \"event\", \"operator\": \"icontains\", \"value\": \"ResizeObserver loop\"}]}. Omit it (or pass an empty values array) for a match-all rule.",
+            "type": "string"
+        },
+        "SamplingRate": {
+            "description": "Probability that a matching event is dropped: 1.0 drops every match (default), 0.0 drops none, 0.5 drops half.",
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+        },
+        "OrderKey": {
+            "description": "Evaluation priority among suppression rules; lower is evaluated first.",
+            "type": "integer"
+        },
+        "CreatedAt": {
+            "description": "ISO 8601 creation timestamp.",
+            "type": "string"
+        },
+        "UpdatedAt": {
+            "description": "ISO 8601 last-update timestamp.",
+            "type": "string"
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "ProjectId"
+    ],
+    "readOnlyProperties": [
+        "/properties/Id",
+        "/properties/CreatedAt",
+        "/properties/UpdatedAt"
+    ],
+    "createOnlyProperties": [
+        "/properties/ProjectId"
+    ],
+    "primaryIdentifier": [
+        "/properties/ProjectId",
+        "/properties/Id"
+    ],
+    "tagging": {
+        "taggable": false
+    },
+    "handlers": {
+        "create": {
+            "permissions": []
+        },
+        "read": {
+            "permissions": []
+        },
+        "update": {
+            "permissions": []
+        },
+        "delete": {
+            "permissions": []
+        },
+        "list": {
+            "permissions": []
+        }
+    }
+}

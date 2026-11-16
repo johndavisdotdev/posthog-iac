@@ -1,0 +1,6 @@
+{
+    "ProjectId": "1",
+    "Name": "cfn-contract-test-retention-rule-renamed",
+    "Enabled": true,
+    "Config": "{\"retention_days\": 30, \"filter_group\": {\"type\": \"AND\", \"values\": [{\"type\": \"AND\", \"values\": [{\"key\": \"service.name\", \"operator\": \"exact\", \"value\": \"cfn-contract-test-v2\"}]}]}}"
+}

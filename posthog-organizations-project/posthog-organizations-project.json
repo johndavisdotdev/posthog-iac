@@ -1,0 +1,254 @@
+{
+    "typeName": "PostHog::Organizations::Project",
+    "description": "A PostHog project and its main settings. Deleting the resource deletes the PostHog project and all of its data (events, persons, recordings, insights, flags and so on); it cannot be undone.",
+    "sourceUrl": "https://github.com/johndavisdev/posthog-iac",
+    "documentationUrl": "https://posthog.com/docs/settings/projects",
+    "definitions": {},
+    "typeConfiguration": {
+        "properties": {
+            "ApiKey": {
+                "description": "PostHog personal API key (phx_...) with the scopes this resource type needs. Pass it with a dynamic reference such as {{resolve:ssm-secure:/posthog/api-key}} when calling SetTypeConfiguration; never put it in plain text.",
+                "type": "string",
+                "minLength": 1
+            },
+            "BaseUrl": {
+                "description": "PostHog API host. Leave unset for PostHog Cloud US (https://us.posthog.com); use https://eu.posthog.com for PostHog Cloud EU, or your instance URL when self-hosting.",
+                "type": "string"
+            }
+        },
+        "additionalProperties": false,
+        "required": [
+            "ApiKey"
+        ]
+    },
+    "properties": {
+        "OrganizationId": {
+            "description": "ID (UUID) of the PostHog organization the project belongs to.",
+            "type": "string",
+            "minLength": 1
+        },
+        "Id": {
+            "description": "The PostHog project ID. Use it as ProjectId for project-scoped PostHog resources.",
+            "type": "string"
+        },
+        "Uuid": {
+            "description": "The project UUID.",
+            "type": "string"
+        },
+        "Name": {
+            "description": "Project name. Must be unique within the organization (case-insensitive).",
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+        },
+        "ProductDescription": {
+            "description": "Short description of what the project is about, used as context by PostHog AI features.",
+            "type": "string",
+            "maxLength": 1000
+        },
+        "Tags": {
+            "description": "Labels applied to the project. PostHog trims and lowercases them.",
+            "type": "array",
+            "insertionOrder": false,
+            "uniqueItems": true,
+            "items": {
+                "type": "string",
+                "maxLength": 255
+            }
+        },
+        "AppUrls": {
+            "description": "URLs of the sites and apps that send data to this project (used by the toolbar and heatmaps).",
+            "type": "array",
+            "insertionOrder": false,
+            "items": {
+                "type": "string",
+                "maxLength": 200
+            }
+        },
+        "AnonymizeIps": {
+            "description": "When true, PostHog drops the IP address from every ingested event.",
+            "type": "boolean"
+        },
+        "Timezone": {
+            "description": "IANA timezone used for date-based filters and reporting, e.g. America/Los_Angeles. PostHog defaults to UTC.",
+            "type": "string",
+            "minLength": 1
+        },
+        "WeekStartDay": {
+            "description": "First day of the week for date range filters: 0 = Sunday, 1 = Monday.",
+            "type": "integer",
+            "enum": [
+                0,
+                1
+            ]
+        },
+        "BaseCurrency": {
+            "description": "ISO 4217 currency code used for revenue analytics, e.g. EUR. PostHog defaults to USD.",
+            "type": "string",
+            "pattern": "^[A-Z]{3}$"
+        },
+        "BusinessModel": {
+            "description": "Whether the project serves B2B or B2C customers (b2b, b2c or other). Used to optimize default UI layouts.",
+            "type": "string",
+            "enum": [
+                "b2b",
+                "b2c",
+                "other"
+            ]
+        },
+        "AutocaptureOptOut": {
+            "description": "Disables posthog-js autocapture (clicks, page views) when true.",
+            "type": "boolean"
+        },
+        "AutocaptureExceptionsOptIn": {
+            "description": "Enables automatic capture of JavaScript exceptions via the SDK.",
+            "type": "boolean"
+        },
+        "AutocaptureWebVitalsOptIn": {
+            "description": "Enables automatic capture of Core Web Vitals performance metrics.",
+            "type": "boolean"
+        },
+        "CaptureConsoleLogOptIn": {
+            "description": "Enables capturing browser console logs alongside session replays.",
+            "type": "boolean"
+        },
+        "CapturePerformanceOptIn": {
+            "description": "Enables capturing performance timing and network requests.",
+            "type": "boolean"
+        },
+        "CaptureDeadClicks": {
+            "description": "Enables capturing clicks that had no effect.",
+            "type": "boolean"
+        },
+        "HeatmapsOptIn": {
+            "description": "Enables heatmap recording on pages that use posthog-js.",
+            "type": "boolean"
+        },
+        "SurveysOptIn": {
+            "description": "Enables displaying surveys via posthog-js on allowed origins.",
+            "type": "boolean"
+        },
+        "SessionRecordingOptIn": {
+            "description": "Enables session replay recording for this project.",
+            "type": "boolean"
+        },
+        "SessionRecordingSampleRate": {
+            "description": "Fraction of sessions to record, as a decimal string between 0.00 and 1.00 (e.g. 0.1 = 10%).",
+            "type": "string",
+            "pattern": "^-?\\d{0,1}(?:\\.\\d{0,2})?$"
+        },
+        "SessionRecordingMinimumDurationMilliseconds": {
+            "description": "Skip saving sessions shorter than this many milliseconds.",
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 30000
+        },
+        "SessionRecordingRetentionPeriod": {
+            "description": "How long to retain new session recordings: 30d, 90d, 1y or 5y (availability depends on plan).",
+            "type": "string",
+            "enum": [
+                "30d",
+                "90d",
+                "1y",
+                "5y"
+            ]
+        },
+        "RecordingDomains": {
+            "description": "Origins permitted to record session replays and heatmaps. Empty allows all origins.",
+            "type": "array",
+            "insertionOrder": false,
+            "items": {
+                "type": "string",
+                "maxLength": 200
+            }
+        },
+        "DataAttributes": {
+            "description": "Element attributes that posthog-js captures as action identifiers, e.g. data-attr.",
+            "type": "array",
+            "insertionOrder": true,
+            "items": {
+                "type": "string"
+            }
+        },
+        "PersonDisplayNameProperties": {
+            "description": "Ordered list of person properties used to render a person's display name in the UI.",
+            "type": "array",
+            "insertionOrder": true,
+            "items": {
+                "type": "string",
+                "maxLength": 400
+            }
+        },
+        "TestAccountFilters": {
+            "description": "JSON array of property filters that identify internal/test traffic to exclude from insights (use Fn::ToJsonString), e.g. [{\"key\": \"email\", \"value\": \"@example.com\", \"operator\": \"not_icontains\", \"type\": \"person\"}].",
+            "type": "string"
+        },
+        "TestAccountFiltersDefaultChecked": {
+            "description": "When true, new insights exclude internal/test users by default.",
+            "type": "boolean"
+        },
+        "PathCleaningFilters": {
+            "description": "JSON array of regex rewrite rules that collapse dynamic path segments before URLs are shown in paths (use Fn::ToJsonString), e.g. [{\"regex\": \"/user/\\\\d+\", \"alias\": \"/user/<id>\"}].",
+            "type": "string"
+        },
+        "ApiToken": {
+            "description": "The project API key (public token, phc_...) that PostHog SDKs use to send events.",
+            "type": "string"
+        },
+        "ApiHost": {
+            "description": "Host the PostHog SDKs send events to (their api_host option).",
+            "type": "string"
+        },
+        "CreatedAt": {
+            "description": "ISO 8601 creation timestamp.",
+            "type": "string"
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "OrganizationId",
+        "Name"
+    ],
+    "readOnlyProperties": [
+        "/properties/Id",
+        "/properties/Uuid",
+        "/properties/ApiToken",
+        "/properties/ApiHost",
+        "/properties/CreatedAt"
+    ],
+    "createOnlyProperties": [
+        "/properties/OrganizationId"
+    ],
+    "primaryIdentifier": [
+        "/properties/OrganizationId",
+        "/properties/Id"
+    ],
+    "additionalIdentifiers": [
+        [
+            "/properties/Uuid"
+        ],
+        [
+            "/properties/ApiToken"
+        ]
+    ],
+    "tagging": {
+        "taggable": false
+    },
+    "handlers": {
+        "create": {
+            "permissions": []
+        },
+        "read": {
+            "permissions": []
+        },
+        "update": {
+            "permissions": []
+        },
+        "delete": {
+            "permissions": []
+        },
+        "list": {
+            "permissions": []
+        }
+    }
+}

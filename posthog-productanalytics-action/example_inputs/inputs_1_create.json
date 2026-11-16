@@ -1,0 +1,13 @@
+{
+    "ProjectId": "1",
+    "Name": "cfn-contract-test-action",
+    "Description": "Created by the CloudFormation contract tests",
+    "Tags": ["cloudformation"],
+    "Steps": [
+        {
+            "Event": "$pageview",
+            "Url": "/signup/complete",
+            "UrlMatching": "contains"
+        }
+    ]
+}

@@ -1,0 +1,131 @@
+{
+    "typeName": "PostHog::FeatureFlags::EarlyAccessFeature",
+    "description": "A PostHog early access feature: a feature users can opt in to from your app, backed by a feature flag that is enabled for opted-in users once the feature reaches an active stage.",
+    "sourceUrl": "https://github.com/johndavisdev/posthog-iac",
+    "documentationUrl": "https://posthog.com/docs/feature-flags/early-access-feature-management",
+    "definitions": {},
+    "typeConfiguration": {
+        "properties": {
+            "ApiKey": {
+                "description": "PostHog personal API key (phx_...) with the scopes this resource type needs. Pass it with a dynamic reference such as {{resolve:ssm-secure:/posthog/api-key}} when calling SetTypeConfiguration; never put it in plain text.",
+                "type": "string",
+                "minLength": 1
+            },
+            "BaseUrl": {
+                "description": "PostHog API host. Leave unset for PostHog Cloud US (https://us.posthog.com); use https://eu.posthog.com for PostHog Cloud EU, or your instance URL when self-hosting.",
+                "type": "string"
+            }
+        },
+        "additionalProperties": false,
+        "required": [
+            "ApiKey"
+        ]
+    },
+    "properties": {
+        "ProjectId": {
+            "description": "ID of the PostHog project the early access feature belongs to.",
+            "type": "string",
+            "minLength": 1
+        },
+        "Id": {
+            "description": "The PostHog early access feature ID (a UUID).",
+            "type": "string"
+        },
+        "Name": {
+            "description": "Name of the early access feature.",
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+        },
+        "Description": {
+            "description": "A longer description of what the feature does, shown to users in the opt-in UI.",
+            "type": "string"
+        },
+        "Stage": {
+            "description": "Lifecycle stage. Moving to an active stage (alpha, beta, general-availability) enables the feature flag for opted-in users.",
+            "type": "string",
+            "enum": [
+                "draft",
+                "concept",
+                "alpha",
+                "beta",
+                "general-availability",
+                "archived"
+            ]
+        },
+        "DocumentationUrl": {
+            "description": "URL of external documentation for the feature, shown to users in the opt-in UI.",
+            "type": "string",
+            "maxLength": 800
+        },
+        "ImageUrl": {
+            "description": "URL of an image that shows the feature, such as a screenshot, shown to users in the opt-in UI.",
+            "type": "string",
+            "maxLength": 800
+        },
+        "FeatureFlagId": {
+            "description": "ID of an existing feature flag to link. If omitted, PostHog creates a new flag from the feature name. The flag must not already be linked to another feature, must not belong to another product such as a survey or experiment, and must not be group-based or multivariate. Only accepted on create.",
+            "type": "string"
+        },
+        "Payload": {
+            "description": "JSON metadata for the feature's flag payload (use Fn::ToJsonString). Only accepted on create, and not read back.",
+            "type": "string"
+        },
+        "LinkedFeatureFlagId": {
+            "description": "ID of the feature flag backing this feature (the one given in FeatureFlagId, or the one PostHog created).",
+            "type": "string"
+        },
+        "FeatureFlagKey": {
+            "description": "Key of the feature flag backing this feature.",
+            "type": "string"
+        },
+        "CreatedAt": {
+            "description": "ISO 8601 creation timestamp.",
+            "type": "string"
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "ProjectId",
+        "Name",
+        "Stage"
+    ],
+    "readOnlyProperties": [
+        "/properties/Id",
+        "/properties/LinkedFeatureFlagId",
+        "/properties/FeatureFlagKey",
+        "/properties/CreatedAt"
+    ],
+    "primaryIdentifier": [
+        "/properties/ProjectId",
+        "/properties/Id"
+    ],
+    "tagging": {
+        "taggable": false
+    },
+    "handlers": {
+        "create": {
+            "permissions": []
+        },
+        "read": {
+            "permissions": []
+        },
+        "update": {
+            "permissions": []
+        },
+        "delete": {
+            "permissions": []
+        },
+        "list": {
+            "permissions": []
+        }
+    },
+    "writeOnlyProperties": [
+        "/properties/Payload"
+    ],
+    "createOnlyProperties": [
+        "/properties/ProjectId",
+        "/properties/FeatureFlagId",
+        "/properties/Payload"
+    ]
+}

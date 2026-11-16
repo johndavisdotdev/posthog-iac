@@ -1,0 +1,61 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >-
+  Creates a PostHog dashboard and two insights shown on it. Requires the
+  PostHog::ProductAnalytics::Insight and PostHog::ProductAnalytics::Dashboard
+  types to be registered and configured with SetTypeConfiguration (ApiKey).
+
+Parameters:
+  ProjectId:
+    Type: String
+    Description: PostHog project ID.
+
+Resources:
+  Traffic:
+    Type: PostHog::ProductAnalytics::Dashboard
+    Properties:
+      ProjectId: !Ref ProjectId
+      Name: Traffic
+
+  DailyPageviews:
+    Type: PostHog::ProductAnalytics::Insight
+    Properties:
+      ProjectId: !Ref ProjectId
+      Name: Daily pageviews
+      Tags: [web]
+      Dashboards:
+        - !GetAtt Traffic.Id
+      Query:
+        Fn::ToJsonString:
+          kind: InsightVizNode
+          source:
+            kind: TrendsQuery
+            interval: day
+            dateRange:
+              date_from: -30d
+            series:
+              - kind: EventsNode
+                event: $pageview
+                math: total
+
+  TopPages:
+    Type: PostHog::ProductAnalytics::Insight
+    Properties:
+      ProjectId: !Ref ProjectId
+      Name: Top pages (SQL)
+      Dashboards:
+        - !GetAtt Traffic.Id
+      Query:
+        Fn::ToJsonString:
+          kind: DataVisualizationNode
+          source:
+            kind: HogQLQuery
+            query: >-
+              select properties.$pathname as path, count() as views
+              from events where event = '$pageview' and timestamp > now() - interval 7 day
+              group by path order by views desc limit 20
+
+Outputs:
+  DailyPageviewsId:
+    Value: !GetAtt DailyPageviews.Id
+  DailyPageviewsShortId:
+    Value: !GetAtt DailyPageviews.ShortId

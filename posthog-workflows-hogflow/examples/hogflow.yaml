@@ -1,0 +1,55 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >-
+  Creates a PostHog workflow triggered by sign-up that waits a day before
+  exiting (add message steps to Actions). Requires the
+  PostHog::Workflows::HogFlow type to be registered and configured with
+  SetTypeConfiguration (ApiKey).
+
+Parameters:
+  ProjectId:
+    Type: String
+    Description: PostHog project ID.
+
+Resources:
+  Onboarding:
+    Type: PostHog::Workflows::HogFlow
+    Properties:
+      ProjectId: !Ref ProjectId
+      Name: Onboarding
+      Description: Follow up one day after sign-up
+      Tags: [growth]
+      Status: draft
+      ExitCondition: exit_only_at_end
+      TriggerMasking:
+        Hash: "{person.id}"
+        Ttl: 2592000
+      Actions:
+        Fn::ToJsonString:
+          - id: trigger_node
+            name: Signed up
+            type: trigger
+            config:
+              type: event
+              filters:
+                events:
+                  - id: signed_up
+                    name: signed_up
+                    type: events
+          - id: wait_node
+            name: Wait a day
+            type: delay
+            config:
+              delay_duration: 1d
+          - id: exit_node
+            name: Exit
+            type: exit
+            config:
+              reason: Default exit
+      Edges:
+        Fn::ToJsonString:
+          - { from: trigger_node, to: wait_node, type: continue }
+          - { from: wait_node, to: exit_node, type: continue }
+
+Outputs:
+  WorkflowId:
+    Value: !GetAtt Onboarding.Id

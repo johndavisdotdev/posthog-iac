@@ -1,0 +1,33 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >-
+  Creates a PostHog dashboard with dashboard-wide filters. Requires the
+  PostHog::ProductAnalytics::Dashboard type to be registered and configured
+  with SetTypeConfiguration (ApiKey). Add insights to it with
+  PostHog::ProductAnalytics::Insight (Dashboards property).
+
+Parameters:
+  ProjectId:
+    Type: String
+    Description: PostHog project ID.
+
+Resources:
+  Growth:
+    Type: PostHog::ProductAnalytics::Dashboard
+    Properties:
+      ProjectId: !Ref ProjectId
+      Name: Growth
+      Description: Weekly growth metrics
+      Pinned: true
+      Tags: [growth]
+      GridSpacing: relaxed
+      Filters:
+        Fn::ToJsonString:
+          date_from: -30d
+          filterTestAccounts: true
+      BreakdownColors:
+        - BreakdownValue: Chrome
+          ColorToken: preset-1
+
+Outputs:
+  DashboardId:
+    Value: !GetAtt Growth.Id

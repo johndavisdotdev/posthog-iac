@@ -1,0 +1,176 @@
+{
+    "typeName": "PostHog::ProductAnalytics::DashboardTemplate",
+    "description": "A PostHog dashboard template: a reusable dashboard definition (tiles, filters and variables) that new dashboards can be created from.",
+    "sourceUrl": "https://github.com/johndavisdev/posthog-iac",
+    "documentationUrl": "https://posthog.com/docs/product-analytics/dashboards#dashboard-templates",
+    "definitions": {
+        "Customization": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "TileSpacing": {
+                    "description": "Named tile density preset.",
+                    "type": "string",
+                    "enum": [
+                        "tight",
+                        "condensed",
+                        "standard",
+                        "relaxed",
+                        "wide"
+                    ]
+                },
+                "LayoutCompaction": {
+                    "description": "How tiles rearrange after a move or resize: `vertical`, `horizontal` or `stable`.",
+                    "type": "string",
+                    "enum": [
+                        "vertical",
+                        "horizontal",
+                        "stable"
+                    ]
+                },
+                "GroupDisplay": {
+                    "description": "How tile groups show: `sections` or `tabs`.",
+                    "type": "string",
+                    "enum": [
+                        "sections",
+                        "tabs"
+                    ]
+                },
+                "Groups": {
+                    "description": "Settings for tile groups, keyed by the tiles' group_key, as a JSON object (use Fn::ToJsonString).",
+                    "type": "string"
+                }
+            }
+        }
+    },
+    "typeConfiguration": {
+        "properties": {
+            "ApiKey": {
+                "description": "PostHog personal API key (phx_...) with the scopes this resource type needs. Pass it with a dynamic reference such as {{resolve:ssm-secure:/posthog/api-key}} when calling SetTypeConfiguration; never put it in plain text.",
+                "type": "string",
+                "minLength": 1
+            },
+            "BaseUrl": {
+                "description": "PostHog API host. Leave unset for PostHog Cloud US (https://us.posthog.com); use https://eu.posthog.com for PostHog Cloud EU, or your instance URL when self-hosting.",
+                "type": "string"
+            }
+        },
+        "additionalProperties": false,
+        "required": [
+            "ApiKey"
+        ]
+    },
+    "properties": {
+        "ProjectId": {
+            "description": "ID of the PostHog project the template belongs to.",
+            "type": "string",
+            "minLength": 1
+        },
+        "Id": {
+            "description": "The PostHog dashboard template ID (UUID).",
+            "type": "string"
+        },
+        "TemplateName": {
+            "description": "Name of the template.",
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 400
+        },
+        "DashboardDescription": {
+            "description": "Description given to dashboards created from the template.",
+            "type": "string",
+            "maxLength": 400
+        },
+        "DashboardFilters": {
+            "description": "Dashboard-level filters for dashboards created from the template, as JSON (use Fn::ToJsonString), e.g. {\"date_from\": \"-30d\"}.",
+            "type": "string"
+        },
+        "Tiles": {
+            "description": "Tiles of the template as a JSON array (use Fn::ToJsonString). Each tile is an object such as {\"type\": \"INSIGHT\", \"name\": \"Pageviews\", \"query\": {...}, \"layouts\": {...}, \"color\": null} or {\"type\": \"TEXT\", \"body\": \"...\"}.",
+            "type": "string"
+        },
+        "Variables": {
+            "description": "Template variables as a JSON array (use Fn::ToJsonString), e.g. [{\"id\": \"VARIABLE_1\", \"name\": \"Signed up\", \"type\": \"event\", \"default\": {\"id\": \"signed_up\"}, \"required\": true, \"description\": \"...\"}].",
+            "type": "string"
+        },
+        "Tags": {
+            "description": "Tags on the template.",
+            "type": "array",
+            "insertionOrder": false,
+            "uniqueItems": true,
+            "items": {
+                "type": "string",
+                "maxLength": 255
+            }
+        },
+        "ImageUrl": {
+            "description": "URL of the template's preview image.",
+            "type": "string",
+            "maxLength": 8201
+        },
+        "Scope": {
+            "description": "Who can use the template: `team` (this project) or `organization` (every project in the organization). `global` and `feature_flag` are reserved for PostHog staff. Defaults to `team`.",
+            "type": "string",
+            "enum": [
+                "team",
+                "organization",
+                "global",
+                "feature_flag"
+            ]
+        },
+        "AvailabilityContexts": {
+            "description": "Contexts in which the template is offered, e.g. general or onboarding.",
+            "type": "array",
+            "insertionOrder": false,
+            "uniqueItems": true,
+            "items": {
+                "type": "string",
+                "maxLength": 255
+            }
+        },
+        "Customization": {
+            "description": "Display settings that a dashboard made from this template starts with.",
+            "$ref": "#/definitions/Customization"
+        },
+        "CreatedAt": {
+            "description": "ISO 8601 creation timestamp.",
+            "type": "string"
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "ProjectId",
+        "TemplateName"
+    ],
+    "readOnlyProperties": [
+        "/properties/Id",
+        "/properties/CreatedAt"
+    ],
+    "primaryIdentifier": [
+        "/properties/ProjectId",
+        "/properties/Id"
+    ],
+    "tagging": {
+        "taggable": false
+    },
+    "handlers": {
+        "create": {
+            "permissions": []
+        },
+        "read": {
+            "permissions": []
+        },
+        "update": {
+            "permissions": []
+        },
+        "delete": {
+            "permissions": []
+        },
+        "list": {
+            "permissions": []
+        }
+    },
+    "createOnlyProperties": [
+        "/properties/ProjectId"
+    ]
+}

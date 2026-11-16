@@ -1,0 +1,29 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >-
+  Creates a PostHog error tracking suppression rule. Requires the
+  PostHog::ErrorTracking::SuppressionRule type to be registered and configured
+  with SetTypeConfiguration (ApiKey).
+
+Parameters:
+  ProjectId:
+    Type: String
+    Description: PostHog project ID.
+
+Resources:
+  IgnoreResizeObserver:
+    Type: PostHog::ErrorTracking::SuppressionRule
+    Properties:
+      ProjectId: !Ref ProjectId
+      SamplingRate: 1
+      Filters:
+        Fn::ToJsonString:
+          type: AND
+          values:
+            - key: $exception_values
+              type: event
+              operator: icontains
+              value: ResizeObserver loop
+
+Outputs:
+  SuppressionRuleId:
+    Value: !GetAtt IgnoreResizeObserver.Id

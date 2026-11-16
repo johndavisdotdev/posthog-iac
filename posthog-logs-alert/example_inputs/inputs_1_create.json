@@ -1,0 +1,9 @@
+{
+    "ProjectId": "1",
+    "Name": "cfn-contract-test-logs-alert",
+    "Filters": {
+        "SeverityLevels": ["error", "fatal"]
+    },
+    "ThresholdCount": 10,
+    "WindowMinutes": 15
+}

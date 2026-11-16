@@ -1,0 +1,58 @@
+{
+    "properties": {
+        "ApiKey": {
+            "description": "PostHog personal API key (phx_...) with the scopes this resource type needs. Pass it with a dynamic reference such as {{resolve:ssm-secure:/posthog/api-key}} when calling SetTypeConfiguration; never put it in plain text.",
+            "type": "string",
+            "minLength": 1
+        },
+        "BaseUrl": {
+            "description": "PostHog API host. Leave unset for PostHog Cloud US (https://us.posthog.com); use https://eu.posthog.com for PostHog Cloud EU, or your instance URL when self-hosting.",
+            "type": "string"
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "ApiKey"
+    ],
+    "definitions": {
+        "Customization": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "TileSpacing": {
+                    "description": "Named tile density preset.",
+                    "type": "string",
+                    "enum": [
+                        "tight",
+                        "condensed",
+                        "standard",
+                        "relaxed",
+                        "wide"
+                    ]
+                },
+                "LayoutCompaction": {
+                    "description": "How tiles rearrange after a move or resize: `vertical`, `horizontal` or `stable`.",
+                    "type": "string",
+                    "enum": [
+                        "vertical",
+                        "horizontal",
+                        "stable"
+                    ]
+                },
+                "GroupDisplay": {
+                    "description": "How tile groups show: `sections` or `tabs`.",
+                    "type": "string",
+                    "enum": [
+                        "sections",
+                        "tabs"
+                    ]
+                },
+                "Groups": {
+                    "description": "Settings for tile groups, keyed by the tiles' group_key, as a JSON object (use Fn::ToJsonString).",
+                    "type": "string"
+                }
+            }
+        }
+    },
+    "typeName": "PostHog::ProductAnalytics::DashboardTemplate"
+}

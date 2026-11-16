@@ -1,0 +1,40 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >-
+  Creates a PostHog data warehouse view, materialized daily. Requires the
+  PostHog::DataWarehouse::SavedQuery type to be registered and configured with
+  SetTypeConfiguration (ApiKey).
+
+Parameters:
+  ProjectId:
+    Type: String
+    Description: PostHog project ID.
+
+Resources:
+  DailySignups:
+    Type: PostHog::DataWarehouse::SavedQuery
+    Properties:
+      ProjectId: !Ref ProjectId
+      Name: daily_signups
+      Description: One row per day with the number of sign-ups.
+      Query:
+        Fn::ToJsonString:
+          kind: HogQLQuery
+          query: |-
+            SELECT
+                toDate(timestamp) AS day,
+                count() AS signups
+            FROM events
+            WHERE event = 'signed_up'
+            GROUP BY day
+      SyncFrequency: 24hour
+      Incremental:
+        Enabled: true
+        IncrementalKey: day
+        UniqueKey: [day]
+        LookbackSeconds: 86400
+
+Outputs:
+  SavedQueryId:
+    Value: !GetAtt DailySignups.Id
+  MaterializationStatus:
+    Value: !GetAtt DailySignups.Status

@@ -1,0 +1,5 @@
+{
+    "ProjectId": "1",
+    "Name": "cfn-contract-test-web-experiment",
+    "Variants": "{\"control\": {\"transforms\": [], \"rollout_percentage\": 50}, \"test\": {\"transforms\": [{\"selector\": \"h1\", \"text\": \"Hello from CloudFormation\"}], \"rollout_percentage\": 50}}"
+}

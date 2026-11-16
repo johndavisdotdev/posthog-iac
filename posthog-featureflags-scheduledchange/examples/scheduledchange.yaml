@@ -1,0 +1,54 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >-
+  Creates a disabled feature flag, schedules it to turn on at launch time and
+  adds a release condition a week later. Requires the
+  PostHog::FeatureFlags::FeatureFlag and PostHog::FeatureFlags::ScheduledChange
+  types to be registered and configured with SetTypeConfiguration (ApiKey).
+
+Parameters:
+  ProjectId:
+    Type: String
+    Description: PostHog project ID.
+
+Resources:
+  LaunchFlag:
+    Type: PostHog::FeatureFlags::FeatureFlag
+    Properties:
+      ProjectId: !Ref ProjectId
+      Key: spring-launch
+      Name: Spring launch banner
+      Active: false
+      Filters:
+        Fn::ToJsonString:
+          groups:
+            - properties: []
+              rollout_percentage: 10
+
+  TurnOnAtLaunch:
+    Type: PostHog::FeatureFlags::ScheduledChange
+    Properties:
+      ProjectId: !Ref ProjectId
+      RecordId: !GetAtt LaunchFlag.Id
+      ScheduledAt: "2030-03-20T09:00:00Z"
+      Payload:
+        Fn::ToJsonString:
+          operation: update_status
+          value: true
+
+  RollOutToEveryone:
+    Type: PostHog::FeatureFlags::ScheduledChange
+    Properties:
+      ProjectId: !Ref ProjectId
+      RecordId: !GetAtt LaunchFlag.Id
+      ScheduledAt: "2030-03-27T09:00:00Z"
+      Payload:
+        Fn::ToJsonString:
+          operation: add_release_condition
+          value:
+            groups:
+              - properties: []
+                rollout_percentage: 100
+
+Outputs:
+  TurnOnAtLaunchId:
+    Value: !GetAtt TurnOnAtLaunch.Id

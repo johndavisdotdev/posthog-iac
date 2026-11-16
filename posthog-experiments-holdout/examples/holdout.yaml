@@ -1,0 +1,26 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >-
+  Creates a PostHog experiment holdout that keeps 10% of users out of every
+  experiment that references it. Requires the PostHog::Experiments::Holdout
+  type to be registered and configured with SetTypeConfiguration (ApiKey).
+
+Parameters:
+  ProjectId:
+    Type: String
+    Description: PostHog project ID.
+
+Resources:
+  GlobalHoldout:
+    Type: PostHog::Experiments::Holdout
+    Properties:
+      ProjectId: !Ref ProjectId
+      Name: Global holdout
+      Description: 10% of users never see experiments, to measure their combined effect.
+      Filters:
+        Fn::ToJsonString:
+          - properties: []
+            rollout_percentage: 10
+
+Outputs:
+  HoldoutId:
+    Value: !GetAtt GlobalHoldout.Id

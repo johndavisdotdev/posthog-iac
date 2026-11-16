@@ -1,0 +1,7 @@
+{
+    "ProjectId": "1",
+    "Name": "cfn-contract-test-survey",
+    "Description": "Created by the CloudFormation contract tests",
+    "Type": "api",
+    "Questions": "[{\"type\": \"open\", \"question\": \"What could we do better?\"}]"
+}

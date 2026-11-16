@@ -1,0 +1,121 @@
+{
+    "typeName": "PostHog::Projects::ApprovalPolicy",
+    "description": "A PostHog approval policy: requires changes of one kind (the action key, e.g. changes to feature flags) in a project to be approved by designated approvers before they are applied.",
+    "sourceUrl": "https://github.com/johndavisdev/posthog-iac",
+    "documentationUrl": "https://posthog.com/docs/api",
+    "definitions": {},
+    "typeConfiguration": {
+        "properties": {
+            "ApiKey": {
+                "description": "PostHog personal API key (phx_...) with the scopes this resource type needs. Pass it with a dynamic reference such as {{resolve:ssm-secure:/posthog/api-key}} when calling SetTypeConfiguration; never put it in plain text.",
+                "type": "string",
+                "minLength": 1
+            },
+            "BaseUrl": {
+                "description": "PostHog API host. Leave unset for PostHog Cloud US (https://us.posthog.com); use https://eu.posthog.com for PostHog Cloud EU, or your instance URL when self-hosting.",
+                "type": "string"
+            }
+        },
+        "additionalProperties": false,
+        "required": [
+            "ApiKey"
+        ]
+    },
+    "properties": {
+        "ProjectId": {
+            "description": "ID of the PostHog project the approval policy belongs to.",
+            "type": "string",
+            "minLength": 1
+        },
+        "Id": {
+            "description": "The PostHog approval policy ID (UUID).",
+            "type": "string"
+        },
+        "ActionKey": {
+            "description": "Key of the gated action, e.g. feature_flag.update.",
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+        },
+        "Conditions": {
+            "description": "JSON object (use Fn::ToJsonString) restricting which changes of the action need approval. Leave unset to gate every change.",
+            "type": "string"
+        },
+        "ApproverConfig": {
+            "description": "JSON object (use Fn::ToJsonString) describing who can approve and how many approvals are needed, e.g. {\"users\": [1, 2], \"roles\": [], \"quorum\": 1}.",
+            "type": "string",
+            "minLength": 1
+        },
+        "AllowSelfApprove": {
+            "description": "Whether the requester of a change may approve it. Defaults to false.",
+            "type": "boolean"
+        },
+        "BypassOrgMembershipLevels": {
+            "description": "JSON array (use Fn::ToJsonString) of organization membership levels whose members can apply the change without approval.",
+            "type": "string"
+        },
+        "BypassRoles": {
+            "description": "IDs (UUIDs) of roles whose members can apply the change without approval.",
+            "type": "array",
+            "insertionOrder": false,
+            "uniqueItems": true,
+            "items": {
+                "type": "string"
+            }
+        },
+        "ExpiresAfter": {
+            "description": "Auto-expire pending change requests after this duration, as a Django duration string such as \"7 00:00:00\" (7 days) or \"12:00:00\" (12 hours), or ISO 8601 such as P7D. Leave unset for the PostHog default.",
+            "type": "string"
+        },
+        "Enabled": {
+            "description": "Whether the policy is enforced. Defaults to true.",
+            "type": "boolean"
+        },
+        "CreatedAt": {
+            "description": "ISO 8601 creation timestamp.",
+            "type": "string"
+        },
+        "UpdatedAt": {
+            "description": "ISO 8601 timestamp of the last change.",
+            "type": "string"
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "ProjectId",
+        "ActionKey",
+        "ApproverConfig"
+    ],
+    "readOnlyProperties": [
+        "/properties/Id",
+        "/properties/CreatedAt",
+        "/properties/UpdatedAt"
+    ],
+    "createOnlyProperties": [
+        "/properties/ProjectId"
+    ],
+    "primaryIdentifier": [
+        "/properties/ProjectId",
+        "/properties/Id"
+    ],
+    "tagging": {
+        "taggable": false
+    },
+    "handlers": {
+        "create": {
+            "permissions": []
+        },
+        "read": {
+            "permissions": []
+        },
+        "update": {
+            "permissions": []
+        },
+        "delete": {
+            "permissions": []
+        },
+        "list": {
+            "permissions": []
+        }
+    }
+}

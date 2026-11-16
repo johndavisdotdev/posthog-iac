@@ -1,0 +1,21 @@
+{
+    "ProjectId": "1",
+    "Name": "cfn-contract-test-logs-alert-renamed",
+    "Enabled": false,
+    "Filters": {
+        "SeverityLevels": ["error"],
+        "ServiceNames": ["checkout"],
+        "FilterGroup": "{\"type\": \"AND\", \"values\": [{\"type\": \"AND\", \"values\": [{\"key\": \"message\", \"type\": \"log\", \"operator\": \"icontains\", \"value\": \"timeout\"}]}]}"
+    },
+    "ThresholdCount": 5,
+    "ThresholdOperator": "above",
+    "WindowMinutes": 30,
+    "EvaluationPeriods": 3,
+    "DatapointsToAlarm": 2,
+    "CooldownMinutes": 60,
+    "ScheduleRestriction": {
+        "BlockedWindows": [
+            {"Start": "22:00", "End": "06:00"}
+        ]
+    }
+}

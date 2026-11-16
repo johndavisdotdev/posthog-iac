@@ -1,0 +1,190 @@
+{
+    "typeName": "PostHog::ProductAnalytics::Dashboard",
+    "description": "A PostHog dashboard: a named collection of insight tiles with shared filters. Tiles are managed by attaching insights (PostHog::ProductAnalytics::Insight Dashboards) and are not part of this resource.",
+    "sourceUrl": "https://github.com/johndavisdev/posthog-iac",
+    "documentationUrl": "https://posthog.com/docs/product-analytics/dashboards",
+    "definitions": {
+        "BreakdownColor": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "BreakdownValue"
+            ],
+            "properties": {
+                "BreakdownValue": {
+                    "description": "The breakdown value this color applies to, as it appears in the chart legend.",
+                    "type": "string"
+                },
+                "ColorToken": {
+                    "description": "Palette slot to color the value with, as `preset-1` upwards. Not a CSS color.",
+                    "type": "string"
+                },
+                "BreakdownType": {
+                    "description": "Breakdown type the value came from, such as `event`, `person`, `session` or `cohort`.",
+                    "type": "string"
+                },
+                "BreakdownProperty": {
+                    "description": "Breakdown property the color is scoped to. Omit to apply it under every property.",
+                    "type": "string"
+                }
+            }
+        }
+    },
+    "typeConfiguration": {
+        "properties": {
+            "ApiKey": {
+                "description": "PostHog personal API key (phx_...) with the scopes this resource type needs. Pass it with a dynamic reference such as {{resolve:ssm-secure:/posthog/api-key}} when calling SetTypeConfiguration; never put it in plain text.",
+                "type": "string",
+                "minLength": 1
+            },
+            "BaseUrl": {
+                "description": "PostHog API host. Leave unset for PostHog Cloud US (https://us.posthog.com); use https://eu.posthog.com for PostHog Cloud EU, or your instance URL when self-hosting.",
+                "type": "string"
+            }
+        },
+        "additionalProperties": false,
+        "required": [
+            "ApiKey"
+        ]
+    },
+    "properties": {
+        "ProjectId": {
+            "description": "ID of the PostHog project the dashboard belongs to.",
+            "type": "string",
+            "minLength": 1
+        },
+        "Id": {
+            "description": "The PostHog dashboard ID.",
+            "type": "string"
+        },
+        "Name": {
+            "description": "Name of the dashboard.",
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 400
+        },
+        "Description": {
+            "description": "Human-readable description of the dashboard.",
+            "type": "string"
+        },
+        "Pinned": {
+            "description": "Whether the dashboard is pinned to the top of the dashboard list.",
+            "type": "boolean"
+        },
+        "Tags": {
+            "description": "Tags on the dashboard.",
+            "type": "array",
+            "insertionOrder": false,
+            "uniqueItems": true,
+            "items": {
+                "type": "string"
+            }
+        },
+        "Filters": {
+            "description": "Dashboard-level filters applied to every tile, as JSON (use Fn::ToJsonString): date_from, date_to, properties, breakdown_filter, interval, compareFilter, filterTestAccounts. E.g. {\"date_from\": \"-30d\"}.",
+            "type": "string"
+        },
+        "BreakdownColors": {
+            "description": "Colors pinned to specific breakdown values across the dashboard's tiles.",
+            "type": "array",
+            "insertionOrder": true,
+            "items": {
+                "$ref": "#/definitions/BreakdownColor"
+            }
+        },
+        "DataColorThemeId": {
+            "description": "ID of the color theme (PostHog::ProductAnalytics::DataColorTheme) used for chart visualizations.",
+            "type": "string"
+        },
+        "QuickFilterIds": {
+            "description": "IDs of the quick filters shown on this dashboard.",
+            "type": "array",
+            "insertionOrder": true,
+            "items": {
+                "type": "string"
+            }
+        },
+        "GridSpacing": {
+            "description": "Named tile density preset.",
+            "type": "string",
+            "enum": [
+                "tight",
+                "condensed",
+                "standard",
+                "relaxed",
+                "wide"
+            ]
+        },
+        "LayoutCompaction": {
+            "description": "How tiles rearrange after a move or resize: `vertical` stacks tiles upward, `horizontal` to the left, `stable` preserves positions.",
+            "type": "string",
+            "enum": [
+                "vertical",
+                "horizontal",
+                "stable"
+            ]
+        },
+        "GroupDisplay": {
+            "description": "How tile groups show: `sections` (collapsible bands) or `tabs`.",
+            "type": "string",
+            "enum": [
+                "sections",
+                "tabs"
+            ]
+        },
+        "UseTemplate": {
+            "description": "Key of a predefined dashboard template to create the dashboard from. Only used on creation.",
+            "type": "string"
+        },
+        "UseDashboard": {
+            "description": "ID of an existing dashboard to duplicate (tiles included). Only used on creation.",
+            "type": "string"
+        },
+        "CreatedAt": {
+            "description": "ISO 8601 creation timestamp.",
+            "type": "string"
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "ProjectId",
+        "Name"
+    ],
+    "readOnlyProperties": [
+        "/properties/Id",
+        "/properties/CreatedAt"
+    ],
+    "primaryIdentifier": [
+        "/properties/ProjectId",
+        "/properties/Id"
+    ],
+    "tagging": {
+        "taggable": false
+    },
+    "handlers": {
+        "create": {
+            "permissions": []
+        },
+        "read": {
+            "permissions": []
+        },
+        "update": {
+            "permissions": []
+        },
+        "delete": {
+            "permissions": []
+        },
+        "list": {
+            "permissions": []
+        }
+    },
+    "createOnlyProperties": [
+        "/properties/ProjectId",
+        "/properties/UseTemplate",
+        "/properties/UseDashboard"
+    ],
+    "writeOnlyProperties": [
+        "/properties/UseTemplate",
+        "/properties/UseDashboard"
+    ]
+}

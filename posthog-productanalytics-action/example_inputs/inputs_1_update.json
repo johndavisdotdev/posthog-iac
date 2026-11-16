@@ -1,0 +1,11 @@
+{
+    "ProjectId": "1",
+    "Name": "cfn-contract-test-action-renamed",
+    "Tags": ["cloudformation", "updated"],
+    "Steps": [
+        {
+            "Event": "signed_up",
+            "Properties": "[{\"key\": \"plan\", \"value\": \"pro\", \"type\": \"person\", \"operator\": \"exact\"}]"
+        }
+    ]
+}

@@ -1,0 +1,35 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >-
+  Creates a PostHog error tracking assignment rule. Requires the
+  PostHog::ErrorTracking::AssignmentRule type to be registered and configured
+  with SetTypeConfiguration (ApiKey).
+
+Parameters:
+  ProjectId:
+    Type: String
+    Description: PostHog project ID.
+  UserId:
+    Type: String
+    Description: ID of the PostHog user who gets the matching issues.
+
+Resources:
+  TypeErrorsToOwner:
+    Type: PostHog::ErrorTracking::AssignmentRule
+    Properties:
+      ProjectId: !Ref ProjectId
+      OrderKey: 0
+      Assignee:
+        Type: user
+        Id: !Ref UserId
+      Filters:
+        Fn::ToJsonString:
+          type: AND
+          values:
+            - key: $exception_types
+              type: event
+              operator: exact
+              value: [TypeError]
+
+Outputs:
+  AssignmentRuleId:
+    Value: !GetAtt TypeErrorsToOwner.Id

@@ -1,0 +1,33 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >-
+  Creates a PostHog no-code web experiment that changes a headline. Requires
+  the PostHog::Experiments::WebExperiment type to be registered and configured
+  with SetTypeConfiguration (ApiKey).
+
+Parameters:
+  ProjectId:
+    Type: String
+    Description: PostHog project ID.
+
+Resources:
+  HeroHeadline:
+    Type: PostHog::Experiments::WebExperiment
+    Properties:
+      ProjectId: !Ref ProjectId
+      Name: Hero headline
+      Variants:
+        Fn::ToJsonString:
+          control:
+            transforms: []
+            rollout_percentage: 50
+          superman:
+            transforms:
+              - selector: "#hero > h1"
+                text: Here comes Superman!
+            rollout_percentage: 50
+
+Outputs:
+  WebExperimentId:
+    Value: !GetAtt HeroHeadline.Id
+  FeatureFlagKey:
+    Value: !GetAtt HeroHeadline.FeatureFlagKey

@@ -1,0 +1,82 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`serializes every question type 1`] = `
+[
+  {
+    "buttonText": "Next",
+    "description": "<b>We never share it</b>",
+    "descriptionContentType": "html",
+    "id": "q-email",
+    "question": "Your email?",
+    "translations": {
+      "de": {
+        "question": "Deine E-Mail?",
+      },
+    },
+    "type": "open",
+    "validation": [
+      {
+        "type": "min_length",
+        "value": 3,
+      },
+      {
+        "type": "max_length",
+        "value": 200,
+      },
+      {
+        "type": "email",
+      },
+    ],
+  },
+  {
+    "link": "https://posthog.com/docs",
+    "question": "Read the docs",
+    "type": "link",
+  },
+  {
+    "display": "emoji",
+    "question": "How was it?",
+    "scale": 3,
+    "type": "rating",
+  },
+  {
+    "display": "number",
+    "question": "Rate us",
+    "scale": 10,
+    "type": "rating",
+  },
+  {
+    "branching": {
+      "responseValues": {
+        "0": "end",
+        "1": 6,
+      },
+      "type": "response_based",
+    },
+    "choices": [
+      "Engineer",
+      "Designer",
+      "Other",
+    ],
+    "hasOpenChoice": true,
+    "question": "Role?",
+    "type": "single_choice",
+  },
+  {
+    "choices": [
+      "A",
+      "B",
+    ],
+    "question": "Tools?",
+    "shuffleOptions": true,
+    "type": "multiple_choice",
+  },
+  {
+    "branching": {
+      "type": "next_question",
+    },
+    "question": "Anything else?",
+    "type": "open",
+  },
+]
+`;

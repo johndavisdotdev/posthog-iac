@@ -1,0 +1,9 @@
+{
+    "ProjectId": "1",
+    "Name": "cfn-contract-test-experiment-renamed",
+    "FeatureFlagKey": "cfn-contract-test-experiment",
+    "FeatureFlag": "{\"filters\": {\"multivariate\": {\"variants\": [{\"key\": \"control\", \"rollout_percentage\": 50}, {\"key\": \"test\", \"rollout_percentage\": 50}]}}}",
+    "Metrics": "[{\"kind\": \"ExperimentMetric\", \"metric_type\": \"funnel\", \"series\": [{\"kind\": \"EventsNode\", \"event\": \"$pageview\"}, {\"kind\": \"EventsNode\", \"event\": \"signed_up\"}]}]",
+    "ExposureCriteria": "{\"filterTestAccounts\": true}",
+    "Tags": ["cloudformation", "updated"]
+}

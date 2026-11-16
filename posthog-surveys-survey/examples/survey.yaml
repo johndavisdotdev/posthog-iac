@@ -1,0 +1,56 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >-
+  Creates a PostHog NPS popover survey for pro users on the app pages.
+  Requires the PostHog::Surveys::Survey type to be registered and configured
+  with SetTypeConfiguration (ApiKey).
+
+Parameters:
+  ProjectId:
+    Type: String
+    Description: PostHog project ID.
+
+Resources:
+  Nps:
+    Type: PostHog::Surveys::Survey
+    Properties:
+      ProjectId: !Ref ProjectId
+      Name: Net Promoter Score
+      Description: Quarterly NPS for paying customers
+      Type: popover
+      Questions:
+        Fn::ToJsonString:
+          - type: rating
+            question: How likely are you to recommend us to a friend?
+            scale: 10
+            display: number
+            isNpsQuestion: true
+            lowerBoundLabel: Unlikely
+            upperBoundLabel: Very likely
+          - type: open
+            question: What is the main reason for your score?
+            optional: true
+      Conditions:
+        Fn::ToJsonString:
+          url: /app
+          urlMatchType: icontains
+          seenSurveyWaitPeriodInDays: 30
+      Appearance:
+        Fn::ToJsonString:
+          position: right
+          thankYouMessageHeader: Thanks for your feedback!
+      TargetingFlagFilters:
+        Fn::ToJsonString:
+          groups:
+            - properties:
+                - key: plan
+                  value: [pro]
+                  operator: exact
+                  type: person
+              rollout_percentage: 100
+      ResponsesLimit: 1000
+      # Uncomment to launch the survey:
+      # StartDate: "2026-12-01T00:00:00Z"
+
+Outputs:
+  SurveyId:
+    Value: !GetAtt Nps.Id

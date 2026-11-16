@@ -1,0 +1,106 @@
+{
+    "typeName": "PostHog::Experiments::SavedMetric",
+    "description": "A PostHog shared (saved) experiment metric: an ExperimentMetric definition that can be attached to many experiments.",
+    "sourceUrl": "https://github.com/johndavisdev/posthog-iac",
+    "documentationUrl": "https://posthog.com/docs/experiments/metrics",
+    "definitions": {},
+    "typeConfiguration": {
+        "properties": {
+            "ApiKey": {
+                "description": "PostHog personal API key (phx_...) with the scopes this resource type needs. Pass it with a dynamic reference such as {{resolve:ssm-secure:/posthog/api-key}} when calling SetTypeConfiguration; never put it in plain text.",
+                "type": "string",
+                "minLength": 1
+            },
+            "BaseUrl": {
+                "description": "PostHog API host. Leave unset for PostHog Cloud US (https://us.posthog.com); use https://eu.posthog.com for PostHog Cloud EU, or your instance URL when self-hosting.",
+                "type": "string"
+            }
+        },
+        "additionalProperties": false,
+        "required": [
+            "ApiKey"
+        ]
+    },
+    "properties": {
+        "ProjectId": {
+            "description": "ID of the PostHog project the shared metric belongs to.",
+            "type": "string",
+            "minLength": 1
+        },
+        "Id": {
+            "description": "The PostHog shared metric ID.",
+            "type": "string"
+        },
+        "Name": {
+            "description": "Name of the shared metric. Must be unique within the project (case-insensitive).",
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 400
+        },
+        "Description": {
+            "description": "Short description of what the metric measures.",
+            "type": "string",
+            "maxLength": 400
+        },
+        "Query": {
+            "description": "ExperimentMetric definition as a JSON object (use Fn::ToJsonString). It must have kind `ExperimentMetric` and a metric_type: `mean` (source is an EventsNode), `funnel` (series of EventsNode steps), `ratio` (numerator and denominator), `quantile` (source with math_property and quantile) or `retention` (start_event and completion_event). Legacy kinds are rejected.",
+            "type": "string",
+            "minLength": 1
+        },
+        "Tags": {
+            "description": "Tags on the shared metric.",
+            "type": "array",
+            "insertionOrder": false,
+            "uniqueItems": true,
+            "items": {
+                "type": "string"
+            }
+        },
+        "CreatedAt": {
+            "description": "ISO 8601 creation timestamp.",
+            "type": "string"
+        },
+        "UpdatedAt": {
+            "description": "ISO 8601 last-update timestamp.",
+            "type": "string"
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "ProjectId",
+        "Name",
+        "Query"
+    ],
+    "readOnlyProperties": [
+        "/properties/Id",
+        "/properties/CreatedAt",
+        "/properties/UpdatedAt"
+    ],
+    "createOnlyProperties": [
+        "/properties/ProjectId"
+    ],
+    "primaryIdentifier": [
+        "/properties/ProjectId",
+        "/properties/Id"
+    ],
+    "tagging": {
+        "taggable": false
+    },
+    "handlers": {
+        "create": {
+            "permissions": []
+        },
+        "read": {
+            "permissions": []
+        },
+        "update": {
+            "permissions": []
+        },
+        "delete": {
+            "permissions": []
+        },
+        "list": {
+            "permissions": []
+        }
+    }
+}

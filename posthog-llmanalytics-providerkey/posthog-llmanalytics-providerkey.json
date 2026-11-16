@@ -1,0 +1,150 @@
+{
+    "typeName": "PostHog::LLMAnalytics::ProviderKey",
+    "description": "A PostHog LLM analytics provider key: an LLM provider API key (OpenAI, Anthropic, Gemini, ...) that PostHog uses to run LLM-judge evaluations and other LLM analytics features in a project. The key itself is write-only; PostHog only returns a masked form.",
+    "sourceUrl": "https://github.com/johndavisdev/posthog-iac",
+    "documentationUrl": "https://posthog.com/docs/llm-analytics/evaluations",
+    "definitions": {},
+    "typeConfiguration": {
+        "properties": {
+            "ApiKey": {
+                "description": "PostHog personal API key (phx_...) with the scopes this resource type needs. Pass it with a dynamic reference such as {{resolve:ssm-secure:/posthog/api-key}} when calling SetTypeConfiguration; never put it in plain text.",
+                "type": "string",
+                "minLength": 1
+            },
+            "BaseUrl": {
+                "description": "PostHog API host. Leave unset for PostHog Cloud US (https://us.posthog.com); use https://eu.posthog.com for PostHog Cloud EU, or your instance URL when self-hosting.",
+                "type": "string"
+            }
+        },
+        "additionalProperties": false,
+        "required": [
+            "ApiKey"
+        ]
+    },
+    "properties": {
+        "ProjectId": {
+            "description": "ID of the PostHog project the provider key belongs to.",
+            "type": "string",
+            "minLength": 1
+        },
+        "Id": {
+            "description": "The PostHog provider key ID (UUID).",
+            "type": "string"
+        },
+        "Provider": {
+            "description": "LLM provider the key is for. Changing it replaces the key.",
+            "type": "string",
+            "enum": [
+                "openai",
+                "anthropic",
+                "gemini",
+                "openrouter",
+                "fireworks",
+                "azure_openai",
+                "together_ai",
+                "minimax",
+                "system_one",
+                "openai_compatible"
+            ]
+        },
+        "Name": {
+            "description": "Display name of the key.",
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 255
+        },
+        "ApiKey": {
+            "description": "The provider API key. Write-only: PostHog never returns it (see ApiKeyMasked). Pass it with a dynamic reference such as {{resolve:secretsmanager:openai-api-key}}; never put it in plain text.",
+            "type": "string",
+            "minLength": 1
+        },
+        "BaseUrl": {
+            "description": "Public HTTPS base URL of an OpenAI-compatible or System One API. For System One, end before /systemone.",
+            "type": "string"
+        },
+        "SystemOneModel": {
+            "description": "Model ID served by the System One endpoint.",
+            "type": "string",
+            "maxLength": 100
+        },
+        "AzureEndpoint": {
+            "description": "Azure OpenAI endpoint URL. For an Anthropic key served by Microsoft Foundry, the endpoint of the Foundry resource, e.g. https://my-resource.services.ai.azure.com/. Omit it for a key from the Anthropic API.",
+            "type": "string"
+        },
+        "ApiVersion": {
+            "description": "Azure OpenAI API version.",
+            "type": "string",
+            "maxLength": 20
+        },
+        "SetAsActive": {
+            "description": "Make this the project's active key for its provider when it is created or updated. Write-only.",
+            "type": "boolean"
+        },
+        "ApiKeyMasked": {
+            "description": "Masked form of the API key, as shown in PostHog.",
+            "type": "string"
+        },
+        "State": {
+            "description": "Validation state of the key: `unknown`, `ok`, `invalid` or `error`.",
+            "type": "string"
+        },
+        "ErrorMessage": {
+            "description": "Error reported by the provider when the key last failed validation.",
+            "type": "string"
+        },
+        "CreatedAt": {
+            "description": "ISO 8601 creation timestamp.",
+            "type": "string"
+        },
+        "LastUsedAt": {
+            "description": "ISO 8601 timestamp of when PostHog last used the key.",
+            "type": "string"
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "ProjectId",
+        "Provider",
+        "Name"
+    ],
+    "readOnlyProperties": [
+        "/properties/Id",
+        "/properties/ApiKeyMasked",
+        "/properties/State",
+        "/properties/ErrorMessage",
+        "/properties/CreatedAt",
+        "/properties/LastUsedAt"
+    ],
+    "primaryIdentifier": [
+        "/properties/ProjectId",
+        "/properties/Id"
+    ],
+    "tagging": {
+        "taggable": false
+    },
+    "handlers": {
+        "create": {
+            "permissions": []
+        },
+        "read": {
+            "permissions": []
+        },
+        "update": {
+            "permissions": []
+        },
+        "delete": {
+            "permissions": []
+        },
+        "list": {
+            "permissions": []
+        }
+    },
+    "writeOnlyProperties": [
+        "/properties/ApiKey",
+        "/properties/SetAsActive"
+    ],
+    "createOnlyProperties": [
+        "/properties/ProjectId",
+        "/properties/Provider"
+    ]
+}

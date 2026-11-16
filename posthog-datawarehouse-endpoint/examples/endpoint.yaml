@@ -1,0 +1,38 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >-
+  Exposes a HogQL query as a PostHog endpoint. Requires the
+  PostHog::DataWarehouse::Endpoint type to be registered and configured with
+  SetTypeConfiguration (ApiKey).
+
+Parameters:
+  ProjectId:
+    Type: String
+    Description: PostHog project ID.
+
+Resources:
+  WeeklyPageviews:
+    Type: PostHog::DataWarehouse::Endpoint
+    Properties:
+      ProjectId: !Ref ProjectId
+      Name: weekly-pageviews
+      Description: Pageviews per day for the last 7 days.
+      Query:
+        Fn::ToJsonString:
+          kind: HogQLQuery
+          query: |-
+            SELECT
+                toDate(timestamp) AS day,
+                count() AS pageviews
+            FROM events
+            WHERE event = '$pageview'
+              AND timestamp > now() - INTERVAL 7 DAY
+            GROUP BY day
+            ORDER BY day
+      DataFreshnessSeconds: 3600
+      Tags: [growth]
+
+Outputs:
+  EndpointId:
+    Value: !GetAtt WeeklyPageviews.Id
+  RunUrl:
+    Value: !GetAtt WeeklyPageviews.Url

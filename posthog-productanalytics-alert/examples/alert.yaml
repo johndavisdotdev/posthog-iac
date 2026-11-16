@@ -1,0 +1,61 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >-
+  Creates a PostHog trends insight and an hourly alert that fires when daily
+  pageviews drop below 100. Requires the PostHog::ProductAnalytics::Alert and
+  PostHog::ProductAnalytics::Insight types to be registered and configured with
+  SetTypeConfiguration (ApiKey).
+
+Parameters:
+  ProjectId:
+    Type: String
+    Description: PostHog project ID.
+  UserId:
+    Type: String
+    Description: ID of the PostHog user to notify.
+
+Resources:
+  DailyPageviews:
+    Type: PostHog::ProductAnalytics::Insight
+    Properties:
+      ProjectId: !Ref ProjectId
+      Name: Daily pageviews
+      Query:
+        Fn::ToJsonString:
+          kind: InsightVizNode
+          source:
+            kind: TrendsQuery
+            interval: day
+            series:
+              - kind: EventsNode
+                event: $pageview
+
+  PageviewsDropped:
+    Type: PostHog::ProductAnalytics::Alert
+    Properties:
+      ProjectId: !Ref ProjectId
+      InsightId: !GetAtt DailyPageviews.Id
+      Name: Pageviews dropped
+      SubscribedUsers:
+        - !Ref UserId
+      CalculationInterval: hourly
+      Condition:
+        Type: absolute_value
+      Threshold:
+        Configuration:
+          Type: absolute
+          Bounds:
+            Lower: 100
+      Config:
+        Fn::ToJsonString:
+          type: TrendsAlertConfig
+          series_index: 0
+          check_ongoing_interval: false
+      SkipWeekend: true
+      ScheduleRestriction:
+        BlockedWindows:
+          - Start: "22:00"
+            End: "07:00"
+
+Outputs:
+  AlertId:
+    Value: !GetAtt PageviewsDropped.Id

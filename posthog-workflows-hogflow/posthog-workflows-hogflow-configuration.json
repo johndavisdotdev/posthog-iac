@@ -1,0 +1,68 @@
+{
+    "properties": {
+        "ApiKey": {
+            "description": "PostHog personal API key (phx_...) with the scopes this resource type needs. Pass it with a dynamic reference such as {{resolve:ssm-secure:/posthog/api-key}} when calling SetTypeConfiguration; never put it in plain text.",
+            "type": "string",
+            "minLength": 1
+        },
+        "BaseUrl": {
+            "description": "PostHog API host. Leave unset for PostHog Cloud US (https://us.posthog.com); use https://eu.posthog.com for PostHog Cloud EU, or your instance URL when self-hosting.",
+            "type": "string"
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "ApiKey"
+    ],
+    "definitions": {
+        "TriggerMasking": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "Hash"
+            ],
+            "properties": {
+                "Hash": {
+                    "description": "HogQL template defining the dedup/grouping key, e.g. {person.id} (once per person within Ttl).",
+                    "type": "string",
+                    "minLength": 1
+                },
+                "Ttl": {
+                    "description": "Seconds (60 to 94608000) to suppress repeat firings of the same hash.",
+                    "type": "integer",
+                    "minimum": 60,
+                    "maximum": 94608000
+                },
+                "Threshold": {
+                    "description": "Fire once per N matches of the same hash within Ttl (a sampler: N=3 fires on the 1st, 4th, 7th match). Omit to fire on the first match, then suppress repeats within Ttl.",
+                    "type": "integer",
+                    "minimum": 1
+                }
+            }
+        },
+        "EmailSendingRateLimit": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "Count",
+                "Period"
+            ],
+            "properties": {
+                "Count": {
+                    "description": "Maximum number of emails this workflow sends per period.",
+                    "type": "integer",
+                    "minimum": 1
+                },
+                "Period": {
+                    "description": "Window the count applies to. Sends over the limit are delayed until capacity frees up, not dropped.",
+                    "type": "string",
+                    "enum": [
+                        "minute",
+                        "hour"
+                    ]
+                }
+            }
+        }
+    },
+    "typeName": "PostHog::Workflows::HogFlow"
+}

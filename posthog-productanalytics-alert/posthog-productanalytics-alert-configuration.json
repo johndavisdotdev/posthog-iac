@@ -1,0 +1,129 @@
+{
+    "properties": {
+        "ApiKey": {
+            "description": "PostHog personal API key (phx_...) with the scopes this resource type needs. Pass it with a dynamic reference such as {{resolve:ssm-secure:/posthog/api-key}} when calling SetTypeConfiguration; never put it in plain text.",
+            "type": "string",
+            "minLength": 1
+        },
+        "BaseUrl": {
+            "description": "PostHog API host. Leave unset for PostHog Cloud US (https://us.posthog.com); use https://eu.posthog.com for PostHog Cloud EU, or your instance URL when self-hosting.",
+            "type": "string"
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "ApiKey"
+    ],
+    "definitions": {
+        "Threshold": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "Configuration"
+            ],
+            "properties": {
+                "Name": {
+                    "description": "Optional name for the threshold.",
+                    "type": "string",
+                    "maxLength": 255
+                },
+                "Configuration": {
+                    "description": "Threshold bounds and type.",
+                    "$ref": "#/definitions/ThresholdConfiguration"
+                }
+            }
+        },
+        "ThresholdConfiguration": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "Type"
+            ],
+            "properties": {
+                "Type": {
+                    "description": "Whether bounds are compared as `absolute` values or as `percentage` change from the previous interval.",
+                    "type": "string",
+                    "enum": [
+                        "absolute",
+                        "percentage"
+                    ]
+                },
+                "Bounds": {
+                    "description": "Lower and upper bounds. For threshold-based alerts (no DetectorConfig) at least one must be set.",
+                    "$ref": "#/definitions/Bounds"
+                }
+            }
+        },
+        "Bounds": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "Lower": {
+                    "description": "The alert fires when the value drops below this number.",
+                    "type": "number"
+                },
+                "Upper": {
+                    "description": "The alert fires when the value exceeds this number.",
+                    "type": "number"
+                }
+            }
+        },
+        "Condition": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "Type"
+            ],
+            "properties": {
+                "Type": {
+                    "description": "How the value is evaluated: `absolute_value`, `relative_increase` or `relative_decrease`.",
+                    "type": "string",
+                    "enum": [
+                        "absolute_value",
+                        "relative_increase",
+                        "relative_decrease"
+                    ]
+                }
+            }
+        },
+        "ScheduleRestriction": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "BlockedWindows"
+            ],
+            "properties": {
+                "BlockedWindows": {
+                    "description": "Local time windows (project timezone) when the alert must not run. At most five.",
+                    "type": "array",
+                    "insertionOrder": false,
+                    "maxItems": 5,
+                    "items": {
+                        "$ref": "#/definitions/BlockedWindow"
+                    }
+                }
+            }
+        },
+        "BlockedWindow": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "Start",
+                "End"
+            ],
+            "properties": {
+                "Start": {
+                    "description": "Start time HH:MM (24-hour, project timezone), inclusive.",
+                    "type": "string",
+                    "pattern": "^([01][0-9]|2[0-3]):[0-5][0-9]$"
+                },
+                "End": {
+                    "description": "End time HH:MM (24-hour, project timezone), exclusive. Each window must span at least 30 minutes.",
+                    "type": "string",
+                    "pattern": "^([01][0-9]|2[0-3]):[0-5][0-9]$"
+                }
+            }
+        }
+    },
+    "typeName": "PostHog::ProductAnalytics::Alert"
+}

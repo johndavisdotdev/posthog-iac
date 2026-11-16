@@ -1,0 +1,154 @@
+{
+    "typeName": "PostHog::FeatureFlags::FeatureFlag",
+    "description": "A PostHog feature flag: a key that SDKs evaluate to roll features out to a percentage of users, to specific users or groups, or to serve multivariate variants and payloads.",
+    "sourceUrl": "https://github.com/johndavisdev/posthog-iac",
+    "documentationUrl": "https://posthog.com/docs/feature-flags",
+    "definitions": {},
+    "typeConfiguration": {
+        "properties": {
+            "ApiKey": {
+                "description": "PostHog personal API key (phx_...) with the scopes this resource type needs. Pass it with a dynamic reference such as {{resolve:ssm-secure:/posthog/api-key}} when calling SetTypeConfiguration; never put it in plain text.",
+                "type": "string",
+                "minLength": 1
+            },
+            "BaseUrl": {
+                "description": "PostHog API host. Leave unset for PostHog Cloud US (https://us.posthog.com); use https://eu.posthog.com for PostHog Cloud EU, or your instance URL when self-hosting.",
+                "type": "string"
+            }
+        },
+        "additionalProperties": false,
+        "required": [
+            "ApiKey"
+        ]
+    },
+    "properties": {
+        "ProjectId": {
+            "description": "ID of the PostHog project the feature flag belongs to.",
+            "type": "string",
+            "minLength": 1
+        },
+        "Id": {
+            "description": "The PostHog feature flag ID.",
+            "type": "string"
+        },
+        "Key": {
+            "description": "Feature flag key that SDKs evaluate, e.g. new-checkout. Must be unique within the project.",
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 400
+        },
+        "Name": {
+            "description": "Description of the feature flag (PostHog stores it in the `name` field for backwards compatibility).",
+            "type": "string"
+        },
+        "Filters": {
+            "description": "Targeting configuration as a JSON object (use Fn::ToJsonString): `groups` (release condition groups with `properties`, `rollout_percentage` and optional `variant`), `multivariate` (`variants` with `key` and `rollout_percentage`), `payloads` (payload values keyed by variant key, or `true` for boolean flags), `aggregation_group_type_index` and `early_exit`. Leave unset for a flag with no release conditions.",
+            "type": "string"
+        },
+        "Active": {
+            "description": "Whether the feature flag is enabled. Defaults to true.",
+            "type": "boolean"
+        },
+        "Archived": {
+            "description": "Whether the flag is archived. Archived flags are hidden from the flag list by default and must be disabled (Active: false).",
+            "type": "boolean"
+        },
+        "Tags": {
+            "description": "Organizational tags for the feature flag.",
+            "type": "array",
+            "insertionOrder": false,
+            "uniqueItems": true,
+            "items": {
+                "type": "string"
+            }
+        },
+        "EvaluationContexts": {
+            "description": "Evaluation contexts that control where the flag evaluates at runtime. PostHog does not return this field, so it is write-only.",
+            "type": "array",
+            "insertionOrder": false,
+            "uniqueItems": true,
+            "items": {
+                "type": "string"
+            }
+        },
+        "IsRemoteConfiguration": {
+            "description": "Whether this flag is a remote configuration flag that delivers a payload rather than gating a feature.",
+            "type": "boolean"
+        },
+        "EnsureExperienceContinuity": {
+            "description": "Whether to persist a user's flag value across the anonymous-to-identified transition. Incompatible with device_id bucketing.",
+            "type": "boolean"
+        },
+        "EvaluationRuntime": {
+            "description": "Where the flag is allowed to evaluate: `server` (server-side SDKs only), `client` (client-side SDKs only) or `all` (both, the default).",
+            "type": "string",
+            "enum": [
+                "server",
+                "client",
+                "all"
+            ]
+        },
+        "BucketingIdentifier": {
+            "description": "Identifier used to bucket users into rollout percentages and variants: `distinct_id` (the default) or `device_id`. `device_id` is incompatible with EnsureExperienceContinuity.",
+            "type": "string",
+            "enum": [
+                "distinct_id",
+                "device_id"
+            ]
+        },
+        "CreatedAt": {
+            "description": "ISO 8601 creation timestamp.",
+            "type": "string"
+        },
+        "UpdatedAt": {
+            "description": "ISO 8601 timestamp of the last update.",
+            "type": "string"
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "ProjectId",
+        "Key"
+    ],
+    "readOnlyProperties": [
+        "/properties/Id",
+        "/properties/CreatedAt",
+        "/properties/UpdatedAt"
+    ],
+    "primaryIdentifier": [
+        "/properties/ProjectId",
+        "/properties/Id"
+    ],
+    "tagging": {
+        "taggable": false
+    },
+    "handlers": {
+        "create": {
+            "permissions": []
+        },
+        "read": {
+            "permissions": []
+        },
+        "update": {
+            "permissions": []
+        },
+        "delete": {
+            "permissions": []
+        },
+        "list": {
+            "permissions": []
+        }
+    },
+    "writeOnlyProperties": [
+        "/properties/EvaluationContexts"
+    ],
+    "createOnlyProperties": [
+        "/properties/ProjectId"
+    ],
+    "additionalIdentifiers": [
+        [
+            "/properties/ProjectId",
+            "/properties/Key"
+        ]
+    ]
+}

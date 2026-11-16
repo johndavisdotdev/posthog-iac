@@ -1,0 +1,39 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >-
+  Creates a PostHog email template filed under a messaging category. Requires
+  the PostHog::Workflows::MessageTemplate and PostHog::Workflows::MessageCategory
+  types to be registered and configured with SetTypeConfiguration (ApiKey).
+
+Parameters:
+  ProjectId:
+    Type: String
+    Description: PostHog project ID.
+
+Resources:
+  Onboarding:
+    Type: PostHog::Workflows::MessageCategory
+    Properties:
+      ProjectId: !Ref ProjectId
+      Key: onboarding
+      Name: Onboarding
+
+  WelcomeEmail:
+    Type: PostHog::Workflows::MessageTemplate
+    Properties:
+      ProjectId: !Ref ProjectId
+      Name: Welcome email
+      Description: Sent by the onboarding workflow right after sign-up
+      Tags: [onboarding]
+      MessageCategory: !GetAtt Onboarding.Id
+      Content:
+        Fn::ToJsonString:
+          templating: liquid
+          email:
+            subject: "Welcome to Acme, {{ person.properties.first_name }}"
+            preheader: Three things to try first
+            text: "Thanks for signing up. Here is how to get started."
+            html: "<p>Thanks for signing up. Here is how to get started.</p>"
+
+Outputs:
+  TemplateId:
+    Value: !GetAtt WelcomeEmail.Id

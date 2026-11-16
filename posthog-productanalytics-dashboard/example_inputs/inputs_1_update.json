@@ -1,0 +1,10 @@
+{
+    "ProjectId": "1",
+    "Name": "cfn-contract-test-dashboard-renamed",
+    "Pinned": true,
+    "Tags": [
+        "cloudformation",
+        "updated"
+    ],
+    "GridSpacing": "relaxed"
+}

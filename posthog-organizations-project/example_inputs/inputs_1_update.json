@@ -1,0 +1,9 @@
+{
+    "OrganizationId": "00000000-0000-0000-0000-000000000000",
+    "Name": "cfn-contract-test-project-renamed",
+    "Tags": ["cloudformation", "updated"],
+    "Timezone": "UTC",
+    "AnonymizeIps": false,
+    "SessionRecordingOptIn": true,
+    "WeekStartDay": 1
+}

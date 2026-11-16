@@ -1,0 +1,10 @@
+{
+    "ProjectId": "1",
+    "Name": "cfn-contract-test-evaluation-renamed",
+    "Enabled": false,
+    "EvaluationType": "hog",
+    "EvaluationConfig": "{\"source\": \"return length(output) > 10\"}",
+    "OutputType": "boolean",
+    "OutputConfig": "{\"allows_na\": true}",
+    "Conditions": "[{\"id\": \"half\", \"rollout_percentage\": 50, \"properties\": []}]"
+}

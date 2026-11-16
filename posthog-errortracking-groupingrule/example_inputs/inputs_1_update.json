@@ -1,0 +1,6 @@
+{
+    "ProjectId": "1",
+    "Filters": "{\"type\": \"OR\", \"values\": [{\"key\": \"$exception_types\", \"type\": \"event\", \"operator\": \"exact\", \"value\": [\"ChunkLoadError\", \"CSSChunkLoadError\"]}]}",
+    "Description": "Created by the CloudFormation contract tests",
+    "OrderKey": 1
+}

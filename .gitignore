@@ -1,0 +1,8 @@
+.venv/
+.DS_Store
+rpdk.log*
+bin/
+*.zip
+.hypothesis/
+sam-tests/
+.remember/

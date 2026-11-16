@@ -1,0 +1,7 @@
+{
+    "ProjectId": "1",
+    "Key": "cfn-contract-test-flag",
+    "Name": "Created by the CloudFormation contract tests",
+    "Tags": ["cloudformation"],
+    "Filters": "{\"groups\": [{\"properties\": [], \"rollout_percentage\": 25}]}"
+}

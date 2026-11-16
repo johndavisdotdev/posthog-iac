@@ -1,0 +1,7 @@
+{
+    "ProjectId": "1",
+    "Type": "filters",
+    "Name": "cfn-contract-test-playlist-renamed",
+    "Pinned": true,
+    "Filters": "{\"date_from\": \"-30d\", \"filter_test_accounts\": true}"
+}

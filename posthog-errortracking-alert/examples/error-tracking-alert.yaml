@@ -1,0 +1,43 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >-
+  Creates a PostHog error tracking alert that posts to Slack. Requires the
+  PostHog::ErrorTracking::Alert type to be registered and configured with
+  SetTypeConfiguration (ApiKey), and a Slack integration in the PostHog project.
+
+Parameters:
+  ProjectId:
+    Type: String
+    Description: PostHog project ID.
+  SlackIntegrationId:
+    Type: Number
+    Description: ID of the PostHog Slack integration.
+  SlackChannelId:
+    Type: String
+    Description: Slack channel ID, e.g. C0123ABCD.
+
+Resources:
+  NewIssues:
+    Type: PostHog::ErrorTracking::Alert
+    Properties:
+      ProjectId: !Ref ProjectId
+      Name: New and reopened issues
+      Triggers: [issue_created, issue_reopened]
+      ThrottleSeconds: 3600
+      Filters:
+        Fn::ToJsonString:
+          filter_test_accounts: true
+          properties:
+            - key: $exception_types
+              type: event
+              operator: exact
+              value: [TypeError]
+      Destinations:
+        - ChannelType: slack
+          IntegrationId: !Ref SlackIntegrationId
+          Config:
+            Channel: !Ref SlackChannelId
+            ChannelName: "#errors"
+
+Outputs:
+  AlertId:
+    Value: !GetAtt NewIssues.Id

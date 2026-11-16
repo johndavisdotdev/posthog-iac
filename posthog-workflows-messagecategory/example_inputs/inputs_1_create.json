@@ -1,0 +1,7 @@
+{
+    "ProjectId": "1",
+    "Key": "cfn-contract-test-category",
+    "Name": "cfn-contract-test-category",
+    "Description": "Created by the CloudFormation contract tests",
+    "PublicDescription": "Occasional product news"
+}

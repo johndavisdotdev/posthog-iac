@@ -1,0 +1,17 @@
+{
+    "ProjectId": "1",
+    "InsightId": "1",
+    "Name": "cfn-contract-test-alert",
+    "CalculationInterval": "daily",
+    "Threshold": {
+        "Configuration": {
+            "Type": "absolute",
+            "Bounds": {
+                "Lower": 10
+            }
+        }
+    },
+    "Condition": {
+        "Type": "absolute_value"
+    }
+}

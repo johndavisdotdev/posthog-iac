@@ -1,0 +1,10 @@
+{
+    "ProjectId": "1",
+    "Name": "cfn-contract-test-evaluation",
+    "Description": "Created by the CloudFormation contract tests",
+    "Enabled": false,
+    "EvaluationType": "hog",
+    "EvaluationConfig": "{\"source\": \"return length(output) > 0\"}",
+    "OutputType": "boolean",
+    "Conditions": "[{\"id\": \"all\", \"rollout_percentage\": 100, \"properties\": []}]"
+}

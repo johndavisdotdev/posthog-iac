@@ -1,0 +1,60 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >-
+  Creates PostHog Logs sampling rules: one drops health-check logs, one caps
+  the volume of debug logs from the api service. Requires the
+  PostHog::Logs::SamplingRule type to be registered and configured with
+  SetTypeConfiguration (ApiKey).
+
+Parameters:
+  ProjectId:
+    Type: String
+    Description: PostHog project ID.
+
+Resources:
+  DropHealthChecks:
+    Type: PostHog::Logs::SamplingRule
+    Properties:
+      ProjectId: !Ref ProjectId
+      Name: Drop health checks
+      Enabled: true
+      Priority: 0
+      RuleType: path_drop
+      Config:
+        Fn::ToJsonString:
+          filter_group:
+            type: AND
+            values:
+              - type: AND
+                values:
+                  - key: http.route
+                    operator: exact
+                    value: /health
+
+  CapApiDebugLogs:
+    Type: PostHog::Logs::SamplingRule
+    Properties:
+      ProjectId: !Ref ProjectId
+      Name: Cap api debug logs
+      Enabled: true
+      Priority: 1
+      RuleType: rate_limit
+      Source: logs
+      Config:
+        Fn::ToJsonString:
+          logs_per_second: 200
+          burst_logs: 1000
+          filter_group:
+            type: AND
+            values:
+              - type: AND
+                values:
+                  - key: service.name
+                    operator: exact
+                    value: api
+                  - key: severity_text
+                    operator: exact
+                    value: debug
+
+Outputs:
+  DropHealthChecksId:
+    Value: !GetAtt DropHealthChecks.Id

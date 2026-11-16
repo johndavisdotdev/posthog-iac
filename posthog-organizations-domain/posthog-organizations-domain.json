@@ -1,0 +1,106 @@
+{
+    "typeName": "PostHog::Organizations::Domain",
+    "description": "A PostHog organization domain: an email domain the organization claims (verified with a DNS TXT record), used for SSO enforcement, SAML and just-in-time provisioning.",
+    "sourceUrl": "https://github.com/johndavisdev/posthog-iac",
+    "documentationUrl": "https://posthog.com/docs/settings/sso",
+    "definitions": {},
+    "typeConfiguration": {
+        "properties": {
+            "ApiKey": {
+                "description": "PostHog personal API key (phx_...) with the scopes this resource type needs. Pass it with a dynamic reference such as {{resolve:ssm-secure:/posthog/api-key}} when calling SetTypeConfiguration; never put it in plain text.",
+                "type": "string",
+                "minLength": 1
+            },
+            "BaseUrl": {
+                "description": "PostHog API host. Leave unset for PostHog Cloud US (https://us.posthog.com); use https://eu.posthog.com for PostHog Cloud EU, or your instance URL when self-hosting.",
+                "type": "string"
+            }
+        },
+        "additionalProperties": false,
+        "required": [
+            "ApiKey"
+        ]
+    },
+    "properties": {
+        "OrganizationId": {
+            "description": "ID (UUID) of the PostHog organization that claims the domain.",
+            "type": "string",
+            "minLength": 1
+        },
+        "Id": {
+            "description": "The PostHog organization domain ID (UUID).",
+            "type": "string"
+        },
+        "Domain": {
+            "description": "The email domain, e.g. example.com. Changing it replaces the resource (and requires verifying the new domain).",
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+        },
+        "JitProvisioningEnabled": {
+            "description": "Whether users with an email address on this (verified) domain can join the organization automatically when they log in with SSO.",
+            "type": "boolean"
+        },
+        "SsoEnforcement": {
+            "description": "SSO provider that users on this domain must log in with, e.g. google-oauth2, github, gitlab or saml. Empty means no enforcement.",
+            "type": "string",
+            "maxLength": 28
+        },
+        "IsVerified": {
+            "description": "Whether the domain has been verified.",
+            "type": "boolean"
+        },
+        "VerifiedAt": {
+            "description": "ISO 8601 timestamp of when the domain was verified.",
+            "type": "string"
+        },
+        "VerificationChallenge": {
+            "description": "Value of the DNS TXT record (on _posthog-challenge.<domain>) that proves ownership of the domain.",
+            "type": "string"
+        },
+        "ScimBaseUrl": {
+            "description": "SCIM base URL for this domain, when SCIM is configured.",
+            "type": "string"
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "OrganizationId",
+        "Domain"
+    ],
+    "readOnlyProperties": [
+        "/properties/Id",
+        "/properties/IsVerified",
+        "/properties/VerifiedAt",
+        "/properties/VerificationChallenge",
+        "/properties/ScimBaseUrl"
+    ],
+    "createOnlyProperties": [
+        "/properties/OrganizationId",
+        "/properties/Domain"
+    ],
+    "primaryIdentifier": [
+        "/properties/OrganizationId",
+        "/properties/Id"
+    ],
+    "tagging": {
+        "taggable": false
+    },
+    "handlers": {
+        "create": {
+            "permissions": []
+        },
+        "read": {
+            "permissions": []
+        },
+        "update": {
+            "permissions": []
+        },
+        "delete": {
+            "permissions": []
+        },
+        "list": {
+            "permissions": []
+        }
+    }
+}

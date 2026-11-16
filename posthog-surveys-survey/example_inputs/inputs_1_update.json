@@ -1,0 +1,7 @@
+{
+    "ProjectId": "1",
+    "Name": "cfn-contract-test-survey-renamed",
+    "Type": "api",
+    "Questions": "[{\"type\": \"rating\", \"question\": \"How likely are you to recommend us?\", \"scale\": 10, \"display\": \"number\", \"isNpsQuestion\": true}]",
+    "Archived": true
+}

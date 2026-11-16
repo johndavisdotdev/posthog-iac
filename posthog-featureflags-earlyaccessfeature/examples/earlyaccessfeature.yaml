@@ -1,0 +1,42 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >-
+  Creates a feature flag and an early access feature linked to it. Requires the
+  PostHog::FeatureFlags::FeatureFlag and PostHog::FeatureFlags::EarlyAccessFeature
+  types to be registered and configured with SetTypeConfiguration (ApiKey).
+
+Parameters:
+  ProjectId:
+    Type: String
+    Description: PostHog project ID.
+
+Resources:
+  DarkModeFlag:
+    Type: PostHog::FeatureFlags::FeatureFlag
+    Properties:
+      ProjectId: !Ref ProjectId
+      Key: dark-mode
+      Name: Dark mode (early access)
+
+  DarkMode:
+    Type: PostHog::FeatureFlags::EarlyAccessFeature
+    Properties:
+      ProjectId: !Ref ProjectId
+      Name: Dark mode
+      Description: Try the new dark theme before everyone else.
+      Stage: beta
+      DocumentationUrl: https://example.com/docs/dark-mode
+      FeatureFlagId: !GetAtt DarkModeFlag.Id
+
+  # Without FeatureFlagId, PostHog creates a flag from the feature name.
+  BetaSearch:
+    Type: PostHog::FeatureFlags::EarlyAccessFeature
+    Properties:
+      ProjectId: !Ref ProjectId
+      Name: Beta search
+      Stage: alpha
+
+Outputs:
+  DarkModeId:
+    Value: !GetAtt DarkMode.Id
+  BetaSearchFlagKey:
+    Value: !GetAtt BetaSearch.FeatureFlagKey

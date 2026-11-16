@@ -1,0 +1,249 @@
+{
+    "typeName": "PostHog::Experiments::Experiment",
+    "description": "A PostHog experiment (A/B test): a feature flag with variants plus the metrics used to compare them.",
+    "sourceUrl": "https://github.com/johndavisdev/posthog-iac",
+    "documentationUrl": "https://posthog.com/docs/experiments",
+    "definitions": {
+        "SavedMetricLink": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "Id": {
+                    "description": "ID of the shared metric (PostHog::Experiments::SavedMetric).",
+                    "type": "string",
+                    "minLength": 1
+                },
+                "Type": {
+                    "description": "Whether the shared metric is used as a `primary` or `secondary` metric.",
+                    "type": "string",
+                    "enum": [
+                        "primary",
+                        "secondary"
+                    ]
+                }
+            },
+            "required": [
+                "Id",
+                "Type"
+            ]
+        }
+    },
+    "typeConfiguration": {
+        "properties": {
+            "ApiKey": {
+                "description": "PostHog personal API key (phx_...) with the scopes this resource type needs. Pass it with a dynamic reference such as {{resolve:ssm-secure:/posthog/api-key}} when calling SetTypeConfiguration; never put it in plain text.",
+                "type": "string",
+                "minLength": 1
+            },
+            "BaseUrl": {
+                "description": "PostHog API host. Leave unset for PostHog Cloud US (https://us.posthog.com); use https://eu.posthog.com for PostHog Cloud EU, or your instance URL when self-hosting.",
+                "type": "string"
+            }
+        },
+        "additionalProperties": false,
+        "required": [
+            "ApiKey"
+        ]
+    },
+    "properties": {
+        "ProjectId": {
+            "description": "ID of the PostHog project the experiment belongs to.",
+            "type": "string",
+            "minLength": 1
+        },
+        "Id": {
+            "description": "The PostHog experiment ID.",
+            "type": "string"
+        },
+        "Name": {
+            "description": "Name of the experiment.",
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 400
+        },
+        "Description": {
+            "description": "Description of the experiment hypothesis and expected outcomes.",
+            "type": "string",
+            "maxLength": 3000
+        },
+        "FeatureFlagKey": {
+            "description": "Key of the experiment's feature flag. Letters, numbers, hyphens and underscores only. PostHog creates the flag when no flag with this key exists; otherwise the experiment links to the existing flag as-is. Cannot be changed after creation.",
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 400,
+            "pattern": "^[a-zA-Z0-9_-]+$"
+        },
+        "FeatureFlag": {
+            "description": "Feature-flag config for the new flag, as a JSON object in the flag's filters shape (use Fn::ToJsonString), e.g. {\"filters\": {\"multivariate\": {\"variants\": [{\"key\": \"control\", \"rollout_percentage\": 50}, {\"key\": \"test\", \"rollout_percentage\": 50}]}}, \"ensure_experience_continuity\": false}. Applied only on create and cannot be combined with the key of a pre-existing flag. After creation, manage the flag with PostHog::FeatureFlags::FeatureFlag. Write-only.",
+            "type": "string"
+        },
+        "FeatureFlagRuleId": {
+            "description": "UUID of the experiment rule on an existing feature flag with rules that this experiment runs on. Set only on create, together with the FeatureFlagKey of that flag.",
+            "type": "string"
+        },
+        "FeatureFlagId": {
+            "description": "ID of the linked feature flag.",
+            "type": "string"
+        },
+        "HoldoutId": {
+            "description": "ID of a holdout group (PostHog::Experiments::Holdout) to exclude from the experiment.",
+            "type": "string"
+        },
+        "Type": {
+            "description": "Experiment type: `web` for frontend UI changes, `product` for backend/API changes.",
+            "type": "string",
+            "enum": [
+                "web",
+                "product"
+            ]
+        },
+        "StartDate": {
+            "description": "ISO 8601 launch time. Setting it launches the experiment.",
+            "type": "string"
+        },
+        "EndDate": {
+            "description": "ISO 8601 end time. Setting it stops the experiment.",
+            "type": "string"
+        },
+        "Parameters": {
+            "description": "Experiment parameters as a JSON object (use Fn::ToJsonString). Supported keys include `variant_notes` (notes per variant key) and `minimum_detectable_effect`. Flag config belongs on FeatureFlag.",
+            "type": "string"
+        },
+        "ExposureCriteria": {
+            "description": "Exposure configuration as a JSON object (use Fn::ToJsonString), e.g. {\"filterTestAccounts\": true, \"exposure_config\": {\"kind\": \"ExperimentEventExposureConfig\", \"event\": \"$pageview\", \"properties\": []}}.",
+            "type": "string"
+        },
+        "Metrics": {
+            "description": "Primary metrics as a JSON array of ExperimentMetric objects (use Fn::ToJsonString). Each metric has kind `ExperimentMetric` and a metric_type: `mean`, `funnel`, `ratio`, `quantile` or `retention`.",
+            "type": "string"
+        },
+        "MetricsSecondary": {
+            "description": "Secondary metrics as a JSON array of ExperimentMetric objects (use Fn::ToJsonString). Same format as Metrics.",
+            "type": "string"
+        },
+        "StatsConfig": {
+            "description": "Statistics configuration as a JSON object (use Fn::ToJsonString), e.g. {\"method\": \"bayesian\"}.",
+            "type": "string"
+        },
+        "SavedMetrics": {
+            "description": "Shared metrics (PostHog::Experiments::SavedMetric) attached to the experiment.",
+            "type": "array",
+            "insertionOrder": false,
+            "items": {
+                "$ref": "#/definitions/SavedMetricLink"
+            }
+        },
+        "ExcludedVariants": {
+            "description": "Variant keys to exclude from metric result calculations. Excluded variants are still served but omitted from analysis. The baseline variant cannot be excluded.",
+            "type": "array",
+            "insertionOrder": false,
+            "uniqueItems": true,
+            "items": {
+                "type": "string"
+            }
+        },
+        "Archived": {
+            "description": "Whether the experiment is archived.",
+            "type": "boolean"
+        },
+        "Conclusion": {
+            "description": "Experiment conclusion.",
+            "type": "string",
+            "enum": [
+                "won",
+                "lost",
+                "inconclusive",
+                "stopped_early",
+                "invalid"
+            ]
+        },
+        "ConclusionComment": {
+            "description": "Comment about the experiment conclusion.",
+            "type": "string",
+            "maxLength": 4000
+        },
+        "Repository": {
+            "description": "GitHub repository holding the experiment's feature-flag code, in `organization/repository` format.",
+            "type": "string",
+            "maxLength": 255
+        },
+        "OnlyCountMaturedUsers": {
+            "description": "Whether to only count users whose exposure window has fully matured.",
+            "type": "boolean"
+        },
+        "AllowUnknownEvents": {
+            "description": "Skip the validation that rejects metrics referencing events not yet ingested by the project. Write-only.",
+            "type": "boolean"
+        },
+        "Tags": {
+            "description": "Tags on the experiment (up to 100, 255 characters each).",
+            "type": "array",
+            "insertionOrder": false,
+            "uniqueItems": true,
+            "maxItems": 100,
+            "items": {
+                "type": "string",
+                "maxLength": 255
+            }
+        },
+        "Status": {
+            "description": "Lifecycle state: `draft`, `running`, `paused`, `exposure_frozen` or `stopped`.",
+            "type": "string"
+        },
+        "CreatedAt": {
+            "description": "ISO 8601 creation timestamp.",
+            "type": "string"
+        },
+        "UpdatedAt": {
+            "description": "ISO 8601 last-update timestamp.",
+            "type": "string"
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "ProjectId",
+        "Name",
+        "FeatureFlagKey"
+    ],
+    "readOnlyProperties": [
+        "/properties/Id",
+        "/properties/FeatureFlagId",
+        "/properties/Status",
+        "/properties/CreatedAt",
+        "/properties/UpdatedAt"
+    ],
+    "writeOnlyProperties": [
+        "/properties/FeatureFlag",
+        "/properties/AllowUnknownEvents"
+    ],
+    "createOnlyProperties": [
+        "/properties/ProjectId",
+        "/properties/FeatureFlagKey",
+        "/properties/FeatureFlag",
+        "/properties/FeatureFlagRuleId"
+    ],
+    "primaryIdentifier": [
+        "/properties/ProjectId",
+        "/properties/Id"
+    ],
+    "tagging": {
+        "taggable": false
+    },
+    "handlers": {
+        "create": {
+            "permissions": []
+        },
+        "read": {
+            "permissions": []
+        },
+        "update": {
+            "permissions": []
+        },
+        "delete": {
+            "permissions": []
+        },
+        "list": {
+            "permissions": []
+        }
+    }
+}

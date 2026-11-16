@@ -1,0 +1,106 @@
+{
+    "typeName": "PostHog::Logs::RetentionRule",
+    "description": "A PostHog Logs retention rule: logs matching the rule's filter group are kept for the rule's retention period instead of the environment's default Logs retention. Rules are evaluated in priority order and the first match wins.",
+    "sourceUrl": "https://github.com/johndavisdev/posthog-iac",
+    "documentationUrl": "https://posthog.com/docs/logs",
+    "definitions": {},
+    "typeConfiguration": {
+        "properties": {
+            "ApiKey": {
+                "description": "PostHog personal API key (phx_...) with the scopes this resource type needs. Pass it with a dynamic reference such as {{resolve:ssm-secure:/posthog/api-key}} when calling SetTypeConfiguration; never put it in plain text.",
+                "type": "string",
+                "minLength": 1
+            },
+            "BaseUrl": {
+                "description": "PostHog API host. Leave unset for PostHog Cloud US (https://us.posthog.com); use https://eu.posthog.com for PostHog Cloud EU, or your instance URL when self-hosting.",
+                "type": "string"
+            }
+        },
+        "additionalProperties": false,
+        "required": [
+            "ApiKey"
+        ]
+    },
+    "properties": {
+        "ProjectId": {
+            "description": "ID of the PostHog project the retention rule belongs to.",
+            "type": "string",
+            "minLength": 1
+        },
+        "Id": {
+            "description": "The PostHog retention rule ID (UUID).",
+            "type": "string"
+        },
+        "Name": {
+            "description": "User-visible label for this rule.",
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 255
+        },
+        "Enabled": {
+            "description": "Whether the rule is active. Disabled rules are ignored by ingestion. Defaults to false.",
+            "type": "boolean"
+        },
+        "Priority": {
+            "description": "Evaluation order: lower numbers are evaluated first and the first matching rule wins. Omit to append after existing rules (PostHog assigns the next priority).",
+            "type": "integer",
+            "minimum": 0
+        },
+        "Config": {
+            "description": "Retention rule configuration as a JSON object (use Fn::ToJsonString). Required keys: `retention_days` (integer; must be a retention tier the organization is entitled to) and `filter_group` (a PropertyGroupFilter: an AND/OR tree of property predicates deciding which logs the rule matches), e.g. {\"retention_days\": 30, \"filter_group\": {\"type\": \"AND\", \"values\": [{\"type\": \"AND\", \"values\": [{\"key\": \"service.name\", \"operator\": \"exact\", \"value\": \"api\"}]}]}}.",
+            "type": "string",
+            "minLength": 1
+        },
+        "Version": {
+            "description": "Incremented by PostHog on each update.",
+            "type": "integer"
+        },
+        "CreatedAt": {
+            "description": "ISO 8601 creation timestamp.",
+            "type": "string"
+        },
+        "UpdatedAt": {
+            "description": "ISO 8601 timestamp of the last update.",
+            "type": "string"
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "ProjectId",
+        "Name",
+        "Config"
+    ],
+    "readOnlyProperties": [
+        "/properties/Id",
+        "/properties/Version",
+        "/properties/CreatedAt",
+        "/properties/UpdatedAt"
+    ],
+    "primaryIdentifier": [
+        "/properties/ProjectId",
+        "/properties/Id"
+    ],
+    "tagging": {
+        "taggable": false
+    },
+    "handlers": {
+        "create": {
+            "permissions": []
+        },
+        "read": {
+            "permissions": []
+        },
+        "update": {
+            "permissions": []
+        },
+        "delete": {
+            "permissions": []
+        },
+        "list": {
+            "permissions": []
+        }
+    },
+    "createOnlyProperties": [
+        "/properties/ProjectId"
+    ]
+}

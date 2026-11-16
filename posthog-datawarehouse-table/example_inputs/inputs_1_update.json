@@ -1,0 +1,13 @@
+{
+    "ProjectId": "1",
+    "Name": "cfn_contract_test_orders",
+    "Format": "CSVWithNames",
+    "UrlPattern": "https://example-bucket.s3.amazonaws.com/orders/*.csv",
+    "Credential": {
+        "AccessKey": "AKIAEXAMPLE",
+        "AccessSecret": "example-secret"
+    },
+    "Options": {
+        "CsvAllowDoubleQuotes": true
+    }
+}

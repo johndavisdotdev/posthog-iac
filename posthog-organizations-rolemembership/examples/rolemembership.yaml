@@ -1,0 +1,31 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >-
+  Creates a PostHog role and adds an organization member to it. Requires the
+  PostHog::Organizations::Role and PostHog::Organizations::RoleMembership types
+  to be registered and configured with SetTypeConfiguration (ApiKey).
+
+Parameters:
+  OrganizationId:
+    Type: String
+    Description: PostHog organization ID (UUID).
+  UserUuid:
+    Type: String
+    Description: UUID of an existing member of the organization.
+
+Resources:
+  Engineers:
+    Type: PostHog::Organizations::Role
+    Properties:
+      OrganizationId: !Ref OrganizationId
+      Name: Engineers
+
+  EngineerMembership:
+    Type: PostHog::Organizations::RoleMembership
+    Properties:
+      OrganizationId: !Ref OrganizationId
+      RoleId: !GetAtt Engineers.Id
+      UserUuid: !Ref UserUuid
+
+Outputs:
+  MembershipId:
+    Value: !GetAtt EngineerMembership.Id

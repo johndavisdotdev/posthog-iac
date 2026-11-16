@@ -1,0 +1,10 @@
+{
+    "ProjectId": "1",
+    "Name": "cfn_contract_test_orders",
+    "Format": "Parquet",
+    "UrlPattern": "https://example-bucket.s3.amazonaws.com/orders/*.parquet",
+    "Credential": {
+        "AccessKey": "AKIAEXAMPLE",
+        "AccessSecret": "example-secret"
+    }
+}

@@ -1,0 +1,53 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >-
+  Creates a PostHog experiment with its own feature flag and a mean metric.
+  Requires the PostHog::Experiments::Experiment type to be registered and
+  configured with SetTypeConfiguration (ApiKey).
+
+Parameters:
+  ProjectId:
+    Type: String
+    Description: PostHog project ID.
+
+Resources:
+  CheckoutButton:
+    Type: PostHog::Experiments::Experiment
+    Properties:
+      ProjectId: !Ref ProjectId
+      Name: Checkout button colour
+      Description: A green checkout button increases purchases
+      FeatureFlagKey: checkout-button-colour
+      FeatureFlag:
+        Fn::ToJsonString:
+          filters:
+            multivariate:
+              variants:
+                - key: control
+                  rollout_percentage: 50
+                - key: green
+                  rollout_percentage: 50
+      Metrics:
+        Fn::ToJsonString:
+          - kind: ExperimentMetric
+            metric_type: mean
+            source:
+              kind: EventsNode
+              event: purchase_completed
+      ExposureCriteria:
+        Fn::ToJsonString:
+          filterTestAccounts: true
+      Parameters:
+        Fn::ToJsonString:
+          variant_notes:
+            green: Button background is #2f9e44
+      Tags: [growth, checkout]
+      # Uncomment to launch the experiment:
+      # StartDate: "2026-12-01T00:00:00Z"
+
+Outputs:
+  ExperimentId:
+    Value: !GetAtt CheckoutButton.Id
+  FeatureFlagId:
+    Value: !GetAtt CheckoutButton.FeatureFlagId
+  Status:
+    Value: !GetAtt CheckoutButton.Status

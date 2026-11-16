@@ -1,0 +1,8 @@
+{
+    "ProjectId": "1",
+    "Name": "cfn_contract_test_event",
+    "Description": "Updated by the CloudFormation contract tests",
+    "Tags": ["cloudformation", "updated"],
+    "Hidden": true,
+    "DefaultColumns": ["person"]
+}

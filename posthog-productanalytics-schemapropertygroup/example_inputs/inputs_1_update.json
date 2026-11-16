@@ -1,0 +1,15 @@
+{
+    "ProjectId": "1",
+    "Name": "cfn-contract-test-property-group-renamed",
+    "Properties": [
+        {
+            "Name": "plan",
+            "PropertyType": "String",
+            "Description": "Billing plan"
+        },
+        {
+            "Name": "coupon",
+            "PropertyType": "String"
+        }
+    ]
+}

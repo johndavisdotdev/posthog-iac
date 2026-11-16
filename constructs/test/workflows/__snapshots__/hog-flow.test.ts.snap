@@ -1,0 +1,192 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`chains a linear workflow and appends an exit step 1`] = `
+[
+  {
+    "config": {
+      "filters": {
+        "events": [
+          {
+            "id": "signed_up",
+            "name": "signed_up",
+            "type": "events",
+          },
+        ],
+        "properties": [
+          {
+            "key": "plan",
+            "operator": "exact",
+            "type": "person",
+            "value": "pro",
+          },
+        ],
+      },
+      "type": "event",
+    },
+    "id": "trigger_node",
+    "name": "Signed up",
+    "type": "trigger",
+  },
+  {
+    "config": {
+      "delay_duration": "1d",
+    },
+    "id": "wait",
+    "name": "Wait a day",
+    "type": "delay",
+  },
+  {
+    "config": {
+      "inputs": {
+        "body": {
+          "value": {
+            "person": "{person.id}",
+          },
+        },
+        "method": {
+          "value": "POST",
+        },
+        "url": {
+          "value": "https://example.com/hook",
+        },
+      },
+      "template_id": "template-webhook",
+    },
+    "id": "notify",
+    "name": "notify",
+    "type": "function",
+  },
+  {
+    "config": {
+      "reason": "Default exit",
+    },
+    "id": "exit_node",
+    "name": "exit_node",
+    "type": "exit",
+  },
+]
+`;
+
+exports[`renders email steps with messaging templates and categories 1`] = `
+[
+  {
+    "config": {
+      "filters": {
+        "actions": [
+          {
+            "id": "7",
+            "type": "actions",
+          },
+        ],
+        "filter_test_accounts": true,
+      },
+      "type": "event",
+    },
+    "id": "trigger_node",
+    "name": "trigger_node",
+    "type": "trigger",
+  },
+  {
+    "config": {
+      "inputs": {
+        "email": {
+          "value": {
+            "templateId": "template-uuid",
+            "to": {
+              "email": "{{ person.properties.email }}",
+            },
+          },
+        },
+      },
+      "message_category_id": "category-uuid",
+      "template_id": "template-email",
+    },
+    "id": "welcome",
+    "name": "welcome",
+    "type": "function_email",
+  },
+  {
+    "config": {
+      "inputs": {
+        "email": {
+          "value": {
+            "subject": "New buyer",
+            "text": "See PostHog",
+            "to": {
+              "email": "ops@example.com",
+            },
+          },
+        },
+      },
+      "template_id": "template-email",
+    },
+    "id": "inline",
+    "name": "inline",
+    "type": "function_email",
+  },
+  {
+    "config": {
+      "reason": "Sent",
+    },
+    "id": "done",
+    "name": "done",
+    "type": "exit",
+  },
+]
+`;
+
+exports[`supports explicit edges, branches and raw escape hatches 1`] = `
+[
+  {
+    "config": {
+      "type": "webhook",
+    },
+    "id": "trigger_node",
+    "name": "trigger_node",
+    "type": "trigger",
+  },
+  {
+    "config": {
+      "conditions": [
+        {
+          "filters": {
+            "properties": [],
+          },
+        },
+      ],
+    },
+    "id": "branch",
+    "name": "branch",
+    "type": "conditional_branch",
+  },
+  {
+    "config": {
+      "inputs": {
+        "channel": {
+          "value": "#growth",
+        },
+      },
+      "template_id": "template-slack",
+    },
+    "id": "slack",
+    "name": "slack",
+    "type": "function",
+  },
+  {
+    "config": {
+      "reason": "Default exit",
+    },
+    "id": "exit",
+    "name": "exit",
+    "type": "exit",
+  },
+  {
+    "config": {
+      "reason": "raw",
+    },
+    "id": "raw_exit",
+    "name": "Raw exit",
+    "type": "exit",
+  },
+]
+`;

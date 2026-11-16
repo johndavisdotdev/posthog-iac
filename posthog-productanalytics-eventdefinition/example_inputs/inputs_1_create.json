@@ -1,0 +1,7 @@
+{
+    "ProjectId": "1",
+    "Name": "cfn_contract_test_event",
+    "Description": "Created by the CloudFormation contract tests",
+    "Tags": ["cloudformation"],
+    "Verified": true
+}

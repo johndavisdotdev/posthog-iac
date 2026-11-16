@@ -1,0 +1,5 @@
+{
+    "ProjectId": "1",
+    "Name": "cfn-contract-test-cohort-renamed",
+    "Filters": "{\"properties\": {\"type\": \"OR\", \"values\": [{\"type\": \"AND\", \"values\": [{\"key\": \"plan\", \"type\": \"person\", \"value\": [\"pro\"], \"operator\": \"exact\"}]}]}}"
+}

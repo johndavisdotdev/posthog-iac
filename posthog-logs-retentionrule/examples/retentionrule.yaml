@@ -1,0 +1,34 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >-
+  Creates a PostHog Logs retention rule that keeps logs from the api service
+  for 30 days. Requires the PostHog::Logs::RetentionRule type to be registered
+  and configured with SetTypeConfiguration (ApiKey).
+
+Parameters:
+  ProjectId:
+    Type: String
+    Description: PostHog project ID.
+
+Resources:
+  ApiLogsRetention:
+    Type: PostHog::Logs::RetentionRule
+    Properties:
+      ProjectId: !Ref ProjectId
+      Name: Keep api logs 30 days
+      Enabled: true
+      Priority: 0
+      Config:
+        Fn::ToJsonString:
+          retention_days: 30
+          filter_group:
+            type: AND
+            values:
+              - type: AND
+                values:
+                  - key: service.name
+                    operator: exact
+                    value: api
+
+Outputs:
+  RetentionRuleId:
+    Value: !GetAtt ApiLogsRetention.Id

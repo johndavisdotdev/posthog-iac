@@ -1,0 +1,81 @@
+{
+    "properties": {
+        "ApiKey": {
+            "description": "PostHog personal API key (phx_...) with the scopes this resource type needs. Pass it with a dynamic reference such as {{resolve:ssm-secure:/posthog/api-key}} when calling SetTypeConfiguration; never put it in plain text.",
+            "type": "string",
+            "minLength": 1
+        },
+        "BaseUrl": {
+            "description": "PostHog API host. Leave unset for PostHog Cloud US (https://us.posthog.com); use https://eu.posthog.com for PostHog Cloud EU, or your instance URL when self-hosting.",
+            "type": "string"
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "ApiKey"
+    ],
+    "definitions": {
+        "Step": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "Event": {
+                    "description": "Event name to match, e.g. $pageview, $autocapture or a custom event.",
+                    "type": "string"
+                },
+                "Selector": {
+                    "description": "CSS selector of the target element, e.g. div > button.cta.",
+                    "type": "string"
+                },
+                "TagName": {
+                    "description": "HTML tag name to match, e.g. button.",
+                    "type": "string"
+                },
+                "Text": {
+                    "description": "Element text to match.",
+                    "type": "string"
+                },
+                "TextMatching": {
+                    "description": "How to match the value. `exact`, `contains` or `regex`.",
+                    "type": "string",
+                    "enum": [
+                        "exact",
+                        "contains",
+                        "regex"
+                    ]
+                },
+                "Href": {
+                    "description": "Link href to match.",
+                    "type": "string"
+                },
+                "HrefMatching": {
+                    "description": "How to match the value. `exact`, `contains` or `regex`.",
+                    "type": "string",
+                    "enum": [
+                        "exact",
+                        "contains",
+                        "regex"
+                    ]
+                },
+                "Url": {
+                    "description": "Page URL to match.",
+                    "type": "string"
+                },
+                "UrlMatching": {
+                    "description": "How to match the value. `exact`, `contains` or `regex`.",
+                    "type": "string",
+                    "enum": [
+                        "exact",
+                        "contains",
+                        "regex"
+                    ]
+                },
+                "Properties": {
+                    "description": "Event or person property filters as a JSON array (use Fn::ToJsonString), e.g. [{\"key\": \"plan\", \"value\": \"pro\", \"operator\": \"exact\", \"type\": \"person\"}].",
+                    "type": "string"
+                }
+            }
+        }
+    },
+    "typeName": "PostHog::ProductAnalytics::Action"
+}

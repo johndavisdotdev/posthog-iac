@@ -1,0 +1,10 @@
+{
+    "ProjectId": "1",
+    "Name": "cfn-contract-test-insight-renamed",
+    "Tags": [
+        "cloudformation",
+        "updated"
+    ],
+    "Favorited": true,
+    "Query": "{\"kind\": \"InsightVizNode\", \"source\": {\"kind\": \"TrendsQuery\", \"series\": [{\"kind\": \"EventsNode\", \"event\": \"$pageview\", \"math\": \"dau\"}], \"interval\": \"week\"}}"
+}

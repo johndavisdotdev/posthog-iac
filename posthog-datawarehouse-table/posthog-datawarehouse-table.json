@@ -1,0 +1,154 @@
+{
+    "typeName": "PostHog::DataWarehouse::Table",
+    "description": "A PostHog self-managed data warehouse table: files in an S3-compatible bucket (CSV, Parquet, JSON or Delta) that PostHog reads as one table queryable with HogQL.",
+    "sourceUrl": "https://github.com/johndavisdev/posthog-iac",
+    "documentationUrl": "https://posthog.com/docs/data-warehouse/setup/s3",
+    "definitions": {
+        "Credential": {
+            "type": "object",
+            "additionalProperties": false,
+            "description": "Access key for the bucket the files live in.",
+            "properties": {
+                "AccessKey": {
+                    "description": "Access key ID for the bucket (an AWS access key ID, a Google Cloud HMAC key, or the equivalent for another S3-compatible store).",
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 500
+                },
+                "AccessSecret": {
+                    "description": "Secret for the access key. Stored encrypted and never returned by the API.",
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 500
+                }
+            },
+            "required": [
+                "AccessKey",
+                "AccessSecret"
+            ]
+        },
+        "Options": {
+            "type": "object",
+            "additionalProperties": false,
+            "description": "Per-format read options.",
+            "properties": {
+                "CsvAllowDoubleQuotes": {
+                    "description": "For CSV files that quote fields with doubled quotes.",
+                    "type": "boolean"
+                }
+            }
+        }
+    },
+    "typeConfiguration": {
+        "properties": {
+            "ApiKey": {
+                "description": "PostHog personal API key (phx_...) with the scopes this resource type needs. Pass it with a dynamic reference such as {{resolve:ssm-secure:/posthog/api-key}} when calling SetTypeConfiguration; never put it in plain text.",
+                "type": "string",
+                "minLength": 1
+            },
+            "BaseUrl": {
+                "description": "PostHog API host. Leave unset for PostHog Cloud US (https://us.posthog.com); use https://eu.posthog.com for PostHog Cloud EU, or your instance URL when self-hosting.",
+                "type": "string"
+            }
+        },
+        "additionalProperties": false,
+        "required": [
+            "ApiKey"
+        ]
+    },
+    "properties": {
+        "ProjectId": {
+            "description": "ID of the PostHog project the table belongs to.",
+            "type": "string",
+            "minLength": 1
+        },
+        "Id": {
+            "description": "The PostHog table ID (UUID).",
+            "type": "string"
+        },
+        "Name": {
+            "description": "Name the table is queried by in HogQL. Must be unique within the project, start with a letter or underscore and contain only letters, numbers and underscores.",
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[A-Za-z_][A-Za-z0-9_]*$"
+        },
+        "Format": {
+            "description": "File format of the objects the pattern matches. Every matched file must share this format.",
+            "type": "string",
+            "enum": [
+                "CSV",
+                "CSVWithNames",
+                "Parquet",
+                "JSONEachRow",
+                "Delta",
+                "DeltaS3Wrapper"
+            ]
+        },
+        "UrlPattern": {
+            "description": "HTTPS URL of the files to read, with `*` matching any part of a path segment (e.g. https://your-bucket.s3.amazonaws.com/orders/*.parquet). All matched files are read as one table.",
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+        },
+        "Credential": {
+            "description": "Bucket access key and secret. Write-only: never read back. Changing it sends the new credential to PostHog.",
+            "$ref": "#/definitions/Credential"
+        },
+        "Options": {
+            "description": "Per-format read options.",
+            "$ref": "#/definitions/Options"
+        },
+        "HogqlName": {
+            "description": "Dotted name the table is queried by in HogQL.",
+            "type": "string"
+        },
+        "CreatedAt": {
+            "description": "ISO 8601 creation timestamp.",
+            "type": "string"
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "ProjectId",
+        "Name",
+        "Format",
+        "UrlPattern",
+        "Credential"
+    ],
+    "readOnlyProperties": [
+        "/properties/Id",
+        "/properties/HogqlName",
+        "/properties/CreatedAt"
+    ],
+    "primaryIdentifier": [
+        "/properties/ProjectId",
+        "/properties/Id"
+    ],
+    "tagging": {
+        "taggable": false
+    },
+    "handlers": {
+        "create": {
+            "permissions": []
+        },
+        "read": {
+            "permissions": []
+        },
+        "update": {
+            "permissions": []
+        },
+        "delete": {
+            "permissions": []
+        },
+        "list": {
+            "permissions": []
+        }
+    },
+    "createOnlyProperties": [
+        "/properties/ProjectId"
+    ],
+    "writeOnlyProperties": [
+        "/properties/Credential"
+    ]
+}

@@ -1,0 +1,128 @@
+{
+    "typeName": "PostHog::ProductAnalytics::Annotation",
+    "description": "A PostHog annotation: a note pinned to a point in time (a release, incident or campaign) and shown on insight charts in a project, an organization, a dashboard or a single insight.",
+    "sourceUrl": "https://github.com/johndavisdev/posthog-iac",
+    "documentationUrl": "https://posthog.com/docs/data/annotations",
+    "definitions": {},
+    "typeConfiguration": {
+        "properties": {
+            "ApiKey": {
+                "description": "PostHog personal API key (phx_...) with the scopes this resource type needs. Pass it with a dynamic reference such as {{resolve:ssm-secure:/posthog/api-key}} when calling SetTypeConfiguration; never put it in plain text.",
+                "type": "string",
+                "minLength": 1
+            },
+            "BaseUrl": {
+                "description": "PostHog API host. Leave unset for PostHog Cloud US (https://us.posthog.com); use https://eu.posthog.com for PostHog Cloud EU, or your instance URL when self-hosting.",
+                "type": "string"
+            }
+        },
+        "additionalProperties": false,
+        "required": [
+            "ApiKey"
+        ]
+    },
+    "properties": {
+        "ProjectId": {
+            "description": "ID of the PostHog project the annotation belongs to.",
+            "type": "string",
+            "minLength": 1
+        },
+        "Id": {
+            "description": "The PostHog annotation ID.",
+            "type": "string"
+        },
+        "Content": {
+            "description": "Annotation text shown on charts to describe the change, release or incident.",
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 8192
+        },
+        "DateMarker": {
+            "description": "When the annotation happened (ISO 8601 timestamp, e.g. 2026-05-01T12:00:00Z). Used to position it on charts.",
+            "type": "string",
+            "minLength": 1
+        },
+        "CreationType": {
+            "description": "Who created the annotation: `USR` for user-created notes, `GIT` for bot or deployment notes. Defaults to `USR`.",
+            "type": "string",
+            "enum": [
+                "USR",
+                "GIT"
+            ]
+        },
+        "Scope": {
+            "description": "Where the annotation is shown: `project` (every insight in the project), `organization` (every project in the organization), `dashboard` (insights on the dashboard in DashboardId) or `dashboard_item` (only the insight in DashboardItem).",
+            "type": "string",
+            "enum": [
+                "dashboard_item",
+                "dashboard",
+                "project",
+                "organization"
+            ]
+        },
+        "DashboardItem": {
+            "description": "ID of the insight to attach the annotation to (for scope `dashboard_item`). Must belong to the same project.",
+            "type": "string"
+        },
+        "DashboardId": {
+            "description": "ID of the dashboard to attach the annotation to (for scope `dashboard`). Must belong to the same project.",
+            "type": "string"
+        },
+        "Emoji": {
+            "description": "Optional emoji shown in place of the default badge on charts.",
+            "type": "string",
+            "maxLength": 16
+        },
+        "HiddenInUserInterface": {
+            "description": "When true, the annotation is hidden from the PostHog UI (charts and the annotations list) but still readable over the API. Use for high-frequency markers such as deployments.",
+            "type": "boolean"
+        },
+        "CreatedAt": {
+            "description": "ISO 8601 creation timestamp.",
+            "type": "string"
+        },
+        "UpdatedAt": {
+            "description": "ISO 8601 timestamp of the last change.",
+            "type": "string"
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "ProjectId",
+        "Content",
+        "DateMarker",
+        "Scope"
+    ],
+    "readOnlyProperties": [
+        "/properties/Id",
+        "/properties/CreatedAt",
+        "/properties/UpdatedAt"
+    ],
+    "createOnlyProperties": [
+        "/properties/ProjectId"
+    ],
+    "primaryIdentifier": [
+        "/properties/ProjectId",
+        "/properties/Id"
+    ],
+    "tagging": {
+        "taggable": false
+    },
+    "handlers": {
+        "create": {
+            "permissions": []
+        },
+        "read": {
+            "permissions": []
+        },
+        "update": {
+            "permissions": []
+        },
+        "delete": {
+            "permissions": []
+        },
+        "list": {
+            "permissions": []
+        }
+    }
+}

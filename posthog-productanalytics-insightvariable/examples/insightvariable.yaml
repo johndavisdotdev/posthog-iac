@@ -1,0 +1,37 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >-
+  Creates PostHog SQL variables for use in SQL insights as {variables.code_name}.
+  Requires the PostHog::ProductAnalytics::InsightVariable type to be registered
+  and configured with SetTypeConfiguration (ApiKey).
+
+Parameters:
+  ProjectId:
+    Type: String
+    Description: PostHog project ID.
+
+Resources:
+  MinRevenue:
+    Type: PostHog::ProductAnalytics::InsightVariable
+    Properties:
+      ProjectId: !Ref ProjectId
+      Name: Min revenue
+      Type: Number
+      DefaultValue: "100"
+
+  Plans:
+    Type: PostHog::ProductAnalytics::InsightVariable
+    Properties:
+      ProjectId: !Ref ProjectId
+      Name: Plans
+      Type: List
+      Values: [free, pro, enterprise]
+      IsMulti: true
+      DefaultValue:
+        Fn::ToJsonString: [pro, enterprise]
+
+Outputs:
+  MinRevenueCodeName:
+    Description: Use as {variables.<code name>} in HogQL.
+    Value: !GetAtt MinRevenue.CodeName
+  PlansId:
+    Value: !GetAtt Plans.Id

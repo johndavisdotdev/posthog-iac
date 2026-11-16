@@ -1,0 +1,44 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >-
+  Creates a PostHog logs alert. Requires the PostHog::Logs::Alert type to be
+  registered and configured with SetTypeConfiguration (ApiKey). Notification
+  destinations are added to the alert in PostHog.
+
+Parameters:
+  ProjectId:
+    Type: String
+    Description: PostHog project ID.
+
+Resources:
+  CheckoutTimeouts:
+    Type: PostHog::Logs::Alert
+    Properties:
+      ProjectId: !Ref ProjectId
+      Name: Checkout timeouts
+      Filters:
+        SeverityLevels: [error, fatal]
+        ServiceNames: [checkout]
+        FilterGroup:
+          Fn::ToJsonString:
+            type: AND
+            values:
+              - type: AND
+                values:
+                  - key: message
+                    type: log
+                    operator: icontains
+                    value: timeout
+      ThresholdCount: 10
+      ThresholdOperator: above
+      WindowMinutes: 15
+      EvaluationPeriods: 3
+      DatapointsToAlarm: 2
+      CooldownMinutes: 30
+      ScheduleRestriction:
+        BlockedWindows:
+          - Start: "02:00"
+            End: "04:00"
+
+Outputs:
+  AlertId:
+    Value: !GetAtt CheckoutTimeouts.Id

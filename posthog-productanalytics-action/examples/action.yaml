@@ -1,0 +1,32 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >-
+  Creates a PostHog action. Requires the PostHog::ProductAnalytics::Action type
+  to be registered and configured with SetTypeConfiguration (ApiKey).
+
+Parameters:
+  ProjectId:
+    Type: String
+    Description: PostHog project ID.
+
+Resources:
+  SignedUp:
+    Type: PostHog::ProductAnalytics::Action
+    Properties:
+      ProjectId: !Ref ProjectId
+      Name: Signed up
+      Description: User finished the sign-up flow
+      Tags: [growth]
+      Steps:
+        - Event: $pageview
+          Url: /signup/complete
+        - Event: signed_up
+          Properties:
+            Fn::ToJsonString:
+              - key: plan
+                value: pro
+                type: person
+                operator: exact
+
+Outputs:
+  ActionId:
+    Value: !GetAtt SignedUp.Id

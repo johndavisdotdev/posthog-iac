@@ -1,0 +1,40 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >-
+  Creates a PostHog product tour for new pro users. Requires the
+  PostHog::Surveys::ProductTour type to be registered and configured with
+  SetTypeConfiguration (ApiKey).
+
+Parameters:
+  ProjectId:
+    Type: String
+    Description: PostHog project ID.
+
+Resources:
+  Onboarding:
+    Type: PostHog::Surveys::ProductTour
+    Properties:
+      ProjectId: !Ref ProjectId
+      Name: Onboarding tour
+      Description: Shows new users where to create their first project
+      AutoLaunch: true
+      Content:
+        Fn::ToJsonString:
+          steps:
+            - type: element
+              selector: "#new-project-button"
+              title: Create your first project
+            - type: modal
+              title: You're all set!
+      TargetingFlagFilters:
+        Fn::ToJsonString:
+          groups:
+            - properties:
+                - key: plan
+                  value: [pro]
+                  operator: exact
+                  type: person
+              rollout_percentage: 100
+
+Outputs:
+  ProductTourId:
+    Value: !GetAtt Onboarding.Id

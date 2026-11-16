@@ -1,0 +1,9 @@
+{
+    "ProjectId": "1",
+    "TemplateName": "cfn-contract-test-template",
+    "DashboardDescription": "Created by the CloudFormation contract tests",
+    "Tags": [
+        "cloudformation"
+    ],
+    "Tiles": "[{\"type\": \"INSIGHT\", \"name\": \"Pageviews\", \"description\": \"Daily pageviews\", \"query\": {\"kind\": \"InsightVizNode\", \"source\": {\"kind\": \"TrendsQuery\", \"series\": [{\"kind\": \"EventsNode\", \"event\": \"$pageview\", \"math\": \"total\"}], \"interval\": \"day\"}}, \"layouts\": {\"sm\": {\"x\": 0, \"y\": 0, \"w\": 6, \"h\": 5}}, \"color\": null}]"
+}

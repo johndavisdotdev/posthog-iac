@@ -1,0 +1,134 @@
+{
+    "typeName": "PostHog::ProductAnalytics::SchemaPropertyGroup",
+    "description": "A PostHog schema property group: a reusable, named set of typed properties that can be attached to event definitions to describe and enforce their schema.",
+    "sourceUrl": "https://github.com/johndavisdev/posthog-iac",
+    "documentationUrl": "https://posthog.com/docs/data/data-management",
+    "definitions": {
+        "Property": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "Name",
+                "PropertyType"
+            ],
+            "properties": {
+                "Name": {
+                    "type": "string",
+                    "description": "Property name, e.g. plan. Unique within the group.",
+                    "minLength": 1,
+                    "maxLength": 400
+                },
+                "PropertyType": {
+                    "type": "string",
+                    "description": "Property type: `DateTime`, `String`, `Numeric`, `Boolean`, `Object` or `Array`.",
+                    "enum": [
+                        "DateTime",
+                        "String",
+                        "Numeric",
+                        "Boolean",
+                        "Object",
+                        "Array"
+                    ]
+                },
+                "IsRequired": {
+                    "type": "boolean",
+                    "description": "Whether events must carry this property. Defaults to false."
+                },
+                "IsOptionalInTypes": {
+                    "type": "boolean",
+                    "description": "Whether generated types mark this property optional even when it is required. Defaults to false."
+                },
+                "Description": {
+                    "type": "string",
+                    "description": "Human-readable description of the property."
+                }
+            }
+        }
+    },
+    "typeConfiguration": {
+        "properties": {
+            "ApiKey": {
+                "description": "PostHog personal API key (phx_...) with the scopes this resource type needs. Pass it with a dynamic reference such as {{resolve:ssm-secure:/posthog/api-key}} when calling SetTypeConfiguration; never put it in plain text.",
+                "type": "string",
+                "minLength": 1
+            },
+            "BaseUrl": {
+                "description": "PostHog API host. Leave unset for PostHog Cloud US (https://us.posthog.com); use https://eu.posthog.com for PostHog Cloud EU, or your instance URL when self-hosting.",
+                "type": "string"
+            }
+        },
+        "additionalProperties": false,
+        "required": [
+            "ApiKey"
+        ]
+    },
+    "properties": {
+        "ProjectId": {
+            "type": "string",
+            "description": "ID of the PostHog project the property group belongs to.",
+            "minLength": 1
+        },
+        "Id": {
+            "type": "string",
+            "description": "The PostHog schema property group ID (UUID)."
+        },
+        "Name": {
+            "type": "string",
+            "description": "Name of the property group.",
+            "minLength": 1,
+            "maxLength": 400
+        },
+        "Description": {
+            "type": "string",
+            "description": "Human-readable description of the property group."
+        },
+        "Properties": {
+            "description": "The properties in the group.",
+            "type": "array",
+            "insertionOrder": false,
+            "items": {
+                "$ref": "#/definitions/Property"
+            }
+        },
+        "CreatedAt": {
+            "type": "string",
+            "description": "ISO 8601 creation timestamp."
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "ProjectId",
+        "Name"
+    ],
+    "readOnlyProperties": [
+        "/properties/Id",
+        "/properties/CreatedAt"
+    ],
+    "createOnlyProperties": [
+        "/properties/ProjectId"
+    ],
+    "primaryIdentifier": [
+        "/properties/ProjectId",
+        "/properties/Id"
+    ],
+    "tagging": {
+        "taggable": false
+    },
+    "handlers": {
+        "create": {
+            "permissions": []
+        },
+        "read": {
+            "permissions": []
+        },
+        "update": {
+            "permissions": []
+        },
+        "delete": {
+            "permissions": []
+        },
+        "list": {
+            "permissions": []
+        }
+    }
+}

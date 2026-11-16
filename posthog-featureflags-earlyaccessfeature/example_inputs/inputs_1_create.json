@@ -1,0 +1,7 @@
+{
+    "ProjectId": "1",
+    "Name": "cfn-contract-test-early-access",
+    "Description": "Created by the CloudFormation contract tests",
+    "Stage": "draft",
+    "DocumentationUrl": "https://example.com/docs/early-access"
+}

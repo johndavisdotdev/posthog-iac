@@ -1,0 +1,282 @@
+package resource
+
+import (
+	"context"
+	"encoding/json"
+	"fmt"
+	"net/url"
+
+	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
+	"github.com/johndavisdev/posthog-iac/internal/posthogcfn"
+)
+
+// samplingRule is the subset of PostHog's LogsSamplingRule these handlers use.
+type samplingRule struct {
+	ID                    posthogcfn.FlexID `json:"id"`
+	Name                  *string           `json:"name"`
+	Enabled               bool              `json:"enabled"`
+	Priority              *int              `json:"priority"`
+	RuleType              *string           `json:"rule_type"`
+	Source                *string           `json:"source"`
+	ScopeService          *string           `json:"scope_service"`
+	ScopePathPattern      *string           `json:"scope_path_pattern"`
+	ScopeAttributeFilters json.RawMessage   `json:"scope_attribute_filters"`
+	Config                json.RawMessage   `json:"config"`
+	Version               *int              `json:"version"`
+	CreatedAt             string            `json:"created_at"`
+	UpdatedAt             *string           `json:"updated_at"`
+}
+
+// defaultSource is the record source PostHog uses when none is sent.
+const defaultSource = "logs"
+
+// newClient builds the PostHog client from the registered type configuration.
+// On failure it returns the progress event the handler should return.
+func newClient(req handler.Request) (*posthogcfn.Client, *handler.ProgressEvent) {
+	cfg, err := Configuration(req)
+	if err != nil {
+		ev := posthogcfn.ConfigError(err)
+		return nil, &ev
+	}
+	c, err := posthogcfn.NewClient(cfg.ApiKey, cfg.BaseUrl)
+	if err != nil {
+		ev := posthogcfn.ConfigError(err)
+		return nil, &ev
+	}
+	return c, nil
+}
+
+func collectionPath(projectID string) string {
+	return posthogcfn.Path("/api/projects/%s/logs/sampling_rules/", projectID)
+}
+
+func itemPath(projectID, id string) string {
+	return posthogcfn.Path("/api/projects/%s/logs/sampling_rules/%s/", projectID, id)
+}
+
+// Create handles the Create event from the CloudFormation service.
+func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
+	c, fail := newClient(req)
+	if fail != nil {
+		return *fail, nil
+	}
+	projectID := posthogcfn.StringValue(currentModel.ProjectId)
+	if projectID == "" {
+		return posthogcfn.InvalidRequest("ProjectId is required"), nil
+	}
+	if posthogcfn.StringValue(currentModel.Name) == "" {
+		return posthogcfn.InvalidRequest("Name is required"), nil
+	}
+	body, err := requestBody(currentModel)
+	if err != nil {
+		return posthogcfn.InvalidRequest("%v", err), nil
+	}
+	// Source is immutable, so it is only sent on create.
+	if currentModel.Source != nil {
+		body["source"] = *currentModel.Source
+	}
+	ctx, cancel := posthogcfn.Context()
+	defer cancel()
+
+	var out samplingRule
+	if err := c.Post(ctx, collectionPath(projectID), body, &out); err != nil {
+		return posthogcfn.FromError("creating logs sampling rule", err), nil
+	}
+	return posthogcfn.Success(fromAPI(projectID, &out, currentModel)), nil
+}
+
+// Read handles the Read event from the CloudFormation service.
+func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
+	c, fail := newClient(req)
+	if fail != nil {
+		return *fail, nil
+	}
+	projectID, id := posthogcfn.StringValue(currentModel.ProjectId), posthogcfn.StringValue(currentModel.Id)
+	if projectID == "" || id == "" {
+		return posthogcfn.NotFound("logs sampling rule ProjectId and Id must be set"), nil
+	}
+	ctx, cancel := posthogcfn.Context()
+	defer cancel()
+
+	out, fail := get(ctx, c, projectID, id)
+	if fail != nil {
+		return *fail, nil
+	}
+	return posthogcfn.Success(fromAPI(projectID, out, currentModel)), nil
+}
+
+// Update handles the Update event from the CloudFormation service.
+func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
+	c, fail := newClient(req)
+	if fail != nil {
+		return *fail, nil
+	}
+	projectID, id := posthogcfn.StringValue(currentModel.ProjectId), posthogcfn.StringValue(currentModel.Id)
+	if id == "" && prevModel != nil {
+		id = posthogcfn.StringValue(prevModel.Id)
+	}
+	if projectID == "" || id == "" {
+		return posthogcfn.NotFound("logs sampling rule ProjectId and Id must be set"), nil
+	}
+	body, err := requestBody(currentModel)
+	if err != nil {
+		return posthogcfn.InvalidRequest("%v", err), nil
+	}
+	ctx, cancel := posthogcfn.Context()
+	defer cancel()
+
+	// PATCH returns 404 for a missing rule, which FromError maps to NotFound.
+	var out samplingRule
+	if err := c.Patch(ctx, itemPath(projectID, id), body, &out); err != nil {
+		return posthogcfn.FromError("updating logs sampling rule "+id, err), nil
+	}
+	return posthogcfn.Success(fromAPI(projectID, &out, currentModel)), nil
+}
+
+// Delete handles the Delete event from the CloudFormation service.
+func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
+	c, fail := newClient(req)
+	if fail != nil {
+		return *fail, nil
+	}
+	projectID, id := posthogcfn.StringValue(currentModel.ProjectId), posthogcfn.StringValue(currentModel.Id)
+	if projectID == "" || id == "" {
+		return posthogcfn.NotFound("logs sampling rule ProjectId and Id must be set"), nil
+	}
+	ctx, cancel := posthogcfn.Context()
+	defer cancel()
+
+	if _, fail := get(ctx, c, projectID, id); fail != nil {
+		return *fail, nil
+	}
+	if err := c.Delete(ctx, itemPath(projectID, id)); err != nil {
+		return posthogcfn.FromError("deleting logs sampling rule "+id, err), nil
+	}
+	return posthogcfn.DeleteSuccess(), nil
+}
+
+// List handles the List event from the CloudFormation service. The list
+// endpoint returns one record source at a time (logs by default), so both
+// sources are read.
+func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
+	c, fail := newClient(req)
+	if fail != nil {
+		return *fail, nil
+	}
+	projectID := posthogcfn.StringValue(currentModel.ProjectId)
+	if projectID == "" {
+		return posthogcfn.InvalidRequest("ProjectId is required to list logs sampling rules"), nil
+	}
+	ctx, cancel := posthogcfn.Context()
+	defer cancel()
+
+	models := make([]Model, 0)
+	seen := map[string]bool{}
+	for _, source := range []string{"logs", "spans"} {
+		items, err := posthogcfn.List[samplingRule](ctx, c, collectionPath(projectID), url.Values{"source": {source}})
+		if err != nil {
+			return posthogcfn.FromError("listing logs sampling rules", err), nil
+		}
+		for i := range items {
+			id := items[i].ID.String()
+			if id == "" || seen[id] {
+				continue
+			}
+			seen[id] = true
+			models = append(models, Model{ProjectId: posthogcfn.String(projectID), Id: items[i].ID.Ptr()})
+		}
+	}
+	return posthogcfn.ListSuccess(models, ""), nil
+}
+
+func get(ctx context.Context, c *posthogcfn.Client, projectID, id string) (*samplingRule, *handler.ProgressEvent) {
+	var out samplingRule
+	if err := c.Get(ctx, itemPath(projectID, id), nil, &out); err != nil {
+		ev := posthogcfn.FromError("reading logs sampling rule "+id, err)
+		return nil, &ev
+	}
+	return &out, nil
+}
+
+// requestBody builds the create/update body. Every writable field is sent so
+// that properties removed from the template are cleared. Priority is the
+// exception: when the template leaves it out, PostHog assigns (or keeps) one.
+func requestBody(m *Model) (map[string]any, error) {
+	if posthogcfn.StringValue(m.RuleType) == "" {
+		return nil, fmt.Errorf("RuleType is required")
+	}
+	if posthogcfn.StringValue(m.Config) == "" {
+		return nil, fmt.Errorf("Config is required")
+	}
+	cfg, err := posthogcfn.ParseJSON("Config", m.Config)
+	if err != nil {
+		return nil, err
+	}
+	if _, ok := cfg.(map[string]any); !ok {
+		return nil, fmt.Errorf("Config must be a JSON object")
+	}
+	filters, err := posthogcfn.ParseJSON("ScopeAttributeFilters", m.ScopeAttributeFilters)
+	if err != nil {
+		return nil, err
+	}
+	if filters == nil {
+		filters = []any{}
+	}
+	if _, ok := filters.([]any); !ok {
+		return nil, fmt.Errorf("ScopeAttributeFilters must be a JSON array")
+	}
+	body := map[string]any{
+		"name":                    posthogcfn.StringValue(m.Name),
+		"enabled":                 posthogcfn.BoolValue(m.Enabled),
+		"rule_type":               *m.RuleType,
+		"scope_service":           nullable(m.ScopeService),
+		"scope_path_pattern":      nullable(m.ScopePathPattern),
+		"scope_attribute_filters": filters,
+		"config":                  cfg,
+	}
+	if m.Priority != nil {
+		body["priority"] = *m.Priority
+	}
+	return body, nil
+}
+
+// nullable sends an unset or empty string as JSON null, which clears the field.
+func nullable(s *string) any {
+	if s == nil || *s == "" {
+		return nil
+	}
+	return *s
+}
+
+// fromAPI converts an API rule to the model. desired is the model from the
+// request; server-assigned values (priority, the default source, keys PostHog
+// adds to config) are not reported unless the template set them.
+func fromAPI(projectID string, r *samplingRule, desired *Model) *Model {
+	var want Model
+	if desired != nil {
+		want = *desired
+	}
+	m := &Model{
+		ProjectId:             posthogcfn.String(projectID),
+		Id:                    r.ID.Ptr(),
+		Name:                  r.Name,
+		RuleType:              posthogcfn.StringPtrOrNil(r.RuleType),
+		ScopeService:          posthogcfn.StringPtrOrNil(r.ScopeService),
+		ScopePathPattern:      posthogcfn.StringPtrOrNil(r.ScopePathPattern),
+		ScopeAttributeFilters: jsonOut(want.ScopeAttributeFilters, r.ScopeAttributeFilters),
+		Config:                jsonOut(want.Config, r.Config),
+		Version:               r.Version,
+		CreatedAt:             posthogcfn.StringOrNil(r.CreatedAt),
+		UpdatedAt:             posthogcfn.StringPtrOrNil(r.UpdatedAt),
+	}
+	if r.Enabled || want.Enabled != nil {
+		m.Enabled = posthogcfn.Bool(r.Enabled)
+	}
+	if want.Priority != nil {
+		m.Priority = r.Priority
+	}
+	if src := posthogcfn.StringPtrOrNil(r.Source); src != nil && (want.Source != nil || *src != defaultSource) {
+		m.Source = src
+	}
+	return m
+}

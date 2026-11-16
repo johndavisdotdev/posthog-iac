@@ -1,0 +1,9 @@
+{
+    "ProjectId": "1",
+    "Name": "cfn-contract-test-experiment",
+    "Description": "Created by the CloudFormation contract tests",
+    "FeatureFlagKey": "cfn-contract-test-experiment",
+    "FeatureFlag": "{\"filters\": {\"multivariate\": {\"variants\": [{\"key\": \"control\", \"rollout_percentage\": 50}, {\"key\": \"test\", \"rollout_percentage\": 50}]}}}",
+    "Metrics": "[{\"kind\": \"ExperimentMetric\", \"metric_type\": \"mean\", \"source\": {\"kind\": \"EventsNode\", \"event\": \"$pageview\"}}]",
+    "Tags": ["cloudformation"]
+}

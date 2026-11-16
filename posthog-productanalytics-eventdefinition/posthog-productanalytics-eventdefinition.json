@@ -1,0 +1,138 @@
+{
+    "typeName": "PostHog::ProductAnalytics::EventDefinition",
+    "description": "A PostHog event definition: the metadata (description, tags, owner, verification, visibility and schema enforcement) PostHog keeps for an event name in a project. Requires a PostHog plan with the data management feature.",
+    "sourceUrl": "https://github.com/johndavisdev/posthog-iac",
+    "documentationUrl": "https://posthog.com/docs/data/data-management",
+    "definitions": {},
+    "typeConfiguration": {
+        "properties": {
+            "ApiKey": {
+                "description": "PostHog personal API key (phx_...) with the scopes this resource type needs. Pass it with a dynamic reference such as {{resolve:ssm-secure:/posthog/api-key}} when calling SetTypeConfiguration; never put it in plain text.",
+                "type": "string",
+                "minLength": 1
+            },
+            "BaseUrl": {
+                "description": "PostHog API host. Leave unset for PostHog Cloud US (https://us.posthog.com); use https://eu.posthog.com for PostHog Cloud EU, or your instance URL when self-hosting.",
+                "type": "string"
+            }
+        },
+        "additionalProperties": false,
+        "required": [
+            "ApiKey"
+        ]
+    },
+    "properties": {
+        "ProjectId": {
+            "type": "string",
+            "description": "ID of the PostHog project the event definition belongs to.",
+            "minLength": 1
+        },
+        "Id": {
+            "type": "string",
+            "description": "The PostHog event definition ID (UUID)."
+        },
+        "Name": {
+            "type": "string",
+            "description": "Event name, e.g. signed_up or $pageview. Unique within the project. Create-only.",
+            "minLength": 1,
+            "maxLength": 400
+        },
+        "Description": {
+            "type": "string",
+            "description": "Human-readable description of the event."
+        },
+        "Tags": {
+            "description": "Tags on the event definition.",
+            "type": "array",
+            "insertionOrder": false,
+            "uniqueItems": true,
+            "items": {
+                "type": "string"
+            }
+        },
+        "Owner": {
+            "type": "string",
+            "description": "Numeric ID of the user responsible for the event."
+        },
+        "Verified": {
+            "type": "boolean",
+            "description": "Whether the event is marked as verified. Defaults to false."
+        },
+        "Hidden": {
+            "type": "boolean",
+            "description": "Whether the event is hidden from event pickers. Defaults to false."
+        },
+        "EnforcementMode": {
+            "type": "string",
+            "description": "Schema enforcement for this event: `allow` (accept events that don't match the schema) or `reject`. Defaults to `allow`.",
+            "enum": [
+                "allow",
+                "reject"
+            ]
+        },
+        "PrimaryProperty": {
+            "type": "string",
+            "description": "Name of a single property PostHog UIs show next to the event name (for example $pathname on $pageview).",
+            "maxLength": 400
+        },
+        "PostToSlack": {
+            "type": "boolean",
+            "description": "Whether to post to the project's Slack/webhook integration when the event is ingested. Defaults to false."
+        },
+        "DefaultColumns": {
+            "description": "Columns shown by default when exploring this event.",
+            "type": "array",
+            "insertionOrder": true,
+            "items": {
+                "type": "string"
+            }
+        },
+        "CreatedAt": {
+            "type": "string",
+            "description": "ISO 8601 creation timestamp."
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "ProjectId",
+        "Name"
+    ],
+    "readOnlyProperties": [
+        "/properties/Id",
+        "/properties/CreatedAt"
+    ],
+    "createOnlyProperties": [
+        "/properties/ProjectId",
+        "/properties/Name"
+    ],
+    "primaryIdentifier": [
+        "/properties/ProjectId",
+        "/properties/Id"
+    ],
+    "additionalIdentifiers": [
+        [
+            "/properties/ProjectId",
+            "/properties/Name"
+        ]
+    ],
+    "tagging": {
+        "taggable": false
+    },
+    "handlers": {
+        "create": {
+            "permissions": []
+        },
+        "read": {
+            "permissions": []
+        },
+        "update": {
+            "permissions": []
+        },
+        "delete": {
+            "permissions": []
+        },
+        "list": {
+            "permissions": []
+        }
+    }
+}

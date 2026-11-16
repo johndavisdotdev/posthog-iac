@@ -1,0 +1,47 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >-
+  Creates a PostHog cohort of persons with a company email who were active in
+  the last 30 days. Requires the PostHog::ProductAnalytics::Cohort type to be
+  registered and configured with SetTypeConfiguration (ApiKey).
+
+Parameters:
+  ProjectId:
+    Type: String
+    Description: PostHog project ID.
+
+Resources:
+  ActiveCustomers:
+    Type: PostHog::ProductAnalytics::Cohort
+    Properties:
+      ProjectId: !Ref ProjectId
+      Name: Active customers
+      Description: Persons with an example.com email who viewed a page in the last 30 days
+      Filters:
+        Fn::ToJsonString:
+          properties:
+            type: AND
+            values:
+              - type: AND
+                values:
+                  - key: email
+                    type: person
+                    value: "@example.com"
+                    operator: icontains
+                  - key: $pageview
+                    type: behavioral
+                    value: performed_event
+                    event_type: events
+                    time_value: 30
+                    time_interval: day
+
+  BetaTesters:
+    Type: PostHog::ProductAnalytics::Cohort
+    Properties:
+      ProjectId: !Ref ProjectId
+      Name: Beta testers
+      Description: Static list, filled in PostHog
+      IsStatic: true
+
+Outputs:
+  ActiveCustomersId:
+    Value: !GetAtt ActiveCustomers.Id

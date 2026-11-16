@@ -1,0 +1,9 @@
+{
+    "OrganizationId": "00000000-0000-0000-0000-000000000000",
+    "Name": "cfn-contract-test-idp-renamed",
+    "ConfigScope": "oidc",
+    "DomainScope": "selected",
+    "OidcIssuerUrl": "https://example.okta.com",
+    "OidcClientId": "cfn-contract-test-client-2",
+    "OidcClientSecret": "cfn-contract-test-secret-2"
+}

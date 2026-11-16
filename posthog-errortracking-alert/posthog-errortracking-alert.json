@@ -1,0 +1,171 @@
+{
+    "typeName": "PostHog::ErrorTracking::Alert",
+    "description": "A PostHog error tracking alert: sends a notification (e.g. to Slack) when an issue is created, reopened, starts spiking or is assigned.",
+    "sourceUrl": "https://github.com/johndavisdev/posthog-iac",
+    "documentationUrl": "https://posthog.com/docs/error-tracking/alerts",
+    "definitions": {
+        "Destination": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "ChannelType": {
+                    "description": "Delivery channel for notifications. Only `slack` is supported.",
+                    "type": "string",
+                    "enum": [
+                        "slack"
+                    ]
+                },
+                "IntegrationId": {
+                    "description": "ID of the PostHog workspace integration used to deliver notifications (required for Slack).",
+                    "type": "integer"
+                },
+                "Config": {
+                    "description": "Channel-specific delivery settings.",
+                    "$ref": "#/definitions/SlackConfig"
+                }
+            },
+            "required": [
+                "ChannelType",
+                "Config"
+            ]
+        },
+        "SlackConfig": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "Channel": {
+                    "description": "Slack channel ID notifications are delivered to, e.g. C0123ABCD.",
+                    "type": "string",
+                    "minLength": 1
+                },
+                "ChannelName": {
+                    "description": "Human-readable Slack channel name, stored for display only.",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "Channel"
+            ]
+        }
+    },
+    "typeConfiguration": {
+        "properties": {
+            "ApiKey": {
+                "description": "PostHog personal API key (phx_...) with the scopes this resource type needs. Pass it with a dynamic reference such as {{resolve:ssm-secure:/posthog/api-key}} when calling SetTypeConfiguration; never put it in plain text.",
+                "type": "string",
+                "minLength": 1
+            },
+            "BaseUrl": {
+                "description": "PostHog API host. Leave unset for PostHog Cloud US (https://us.posthog.com); use https://eu.posthog.com for PostHog Cloud EU, or your instance URL when self-hosting.",
+                "type": "string"
+            }
+        },
+        "additionalProperties": false,
+        "required": [
+            "ApiKey"
+        ]
+    },
+    "properties": {
+        "ProjectId": {
+            "description": "ID of the PostHog project the alert belongs to.",
+            "type": "string",
+            "minLength": 1
+        },
+        "Id": {
+            "description": "The PostHog alert ID (UUID).",
+            "type": "string"
+        },
+        "Name": {
+            "description": "Human-readable name of the alert.",
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 400
+        },
+        "Enabled": {
+            "description": "Whether the alert fires notifications. Defaults to true.",
+            "type": "boolean"
+        },
+        "Triggers": {
+            "description": "Issue lifecycle events that open a notification thread for an issue.",
+            "type": "array",
+            "insertionOrder": false,
+            "uniqueItems": true,
+            "minItems": 1,
+            "items": {
+                "type": "string",
+                "enum": [
+                    "issue_created",
+                    "issue_reopened",
+                    "issue_spiking",
+                    "issue_assigned"
+                ]
+            }
+        },
+        "Filters": {
+            "description": "JSON (use Fn::ToJsonString). Filters an issue transition must match to open a notification thread, in hog function filter shape: {\"events\": [...], \"actions\": [...], \"properties\": [...], \"filter_test_accounts\": true}. PostHog compiles the bytecode on save; it is not part of this property.",
+            "type": "string"
+        },
+        "ThrottleSeconds": {
+            "description": "Minimum seconds between thread-opening notifications per issue, at most 30 days. 0 (the default) disables the throttle.",
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 2592000
+        },
+        "Destinations": {
+            "description": "Delivery targets notifications fan out to. Updating replaces all destinations.",
+            "type": "array",
+            "insertionOrder": false,
+            "minItems": 1,
+            "items": {
+                "$ref": "#/definitions/Destination"
+            }
+        },
+        "CreatedAt": {
+            "description": "ISO 8601 creation timestamp.",
+            "type": "string"
+        },
+        "UpdatedAt": {
+            "description": "ISO 8601 last-update timestamp.",
+            "type": "string"
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "ProjectId",
+        "Name",
+        "Triggers",
+        "Destinations"
+    ],
+    "readOnlyProperties": [
+        "/properties/Id",
+        "/properties/CreatedAt",
+        "/properties/UpdatedAt"
+    ],
+    "createOnlyProperties": [
+        "/properties/ProjectId"
+    ],
+    "primaryIdentifier": [
+        "/properties/ProjectId",
+        "/properties/Id"
+    ],
+    "tagging": {
+        "taggable": false
+    },
+    "handlers": {
+        "create": {
+            "permissions": []
+        },
+        "read": {
+            "permissions": []
+        },
+        "update": {
+            "permissions": []
+        },
+        "delete": {
+            "permissions": []
+        },
+        "list": {
+            "permissions": []
+        }
+    }
+}

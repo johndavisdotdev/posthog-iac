@@ -1,0 +1,86 @@
+{
+    "typeName": "PostHog::Organizations::Role",
+    "description": "A PostHog role: a named group of organization members that access controls (project, resource and feature access) can be granted to.",
+    "sourceUrl": "https://github.com/johndavisdev/posthog-iac",
+    "documentationUrl": "https://posthog.com/docs/settings/access-control",
+    "definitions": {},
+    "typeConfiguration": {
+        "properties": {
+            "ApiKey": {
+                "description": "PostHog personal API key (phx_...) with the scopes this resource type needs. Pass it with a dynamic reference such as {{resolve:ssm-secure:/posthog/api-key}} when calling SetTypeConfiguration; never put it in plain text.",
+                "type": "string",
+                "minLength": 1
+            },
+            "BaseUrl": {
+                "description": "PostHog API host. Leave unset for PostHog Cloud US (https://us.posthog.com); use https://eu.posthog.com for PostHog Cloud EU, or your instance URL when self-hosting.",
+                "type": "string"
+            }
+        },
+        "additionalProperties": false,
+        "required": [
+            "ApiKey"
+        ]
+    },
+    "properties": {
+        "OrganizationId": {
+            "description": "ID (UUID) of the PostHog organization the role belongs to.",
+            "type": "string",
+            "minLength": 1
+        },
+        "Id": {
+            "description": "The PostHog role ID (UUID).",
+            "type": "string"
+        },
+        "Name": {
+            "description": "Name of the role.",
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+        },
+        "IsDefault": {
+            "description": "Whether this is the organization's default role, assigned to new members.",
+            "type": "boolean"
+        },
+        "CreatedAt": {
+            "description": "ISO 8601 creation timestamp.",
+            "type": "string"
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "OrganizationId",
+        "Name"
+    ],
+    "readOnlyProperties": [
+        "/properties/Id",
+        "/properties/IsDefault",
+        "/properties/CreatedAt"
+    ],
+    "createOnlyProperties": [
+        "/properties/OrganizationId"
+    ],
+    "primaryIdentifier": [
+        "/properties/OrganizationId",
+        "/properties/Id"
+    ],
+    "tagging": {
+        "taggable": false
+    },
+    "handlers": {
+        "create": {
+            "permissions": []
+        },
+        "read": {
+            "permissions": []
+        },
+        "update": {
+            "permissions": []
+        },
+        "delete": {
+            "permissions": []
+        },
+        "list": {
+            "permissions": []
+        }
+    }
+}

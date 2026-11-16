@@ -1,0 +1,9 @@
+{
+    "ProjectId": "1",
+    "RecordId": "1",
+    "Payload": "{\"operation\": \"update_status\", \"value\": false}",
+    "ScheduledAt": "2030-07-01T09:00:00Z",
+    "IsRecurring": true,
+    "RecurrenceInterval": "weekly",
+    "EndDate": "2030-12-31T00:00:00Z"
+}

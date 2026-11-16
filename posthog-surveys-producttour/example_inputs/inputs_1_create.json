@@ -1,0 +1,6 @@
+{
+    "ProjectId": "1",
+    "Name": "cfn-contract-test-product-tour",
+    "Description": "Created by the CloudFormation contract tests",
+    "Content": "{\"steps\": [{\"type\": \"modal\", \"title\": \"Welcome\"}]}"
+}

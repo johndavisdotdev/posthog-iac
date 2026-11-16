@@ -1,0 +1,7 @@
+{
+    "ProjectId": "1",
+    "Name": "",
+    "Interval": "day",
+    "DestinationType": "AwsS3",
+    "DestinationConfig": "not json"
+}

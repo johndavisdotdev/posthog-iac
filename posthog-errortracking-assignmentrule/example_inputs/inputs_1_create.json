@@ -1,0 +1,8 @@
+{
+    "ProjectId": "1",
+    "Filters": "{\"type\": \"AND\", \"values\": [{\"key\": \"$exception_types\", \"type\": \"event\", \"operator\": \"exact\", \"value\": [\"TypeError\"]}]}",
+    "Assignee": {
+        "Type": "user",
+        "Id": "1"
+    }
+}

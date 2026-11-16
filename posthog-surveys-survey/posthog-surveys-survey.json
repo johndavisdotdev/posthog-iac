@@ -1,0 +1,208 @@
+{
+    "typeName": "PostHog::Surveys::Survey",
+    "description": "A PostHog survey: questions shown to users in-app (popover or widget), on a hosted page, or collected through the API.",
+    "sourceUrl": "https://github.com/johndavisdev/posthog-iac",
+    "documentationUrl": "https://posthog.com/docs/surveys",
+    "definitions": {},
+    "typeConfiguration": {
+        "properties": {
+            "ApiKey": {
+                "description": "PostHog personal API key (phx_...) with the scopes this resource type needs. Pass it with a dynamic reference such as {{resolve:ssm-secure:/posthog/api-key}} when calling SetTypeConfiguration; never put it in plain text.",
+                "type": "string",
+                "minLength": 1
+            },
+            "BaseUrl": {
+                "description": "PostHog API host. Leave unset for PostHog Cloud US (https://us.posthog.com); use https://eu.posthog.com for PostHog Cloud EU, or your instance URL when self-hosting.",
+                "type": "string"
+            }
+        },
+        "additionalProperties": false,
+        "required": [
+            "ApiKey"
+        ]
+    },
+    "properties": {
+        "ProjectId": {
+            "description": "ID of the PostHog project the survey belongs to.",
+            "type": "string",
+            "minLength": 1
+        },
+        "Id": {
+            "description": "The PostHog survey ID (UUID).",
+            "type": "string"
+        },
+        "Name": {
+            "description": "Survey name. In-app surveys send it to visitors' browsers and hosted surveys show it publicly, so keep private details out of it.",
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 400
+        },
+        "Description": {
+            "description": "Internal survey description. Never delivered to visitors.",
+            "type": "string"
+        },
+        "Type": {
+            "description": "Survey type.",
+            "type": "string",
+            "enum": [
+                "popover",
+                "widget",
+                "external_survey",
+                "api"
+            ]
+        },
+        "Schedule": {
+            "description": "`once` shows the survey once per user (PostHog's default), `recurring` repeats every IterationFrequencyDays, `always` shows it every time the conditions match.",
+            "type": "string",
+            "enum": [
+                "once",
+                "recurring",
+                "always"
+            ]
+        },
+        "LinkedFlagId": {
+            "description": "ID of a feature flag linked to the survey: the survey is shown only to users with the flag enabled.",
+            "type": "string"
+        },
+        "LinkedInsightId": {
+            "description": "ID of an insight linked to the survey.",
+            "type": "string"
+        },
+        "TargetingFlagFilters": {
+            "description": "Person targeting as a JSON feature-flag filters object (use Fn::ToJsonString), e.g. {\"groups\": [{\"properties\": [{\"key\": \"email\", \"value\": [\"@example.com\"], \"operator\": \"icontains\", \"type\": \"person\"}], \"rollout_percentage\": 100}]}. PostHog keeps it on a targeting flag it manages. Removing the property removes the targeting.",
+            "type": "string"
+        },
+        "TargetingFlagId": {
+            "description": "ID of the targeting flag PostHog manages for TargetingFlagFilters.",
+            "type": "string"
+        },
+        "Questions": {
+            "description": "Questions as a JSON array (use Fn::ToJsonString). Each question has a `type` (`open`, `link`, `rating`, `single_choice` or `multiple_choice`), `question`, and type-specific fields such as `choices`, `scale`, `display`, `link` and `branching`. PostHog assigns an `id` to questions without one.",
+            "type": "string"
+        },
+        "Conditions": {
+            "description": "Display conditions as a JSON object (use Fn::ToJsonString): `url`, `urlMatchType`, `selector`, `deviceTypes`, `seenSurveyWaitPeriodInDays`, `events`, `actions` and so on.",
+            "type": "string"
+        },
+        "Appearance": {
+            "description": "Appearance customization as a JSON object (use Fn::ToJsonString): colours, `position`, `submitButtonText`, `thankYouMessageHeader`, `whiteLabel` and so on.",
+            "type": "string"
+        },
+        "Translations": {
+            "description": "Survey-level translations as a JSON object keyed by language code (use Fn::ToJsonString). Question translations go inside each question.",
+            "type": "string"
+        },
+        "StartDate": {
+            "description": "ISO 8601 launch time. Setting it launches the survey.",
+            "type": "string"
+        },
+        "EndDate": {
+            "description": "ISO 8601 end time. Setting it completes the survey.",
+            "type": "string"
+        },
+        "Archived": {
+            "description": "Whether the survey is archived.",
+            "type": "boolean"
+        },
+        "ResponsesLimit": {
+            "description": "Number of responses after which the survey stops automatically.",
+            "type": "integer",
+            "minimum": 1
+        },
+        "IterationCount": {
+            "description": "For a recurring schedule, how many times the survey is shown to a user.",
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 500
+        },
+        "IterationFrequencyDays": {
+            "description": "For a recurring schedule, the number of days between survey iterations.",
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 365
+        },
+        "RepeatUntilStopped": {
+            "description": "For a recurring schedule, keep repeating until the survey is stopped (IterationCount is then ignored).",
+            "type": "boolean"
+        },
+        "EnablePartialResponses": {
+            "description": "Store a response as soon as one question is answered (true) instead of when all are answered (false).",
+            "type": "boolean"
+        },
+        "EnableIframeEmbedding": {
+            "description": "Allow the hosted survey page to be embedded in an iframe.",
+            "type": "boolean"
+        },
+        "BaseLanguage": {
+            "description": "BCP-47 code of the language of the survey's untranslated text. PostHog defaults to `en`.",
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 20
+        },
+        "ResponseSamplingStartDate": {
+            "description": "ISO 8601 start of response sampling.",
+            "type": "string"
+        },
+        "ResponseSamplingIntervalType": {
+            "description": "Unit of the response sampling interval.",
+            "type": "string",
+            "enum": [
+                "day",
+                "week",
+                "month"
+            ]
+        },
+        "ResponseSamplingInterval": {
+            "description": "Length of the response sampling interval, in ResponseSamplingIntervalType units.",
+            "type": "integer",
+            "minimum": 0
+        },
+        "ResponseSamplingLimit": {
+            "description": "Maximum number of responses collected per sampling interval.",
+            "type": "integer",
+            "minimum": 0
+        },
+        "CreatedAt": {
+            "description": "ISO 8601 creation timestamp.",
+            "type": "string"
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "ProjectId",
+        "Name",
+        "Type"
+    ],
+    "readOnlyProperties": [
+        "/properties/Id",
+        "/properties/TargetingFlagId",
+        "/properties/CreatedAt"
+    ],
+    "createOnlyProperties": [
+        "/properties/ProjectId"
+    ],
+    "primaryIdentifier": [
+        "/properties/ProjectId",
+        "/properties/Id"
+    ],
+    "tagging": {
+        "taggable": false
+    },
+    "handlers": {
+        "create": {
+            "permissions": []
+        },
+        "read": {
+            "permissions": []
+        },
+        "update": {
+            "permissions": []
+        },
+        "delete": {
+            "permissions": []
+        },
+        "list": {
+            "permissions": []
+        }
+    }
+}

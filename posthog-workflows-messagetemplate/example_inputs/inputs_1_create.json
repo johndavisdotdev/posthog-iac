@@ -1,0 +1,7 @@
+{
+    "ProjectId": "1",
+    "Name": "cfn-contract-test-template",
+    "Description": "Created by the CloudFormation contract tests",
+    "Tags": ["cloudformation"],
+    "Content": "{\"templating\": \"liquid\", \"email\": {\"subject\": \"Welcome {{ person.properties.name }}\", \"text\": \"Thanks for signing up.\"}}"
+}

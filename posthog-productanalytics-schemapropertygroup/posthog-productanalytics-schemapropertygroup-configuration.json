@@ -1,0 +1,60 @@
+{
+    "properties": {
+        "ApiKey": {
+            "description": "PostHog personal API key (phx_...) with the scopes this resource type needs. Pass it with a dynamic reference such as {{resolve:ssm-secure:/posthog/api-key}} when calling SetTypeConfiguration; never put it in plain text.",
+            "type": "string",
+            "minLength": 1
+        },
+        "BaseUrl": {
+            "description": "PostHog API host. Leave unset for PostHog Cloud US (https://us.posthog.com); use https://eu.posthog.com for PostHog Cloud EU, or your instance URL when self-hosting.",
+            "type": "string"
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "ApiKey"
+    ],
+    "definitions": {
+        "Property": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "Name",
+                "PropertyType"
+            ],
+            "properties": {
+                "Name": {
+                    "type": "string",
+                    "description": "Property name, e.g. plan. Unique within the group.",
+                    "minLength": 1,
+                    "maxLength": 400
+                },
+                "PropertyType": {
+                    "type": "string",
+                    "description": "Property type: `DateTime`, `String`, `Numeric`, `Boolean`, `Object` or `Array`.",
+                    "enum": [
+                        "DateTime",
+                        "String",
+                        "Numeric",
+                        "Boolean",
+                        "Object",
+                        "Array"
+                    ]
+                },
+                "IsRequired": {
+                    "type": "boolean",
+                    "description": "Whether events must carry this property. Defaults to false."
+                },
+                "IsOptionalInTypes": {
+                    "type": "boolean",
+                    "description": "Whether generated types mark this property optional even when it is required. Defaults to false."
+                },
+                "Description": {
+                    "type": "string",
+                    "description": "Human-readable description of the property."
+                }
+            }
+        }
+    },
+    "typeName": "PostHog::ProductAnalytics::SchemaPropertyGroup"
+}

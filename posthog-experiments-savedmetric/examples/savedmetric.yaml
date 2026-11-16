@@ -1,0 +1,32 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >-
+  Creates a PostHog shared experiment metric. Requires the
+  PostHog::Experiments::SavedMetric type to be registered and configured with
+  SetTypeConfiguration (ApiKey).
+
+Parameters:
+  ProjectId:
+    Type: String
+    Description: PostHog project ID.
+
+Resources:
+  SignupFunnel:
+    Type: PostHog::Experiments::SavedMetric
+    Properties:
+      ProjectId: !Ref ProjectId
+      Name: Sign-up funnel
+      Description: Pageview to completed sign-up
+      Tags: [growth]
+      Query:
+        Fn::ToJsonString:
+          kind: ExperimentMetric
+          metric_type: funnel
+          series:
+            - kind: EventsNode
+              event: $pageview
+            - kind: EventsNode
+              event: signed_up
+
+Outputs:
+  SavedMetricId:
+    Value: !GetAtt SignupFunnel.Id

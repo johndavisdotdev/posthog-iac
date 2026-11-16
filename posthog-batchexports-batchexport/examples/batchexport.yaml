@@ -1,0 +1,47 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >-
+  Creates a daily PostHog batch export of events to S3 as Parquet. Credentials
+  come from an existing PostHog aws-s3 integration. Requires the
+  PostHog::BatchExports::BatchExport type to be registered and configured with
+  SetTypeConfiguration (ApiKey).
+
+Parameters:
+  ProjectId:
+    Type: String
+    Description: PostHog project ID.
+  S3IntegrationId:
+    Type: String
+    Description: ID of the PostHog aws-s3 integration that holds the AWS credentials.
+  BucketName:
+    Type: String
+    Description: Destination bucket.
+
+Resources:
+  EventsToS3:
+    Type: PostHog::BatchExports::BatchExport
+    Properties:
+      ProjectId: !Ref ProjectId
+      Name: Events to S3
+      Model: events
+      Interval: day
+      Timezone: Europe/London
+      OffsetHour: 2
+      DestinationType: AwsS3
+      DestinationIntegrationId: !Ref S3IntegrationId
+      DestinationConfig:
+        Fn::ToJsonString:
+          bucket_name: !Ref BucketName
+          region: !Ref AWS::Region
+          prefix: posthog/events/
+          file_format: Parquet
+          compression: zstd
+      Filters:
+        Fn::ToJsonString:
+          - key: $browser
+            operator: is_not
+            type: event
+            value: [HeadlessChrome]
+
+Outputs:
+  BatchExportId:
+    Value: !GetAtt EventsToS3.Id

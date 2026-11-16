@@ -1,0 +1,287 @@
+{
+    "typeName": "PostHog::Logs::Alert",
+    "description": "A PostHog logs alert: counts log entries matching a filter over a time window and fires when the count crosses a threshold. Notification destinations are managed separately.",
+    "sourceUrl": "https://github.com/johndavisdev/posthog-iac",
+    "documentationUrl": "https://posthog.com/docs/logs",
+    "definitions": {
+        "Filters": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "SeverityLevels": {
+                    "description": "Log severity levels to match.",
+                    "type": "array",
+                    "insertionOrder": false,
+                    "uniqueItems": true,
+                    "items": {
+                        "type": "string",
+                        "enum": [
+                            "trace",
+                            "debug",
+                            "info",
+                            "warn",
+                            "error",
+                            "fatal"
+                        ]
+                    }
+                },
+                "ServiceNames": {
+                    "description": "Service names to match.",
+                    "type": "array",
+                    "insertionOrder": false,
+                    "uniqueItems": true,
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "FilterGroup": {
+                    "description": "JSON (use Fn::ToJsonString). Property filter group, e.g. {\"type\": \"AND\", \"values\": [{\"type\": \"AND\", \"values\": [{\"key\": \"message\", \"type\": \"log\", \"operator\": \"icontains\", \"value\": \"timeout\"}]}]}.",
+                    "type": "string"
+                }
+            }
+        },
+        "ScheduleRestriction": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "BlockedWindows": {
+                    "description": "Blocked local time windows (project timezone) when the alert must not run. Overlapping windows are merged by PostHog. At most five.",
+                    "type": "array",
+                    "insertionOrder": false,
+                    "maxItems": 5,
+                    "items": {
+                        "$ref": "#/definitions/BlockedWindow"
+                    }
+                }
+            },
+            "required": [
+                "BlockedWindows"
+            ]
+        },
+        "BlockedWindow": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "Start": {
+                    "description": "Start time HH:MM (24-hour, project timezone), inclusive.",
+                    "type": "string",
+                    "pattern": "^[0-2][0-9]:[0-5][0-9]$"
+                },
+                "End": {
+                    "description": "End time HH:MM (24-hour, project timezone), exclusive. Each window must span at least 30 minutes.",
+                    "type": "string",
+                    "pattern": "^[0-2][0-9]:[0-5][0-9]$"
+                }
+            },
+            "required": [
+                "Start",
+                "End"
+            ]
+        },
+        "Grouping": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "Mode": {
+                    "description": "`single` keeps one instance for the whole alert. `by_result_labels` keeps one instance per distinct value of the labels in Keys, each firing and resolving on its own (needs ThresholdOperator `above`).",
+                    "type": "string",
+                    "enum": [
+                        "single",
+                        "by_result_labels"
+                    ]
+                },
+                "Keys": {
+                    "description": "Result labels whose values make a group, such as service_name or severity_text. Empty for `single`, required for `by_result_labels`. Changing them deletes existing instances.",
+                    "type": "array",
+                    "insertionOrder": false,
+                    "uniqueItems": true,
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "MaxInstances": {
+                    "description": "Most instances the alert keeps at once (1-100, default 100).",
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 100
+                },
+                "OnOverflow": {
+                    "description": "What happens to groups past MaxInstances. `degrade_visible` (default) names how many were left out.",
+                    "type": "string",
+                    "enum": [
+                        "degrade_visible"
+                    ]
+                }
+            },
+            "required": [
+                "Mode"
+            ]
+        }
+    },
+    "typeConfiguration": {
+        "properties": {
+            "ApiKey": {
+                "description": "PostHog personal API key (phx_...) with the scopes this resource type needs. Pass it with a dynamic reference such as {{resolve:ssm-secure:/posthog/api-key}} when calling SetTypeConfiguration; never put it in plain text.",
+                "type": "string",
+                "minLength": 1
+            },
+            "BaseUrl": {
+                "description": "PostHog API host. Leave unset for PostHog Cloud US (https://us.posthog.com); use https://eu.posthog.com for PostHog Cloud EU, or your instance URL when self-hosting.",
+                "type": "string"
+            }
+        },
+        "additionalProperties": false,
+        "required": [
+            "ApiKey"
+        ]
+    },
+    "properties": {
+        "ProjectId": {
+            "description": "ID of the PostHog project the alert belongs to.",
+            "type": "string",
+            "minLength": 1
+        },
+        "Id": {
+            "description": "The PostHog logs alert ID (UUID).",
+            "type": "string"
+        },
+        "Name": {
+            "description": "Human-readable name for the alert.",
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 255
+        },
+        "Enabled": {
+            "description": "Whether the alert is evaluated. Defaults to true. Disabling resets its state to not_firing.",
+            "type": "boolean"
+        },
+        "Filters": {
+            "description": "Which log entries are counted. An enabled alert needs at least one of SeverityLevels, ServiceNames or FilterGroup.",
+            "$ref": "#/definitions/Filters"
+        },
+        "ThresholdCount": {
+            "description": "Number of matching log entries in the window that breaches the threshold. Defaults to 100. Use 0 with `above` to fire on any matching log.",
+            "type": "integer",
+            "minimum": 0
+        },
+        "ThresholdOperator": {
+            "description": "Whether the alert fires when the count is `above` (default) or `below` the threshold.",
+            "type": "string",
+            "enum": [
+                "above",
+                "below"
+            ]
+        },
+        "WindowMinutes": {
+            "description": "Time window in minutes over which log entries are counted. Defaults to 5.",
+            "type": "integer",
+            "enum": [
+                5,
+                10,
+                15,
+                30,
+                60
+            ]
+        },
+        "EvaluationPeriods": {
+            "description": "Total number of check periods in the sliding evaluation window (M in N-of-M). Defaults to 1.",
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 10
+        },
+        "DatapointsToAlarm": {
+            "description": "How many periods within the evaluation window must breach the threshold to fire (N in N-of-M). Defaults to 1.",
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 10
+        },
+        "CooldownMinutes": {
+            "description": "Minimum minutes between notifications. 0 (default) means no minimum. Does not apply to PagerDuty incidents.",
+            "type": "integer",
+            "minimum": 0
+        },
+        "ScheduleRestriction": {
+            "description": "Quiet hours: local time windows when the alert must not run. Omit to disable quiet hours.",
+            "$ref": "#/definitions/ScheduleRestriction"
+        },
+        "Grouping": {
+            "description": "How the alert splits its results into instances. Only alerts evaluated by the PostHog alerts platform (PlatformOwned) can use a mode other than `single`.",
+            "$ref": "#/definitions/Grouping"
+        },
+        "Labels": {
+            "description": "Labels that say who owns the alert and how urgent it is, e.g. {\"team\": \"checkout\", \"severity\": \"critical\"}. `alertname` and names starting with `posthog_` are reserved. Only PlatformOwned alerts can have labels.",
+            "type": "object",
+            "additionalProperties": false,
+            "patternProperties": {
+                "^[A-Za-z0-9_]+$": {
+                    "type": "string"
+                }
+            }
+        },
+        "Annotations": {
+            "description": "Context for responders, e.g. {\"runbook_url\": \"https://...\"}. Values can use {{ $labels.<name> }} and {{ $value }}; names ending in _url must start with https://. Only PlatformOwned alerts can have annotations.",
+            "type": "object",
+            "additionalProperties": false,
+            "patternProperties": {
+                "^[A-Za-z0-9_]+$": {
+                    "type": "string"
+                }
+            }
+        },
+        "CheckIntervalMinutes": {
+            "description": "How often PostHog evaluates the alert, in minutes. Server-managed.",
+            "type": "integer"
+        },
+        "PlatformOwned": {
+            "description": "Whether the PostHog alerts platform evaluates this alert and sends its notifications. Server-managed.",
+            "type": "boolean"
+        },
+        "CreatedAt": {
+            "description": "ISO 8601 creation timestamp.",
+            "type": "string"
+        },
+        "UpdatedAt": {
+            "description": "ISO 8601 last-update timestamp.",
+            "type": "string"
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "ProjectId",
+        "Name"
+    ],
+    "readOnlyProperties": [
+        "/properties/Id",
+        "/properties/CheckIntervalMinutes",
+        "/properties/PlatformOwned",
+        "/properties/CreatedAt",
+        "/properties/UpdatedAt"
+    ],
+    "createOnlyProperties": [
+        "/properties/ProjectId"
+    ],
+    "primaryIdentifier": [
+        "/properties/ProjectId",
+        "/properties/Id"
+    ],
+    "tagging": {
+        "taggable": false
+    },
+    "handlers": {
+        "create": {
+            "permissions": []
+        },
+        "read": {
+            "permissions": []
+        },
+        "update": {
+            "permissions": []
+        },
+        "delete": {
+            "permissions": []
+        },
+        "list": {
+            "permissions": []
+        }
+    }
+}

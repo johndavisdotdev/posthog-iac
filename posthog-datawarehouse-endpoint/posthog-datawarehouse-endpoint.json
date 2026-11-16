@@ -1,0 +1,177 @@
+{
+    "typeName": "PostHog::DataWarehouse::Endpoint",
+    "description": "A PostHog endpoint: a named HogQL or insight query exposed as an API route (/api/projects/{project_id}/endpoints/{name}/run), optionally materialized.",
+    "sourceUrl": "https://github.com/johndavisdev/posthog-iac",
+    "documentationUrl": "https://posthog.com/docs/endpoints",
+    "definitions": {},
+    "typeConfiguration": {
+        "properties": {
+            "ApiKey": {
+                "description": "PostHog personal API key (phx_...) with the scopes this resource type needs. Pass it with a dynamic reference such as {{resolve:ssm-secure:/posthog/api-key}} when calling SetTypeConfiguration; never put it in plain text.",
+                "type": "string",
+                "minLength": 1
+            },
+            "BaseUrl": {
+                "description": "PostHog API host. Leave unset for PostHog Cloud US (https://us.posthog.com); use https://eu.posthog.com for PostHog Cloud EU, or your instance URL when self-hosting.",
+                "type": "string"
+            }
+        },
+        "additionalProperties": false,
+        "required": [
+            "ApiKey"
+        ]
+    },
+    "properties": {
+        "ProjectId": {
+            "description": "ID of the PostHog project the endpoint belongs to.",
+            "type": "string",
+            "minLength": 1
+        },
+        "Name": {
+            "description": "Unique URL-safe name, used in the endpoint's path. Must start with a letter and contain only letters, numbers, hyphens and underscores. Changing it replaces the endpoint.",
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[A-Za-z][A-Za-z0-9_-]*$"
+        },
+        "Id": {
+            "description": "The PostHog endpoint ID (UUID).",
+            "type": "string"
+        },
+        "Query": {
+            "description": "HogQL or insight query the endpoint executes, as a JSON object with a \"kind\" key (use Fn::ToJsonString), e.g. {\"kind\": \"HogQLQuery\", \"query\": \"SELECT count() FROM events\"}. Changing it creates a new endpoint version.",
+            "type": "string",
+            "minLength": 1
+        },
+        "Description": {
+            "description": "Human-readable description of what this endpoint returns.",
+            "type": "string"
+        },
+        "DataFreshnessSeconds": {
+            "description": "How fresh the data should be, in seconds: 900, 1800, 3600, 21600, 43200, 86400 (the default) or 604800. Controls cache TTL and materialization sync frequency.",
+            "type": "integer",
+            "enum": [
+                900,
+                1800,
+                3600,
+                21600,
+                43200,
+                86400,
+                604800
+            ]
+        },
+        "IsActive": {
+            "description": "Whether this endpoint is available for execution via the API. Defaults to true.",
+            "type": "boolean"
+        },
+        "IsMaterialized": {
+            "description": "Whether query results are materialized to S3.",
+            "type": "boolean"
+        },
+        "DerivedFromInsight": {
+            "description": "Short ID of the insight this endpoint was derived from.",
+            "type": "string"
+        },
+        "BucketOverrides": {
+            "description": "Per-column bucket overrides for range variable materialization. Keys are column names, values are bucket keys.",
+            "type": "object",
+            "additionalProperties": false,
+            "patternProperties": {
+                "^.+$": {
+                    "type": "string"
+                }
+            }
+        },
+        "Tags": {
+            "description": "Tag names associated with this endpoint.",
+            "type": "array",
+            "insertionOrder": false,
+            "uniqueItems": true,
+            "items": {
+                "type": "string"
+            }
+        },
+        "OptionalBreakdownProperties": {
+            "description": "Breakdown property names that may be omitted on /run. Omitted ones return data aggregated across all values of that breakdown. By default every breakdown variable is required.",
+            "type": "array",
+            "insertionOrder": false,
+            "uniqueItems": true,
+            "items": {
+                "type": "string"
+            }
+        },
+        "EndpointPath": {
+            "description": "Relative API path to execute this endpoint.",
+            "type": "string"
+        },
+        "Url": {
+            "description": "Absolute URL to execute this endpoint.",
+            "type": "string"
+        },
+        "CurrentVersion": {
+            "description": "Latest version number.",
+            "type": "integer"
+        },
+        "MaterializationStatus": {
+            "description": "Current materialization status of the current version (e.g. Completed, Running).",
+            "type": "string"
+        },
+        "CreatedAt": {
+            "description": "ISO 8601 creation timestamp.",
+            "type": "string"
+        },
+        "UpdatedAt": {
+            "description": "ISO 8601 last-update timestamp.",
+            "type": "string"
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "ProjectId",
+        "Name",
+        "Query"
+    ],
+    "readOnlyProperties": [
+        "/properties/Id",
+        "/properties/EndpointPath",
+        "/properties/Url",
+        "/properties/CurrentVersion",
+        "/properties/MaterializationStatus",
+        "/properties/CreatedAt",
+        "/properties/UpdatedAt"
+    ],
+    "primaryIdentifier": [
+        "/properties/ProjectId",
+        "/properties/Name"
+    ],
+    "tagging": {
+        "taggable": false
+    },
+    "handlers": {
+        "create": {
+            "permissions": []
+        },
+        "read": {
+            "permissions": []
+        },
+        "update": {
+            "permissions": []
+        },
+        "delete": {
+            "permissions": []
+        },
+        "list": {
+            "permissions": []
+        }
+    },
+    "createOnlyProperties": [
+        "/properties/ProjectId",
+        "/properties/Name",
+        "/properties/DerivedFromInsight"
+    ],
+    "additionalIdentifiers": [
+        [
+            "/properties/Id"
+        ]
+    ]
+}

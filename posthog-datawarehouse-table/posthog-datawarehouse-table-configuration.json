@@ -1,0 +1,54 @@
+{
+    "properties": {
+        "ApiKey": {
+            "description": "PostHog personal API key (phx_...) with the scopes this resource type needs. Pass it with a dynamic reference such as {{resolve:ssm-secure:/posthog/api-key}} when calling SetTypeConfiguration; never put it in plain text.",
+            "type": "string",
+            "minLength": 1
+        },
+        "BaseUrl": {
+            "description": "PostHog API host. Leave unset for PostHog Cloud US (https://us.posthog.com); use https://eu.posthog.com for PostHog Cloud EU, or your instance URL when self-hosting.",
+            "type": "string"
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "ApiKey"
+    ],
+    "definitions": {
+        "Credential": {
+            "type": "object",
+            "additionalProperties": false,
+            "description": "Access key for the bucket the files live in.",
+            "properties": {
+                "AccessKey": {
+                    "description": "Access key ID for the bucket (an AWS access key ID, a Google Cloud HMAC key, or the equivalent for another S3-compatible store).",
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 500
+                },
+                "AccessSecret": {
+                    "description": "Secret for the access key. Stored encrypted and never returned by the API.",
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 500
+                }
+            },
+            "required": [
+                "AccessKey",
+                "AccessSecret"
+            ]
+        },
+        "Options": {
+            "type": "object",
+            "additionalProperties": false,
+            "description": "Per-format read options.",
+            "properties": {
+                "CsvAllowDoubleQuotes": {
+                    "description": "For CSV files that quote fields with doubled quotes.",
+                    "type": "boolean"
+                }
+            }
+        }
+    },
+    "typeName": "PostHog::DataWarehouse::Table"
+}

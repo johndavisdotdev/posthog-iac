@@ -1,0 +1,12 @@
+{
+    "ProjectId": "1",
+    "Name": "cfn-contract-test-endpoint",
+    "Query": "{\"kind\": \"HogQLQuery\", \"query\": \"SELECT count() AS pageviews FROM events WHERE event = '$pageview' AND timestamp > now() - INTERVAL 7 DAY\"}",
+    "Description": "Updated by the CloudFormation contract tests",
+    "DataFreshnessSeconds": 3600,
+    "IsActive": false,
+    "Tags": [
+        "cloudformation",
+        "updated"
+    ]
+}

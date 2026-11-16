@@ -1,0 +1,7 @@
+{
+    "ProjectId": "1",
+    "Name": "cfn-contract-test-product-tour-renamed",
+    "Content": "{\"steps\": [{\"type\": \"modal\", \"title\": \"Welcome back\"}]}",
+    "TargetingFlagFilters": "{\"groups\": [{\"properties\": [], \"rollout_percentage\": 50}]}",
+    "Archived": true
+}

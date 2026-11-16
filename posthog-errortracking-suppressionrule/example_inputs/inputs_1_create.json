@@ -1,0 +1,4 @@
+{
+    "ProjectId": "1",
+    "Filters": "{\"type\": \"AND\", \"values\": [{\"key\": \"$exception_values\", \"type\": \"event\", \"operator\": \"icontains\", \"value\": \"ResizeObserver loop\"}]}"
+}

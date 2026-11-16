@@ -1,0 +1,42 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >-
+  Connects a Postgres database to the PostHog data warehouse. Requires the
+  PostHog::DataWarehouse::Source type to be registered and configured with
+  SetTypeConfiguration (ApiKey).
+
+Parameters:
+  ProjectId:
+    Type: String
+    Description: PostHog project ID.
+  DatabasePasswordSecret:
+    Type: String
+    Description: Name of the Secrets Manager secret holding the database password.
+
+Resources:
+  ProductionDatabase:
+    Type: PostHog::DataWarehouse::Source
+    Properties:
+      ProjectId: !Ref ProjectId
+      SourceType: Postgres
+      Prefix: prod_
+      Description: Production application database
+      Payload:
+        Fn::ToJsonString:
+          host: db.example.com
+          port: 5432
+          database: app
+          user: posthog_reader
+          password: !Sub "{{resolve:secretsmanager:${DatabasePasswordSecret}}}"
+          schema: public
+          schemas:
+            - name: orders
+              should_sync: true
+              sync_type: full_refresh
+      AutoSyncNewSchemas: true
+      AutoSyncSchemaPatterns: [orders_*]
+
+Outputs:
+  SourceId:
+    Value: !GetAtt ProductionDatabase.Id
+  SyncStatus:
+    Value: !GetAtt ProductionDatabase.Status

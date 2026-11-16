@@ -1,0 +1,103 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`creates a product tour with typed steps, display settings and targeting 1`] = `
+{
+  "appearance": {
+    "backgroundColor": "#fff",
+    "borderRadius": 8,
+    "showOverlay": true,
+  },
+  "conditions": {
+    "autoShowDelaySeconds": 2,
+    "url": "/app",
+    "urlMatchType": "exact",
+  },
+  "displayFrequency": "show_once",
+  "steps": [
+    {
+      "body": "Click <here> & go",
+      "content": {
+        "content": [
+          {
+            "attrs": {
+              "level": 2,
+            },
+            "content": [
+              {
+                "text": "Create a project",
+                "type": "text",
+              },
+            ],
+            "type": "heading",
+          },
+          {
+            "content": [
+              {
+                "text": "Click <here> & go",
+                "type": "text",
+              },
+            ],
+            "type": "paragraph",
+          },
+        ],
+        "type": "doc",
+      },
+      "contentHtml": "<h2>Create a project</h2><p>Click &lt;here&gt; &amp; go</p>",
+      "placement": "bottom",
+      "progressionTrigger": "button",
+      "selector": "#new-project",
+      "title": "Create a project",
+      "type": "element",
+    },
+    {
+      "content": {
+        "content": [
+          {
+            "attrs": {
+              "level": 2,
+            },
+            "content": [
+              {
+                "text": "Navigate",
+                "type": "text",
+              },
+            ],
+            "type": "heading",
+          },
+        ],
+        "type": "doc",
+      },
+      "contentHtml": "<h2>Navigate</h2>",
+      "id": "s2",
+      "progressionTrigger": "click",
+      "selector": ".nav",
+      "title": "Navigate",
+      "type": "element",
+    },
+    {
+      "content": {
+        "content": [
+          {
+            "attrs": {
+              "level": 2,
+            },
+            "content": [
+              {
+                "text": "All set!",
+                "type": "text",
+              },
+            ],
+            "type": "heading",
+          },
+        ],
+        "type": "doc",
+      },
+      "contentHtml": "<h2>All set!</h2>",
+      "maxWidth": 400,
+      "progressionTrigger": "button",
+      "title": "All set!",
+      "type": "modal",
+    },
+  ],
+}
+`;

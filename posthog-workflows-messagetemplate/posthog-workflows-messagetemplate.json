@@ -1,0 +1,123 @@
+{
+    "typeName": "PostHog::Workflows::MessageTemplate",
+    "description": "A PostHog messaging template: reusable email content (subject, body, sender) that workflow email steps and the transactional email API send.",
+    "sourceUrl": "https://github.com/johndavisdev/posthog-iac",
+    "documentationUrl": "https://posthog.com/docs/workflows",
+    "definitions": {},
+    "typeConfiguration": {
+        "properties": {
+            "ApiKey": {
+                "description": "PostHog personal API key (phx_...) with the scopes this resource type needs. Pass it with a dynamic reference such as {{resolve:ssm-secure:/posthog/api-key}} when calling SetTypeConfiguration; never put it in plain text.",
+                "type": "string",
+                "minLength": 1
+            },
+            "BaseUrl": {
+                "description": "PostHog API host. Leave unset for PostHog Cloud US (https://us.posthog.com); use https://eu.posthog.com for PostHog Cloud EU, or your instance URL when self-hosting.",
+                "type": "string"
+            }
+        },
+        "additionalProperties": false,
+        "required": [
+            "ApiKey"
+        ]
+    },
+    "properties": {
+        "ProjectId": {
+            "description": "ID of the PostHog project the message template belongs to.",
+            "type": "string",
+            "minLength": 1
+        },
+        "Id": {
+            "description": "The message template ID (UUID).",
+            "type": "string"
+        },
+        "Name": {
+            "description": "Human-readable template name shown in the template library.",
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 400
+        },
+        "Description": {
+            "description": "What the template is for and when to use it.",
+            "type": "string"
+        },
+        "Tags": {
+            "description": "Tags for organizing templates, for example by team or use case. Tags are shared with the rest of the project.",
+            "type": "array",
+            "insertionOrder": false,
+            "uniqueItems": true,
+            "items": {
+                "type": "string",
+                "maxLength": 255
+            }
+        },
+        "Type": {
+            "description": "Message channel of the template. Currently only `email` (the PostHog default).",
+            "type": "string",
+            "maxLength": 24
+        },
+        "Content": {
+            "description": "Template content keyed by channel, as a JSON object (use Fn::ToJsonString), e.g. {\"templating\": \"liquid\", \"email\": {\"subject\": \"Welcome {{ person.properties.name }}\", \"text\": \"...\", \"html\": \"<p>...</p>\", \"preheader\": \"...\"}}. `email.design` holds the visual editor's design JSON. Replaced as a whole on update.",
+            "type": "string"
+        },
+        "MessageCategory": {
+            "description": "ID of the message category (PostHog::Workflows::MessageCategory) to file the template under. Must belong to the same project.",
+            "type": "string"
+        },
+        "Sensitive": {
+            "description": "For emails that carry login codes, reset links or other secrets: PostHog keeps no copy of each sent email's body or filled-in subject, and clicked links keep only the site address.",
+            "type": "boolean"
+        },
+        "TransactionalHogFlowId": {
+            "description": "ID of the workflow that sends this template over the transactional email API, once the template has been made transactional.",
+            "type": "string"
+        },
+        "CreatedAt": {
+            "description": "ISO 8601 creation timestamp.",
+            "type": "string"
+        },
+        "UpdatedAt": {
+            "description": "ISO 8601 timestamp of the last change.",
+            "type": "string"
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "ProjectId",
+        "Name",
+        "Content"
+    ],
+    "readOnlyProperties": [
+        "/properties/Id",
+        "/properties/TransactionalHogFlowId",
+        "/properties/CreatedAt",
+        "/properties/UpdatedAt"
+    ],
+    "createOnlyProperties": [
+        "/properties/ProjectId"
+    ],
+    "primaryIdentifier": [
+        "/properties/ProjectId",
+        "/properties/Id"
+    ],
+    "tagging": {
+        "taggable": false
+    },
+    "handlers": {
+        "create": {
+            "permissions": []
+        },
+        "read": {
+            "permissions": []
+        },
+        "update": {
+            "permissions": []
+        },
+        "delete": {
+            "permissions": []
+        },
+        "list": {
+            "permissions": []
+        }
+    }
+}

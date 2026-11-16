@@ -1,0 +1,6 @@
+{
+    "ProjectId": "1",
+    "Name": "cfn_contract_test_view",
+    "Query": "{\"kind\": \"HogQLQuery\", \"query\": \"SELECT event, count() AS cnt FROM events GROUP BY event\"}",
+    "Description": "Created by the CloudFormation contract tests"
+}

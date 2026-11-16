@@ -1,0 +1,20 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >-
+  Creates a PostHog role. Requires the PostHog::Organizations::Role type to be
+  registered and configured with SetTypeConfiguration (ApiKey).
+
+Parameters:
+  OrganizationId:
+    Type: String
+    Description: PostHog organization ID (UUID).
+
+Resources:
+  Engineers:
+    Type: PostHog::Organizations::Role
+    Properties:
+      OrganizationId: !Ref OrganizationId
+      Name: Engineers
+
+Outputs:
+  RoleId:
+    Value: !GetAtt Engineers.Id

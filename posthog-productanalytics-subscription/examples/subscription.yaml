@@ -1,0 +1,54 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >-
+  Emails a PostHog insight every Monday and posts a weekly AI report to Slack.
+  Requires the PostHog::ProductAnalytics::Subscription type to be registered
+  and configured with SetTypeConfiguration (ApiKey).
+
+Parameters:
+  ProjectId:
+    Type: String
+    Description: PostHog project ID.
+  InsightId:
+    Type: String
+    Description: Numeric ID of the insight to deliver.
+  SlackIntegrationId:
+    Type: String
+    Description: ID of the project's Slack integration.
+
+Resources:
+  WeeklySignups:
+    Type: PostHog::ProductAnalytics::Subscription
+    Properties:
+      ProjectId: !Ref ProjectId
+      Title: Weekly signups
+      Insight: !Ref InsightId
+      TargetType: email
+      TargetValue: growth@example.com,ceo@example.com
+      Frequency: weekly
+      Byweekday: [monday]
+      StartDate: "2026-01-05T09:00:00Z"
+
+  ActivationReport:
+    Type: PostHog::ProductAnalytics::Subscription
+    Properties:
+      ProjectId: !Ref ProjectId
+      Title: Activation report
+      Prompt: Summarise how activation changed over the last week and why.
+      AiPromptConfig:
+        Window:
+          Mode: last_n_days
+          StartDaysAgo: 7
+      Contexts:
+        - InsightId: !Ref InsightId
+      TargetType: slack
+      TargetValue: "#growth"
+      IntegrationId: !Ref SlackIntegrationId
+      Frequency: weekly
+      Byweekday: [monday]
+      StartDate: "2026-01-05T09:00:00Z"
+
+Outputs:
+  WeeklySignupsId:
+    Value: !GetAtt WeeklySignups.Id
+  WeeklySignupsSchedule:
+    Value: !GetAtt WeeklySignups.Summary

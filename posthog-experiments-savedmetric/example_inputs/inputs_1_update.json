@@ -1,0 +1,6 @@
+{
+    "ProjectId": "1",
+    "Name": "cfn-contract-test-saved-metric-renamed",
+    "Query": "{\"kind\": \"ExperimentMetric\", \"metric_type\": \"funnel\", \"series\": [{\"kind\": \"EventsNode\", \"event\": \"$pageview\"}, {\"kind\": \"EventsNode\", \"event\": \"signed_up\"}]}",
+    "Tags": ["cloudformation", "updated"]
+}

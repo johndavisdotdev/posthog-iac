@@ -1,0 +1,62 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >-
+  Creates a PostHog webhook destination for order events. The bearer token is
+  read from Secrets Manager and sent as a write-only secret input. Requires the
+  PostHog::CDP::HogFunction type to be registered and configured with
+  SetTypeConfiguration (ApiKey).
+
+Parameters:
+  ProjectId:
+    Type: String
+    Description: PostHog project ID.
+  WebhookTokenSecret:
+    Type: String
+    Description: Name of the Secrets Manager secret holding the webhook bearer token.
+
+Resources:
+  OrderWebhook:
+    Type: PostHog::CDP::HogFunction
+    Properties:
+      ProjectId: !Ref ProjectId
+      Type: destination
+      Name: Order webhook
+      Description: Posts order events to the fulfilment service
+      Enabled: true
+      Hog: |
+        fetch(inputs.url, {
+          'method': 'POST',
+          'headers': {'Authorization': f'Bearer {inputs.token}'},
+          'body': {'event': event.event, 'properties': event.properties}
+        })
+      InputsSchema:
+        Fn::ToJsonString:
+          - key: url
+            type: string
+            label: Webhook URL
+            required: true
+          - key: token
+            type: string
+            label: Bearer token
+            secret: true
+      Inputs:
+        Fn::ToJsonString:
+          url:
+            value: https://fulfilment.example.com/posthog
+      SecretInputs:
+        Fn::ToJsonString:
+          token:
+            value: !Sub "{{resolve:secretsmanager:${WebhookTokenSecret}}}"
+      Filters:
+        Fn::ToJsonString:
+          events:
+            - id: order_placed
+              name: order_placed
+              type: events
+          filter_test_accounts: true
+      Masking:
+        Hash: "{event.properties.order_id}"
+        Ttl: 3600
+
+Outputs:
+  HogFunctionId:
+    Value: !GetAtt OrderWebhook.Id

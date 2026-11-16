@@ -1,0 +1,133 @@
+{
+    "properties": {
+        "ApiKey": {
+            "description": "PostHog personal API key (phx_...) with the scopes this resource type needs. Pass it with a dynamic reference such as {{resolve:ssm-secure:/posthog/api-key}} when calling SetTypeConfiguration; never put it in plain text.",
+            "type": "string",
+            "minLength": 1
+        },
+        "BaseUrl": {
+            "description": "PostHog API host. Leave unset for PostHog Cloud US (https://us.posthog.com); use https://eu.posthog.com for PostHog Cloud EU, or your instance URL when self-hosting.",
+            "type": "string"
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "ApiKey"
+    ],
+    "definitions": {
+        "Filters": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "SeverityLevels": {
+                    "description": "Log severity levels to match.",
+                    "type": "array",
+                    "insertionOrder": false,
+                    "uniqueItems": true,
+                    "items": {
+                        "type": "string",
+                        "enum": [
+                            "trace",
+                            "debug",
+                            "info",
+                            "warn",
+                            "error",
+                            "fatal"
+                        ]
+                    }
+                },
+                "ServiceNames": {
+                    "description": "Service names to match.",
+                    "type": "array",
+                    "insertionOrder": false,
+                    "uniqueItems": true,
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "FilterGroup": {
+                    "description": "JSON (use Fn::ToJsonString). Property filter group, e.g. {\"type\": \"AND\", \"values\": [{\"type\": \"AND\", \"values\": [{\"key\": \"message\", \"type\": \"log\", \"operator\": \"icontains\", \"value\": \"timeout\"}]}]}.",
+                    "type": "string"
+                }
+            }
+        },
+        "ScheduleRestriction": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "BlockedWindows": {
+                    "description": "Blocked local time windows (project timezone) when the alert must not run. Overlapping windows are merged by PostHog. At most five.",
+                    "type": "array",
+                    "insertionOrder": false,
+                    "maxItems": 5,
+                    "items": {
+                        "$ref": "#/definitions/BlockedWindow"
+                    }
+                }
+            },
+            "required": [
+                "BlockedWindows"
+            ]
+        },
+        "BlockedWindow": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "Start": {
+                    "description": "Start time HH:MM (24-hour, project timezone), inclusive.",
+                    "type": "string",
+                    "pattern": "^[0-2][0-9]:[0-5][0-9]$"
+                },
+                "End": {
+                    "description": "End time HH:MM (24-hour, project timezone), exclusive. Each window must span at least 30 minutes.",
+                    "type": "string",
+                    "pattern": "^[0-2][0-9]:[0-5][0-9]$"
+                }
+            },
+            "required": [
+                "Start",
+                "End"
+            ]
+        },
+        "Grouping": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "Mode": {
+                    "description": "`single` keeps one instance for the whole alert. `by_result_labels` keeps one instance per distinct value of the labels in Keys, each firing and resolving on its own (needs ThresholdOperator `above`).",
+                    "type": "string",
+                    "enum": [
+                        "single",
+                        "by_result_labels"
+                    ]
+                },
+                "Keys": {
+                    "description": "Result labels whose values make a group, such as service_name or severity_text. Empty for `single`, required for `by_result_labels`. Changing them deletes existing instances.",
+                    "type": "array",
+                    "insertionOrder": false,
+                    "uniqueItems": true,
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "MaxInstances": {
+                    "description": "Most instances the alert keeps at once (1-100, default 100).",
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 100
+                },
+                "OnOverflow": {
+                    "description": "What happens to groups past MaxInstances. `degrade_visible` (default) names how many were left out.",
+                    "type": "string",
+                    "enum": [
+                        "degrade_visible"
+                    ]
+                }
+            },
+            "required": [
+                "Mode"
+            ]
+        }
+    },
+    "typeName": "PostHog::Logs::Alert"
+}

@@ -1,0 +1,7 @@
+{
+    "ProjectId": "1",
+    "Type": "filters",
+    "Name": "cfn-contract-test-playlist",
+    "Description": "Created by the CloudFormation contract tests",
+    "Filters": "{\"date_from\": \"-7d\", \"filter_test_accounts\": true}"
+}

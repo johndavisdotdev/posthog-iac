@@ -1,0 +1,18 @@
+{
+    "ProjectId": "1",
+    "Name": "cfn-contract-test-alert-renamed",
+    "Enabled": false,
+    "Triggers": ["issue_created", "issue_reopened"],
+    "ThrottleSeconds": 3600,
+    "Filters": "{\"properties\": [{\"key\": \"$exception_types\", \"value\": [\"TypeError\"], \"operator\": \"exact\", \"type\": \"event\"}], \"filter_test_accounts\": true}",
+    "Destinations": [
+        {
+            "ChannelType": "slack",
+            "IntegrationId": 1,
+            "Config": {
+                "Channel": "C0123ABCD",
+                "ChannelName": "#errors"
+            }
+        }
+    ]
+}

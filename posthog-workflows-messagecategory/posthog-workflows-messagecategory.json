@@ -1,0 +1,116 @@
+{
+    "typeName": "PostHog::Workflows::MessageCategory",
+    "description": "A PostHog messaging category: a named group of workflow messages (marketing or transactional) that recipients can opt out of on the preferences page.",
+    "sourceUrl": "https://github.com/johndavisdev/posthog-iac",
+    "documentationUrl": "https://posthog.com/docs/workflows",
+    "definitions": {},
+    "typeConfiguration": {
+        "properties": {
+            "ApiKey": {
+                "description": "PostHog personal API key (phx_...) with the scopes this resource type needs. Pass it with a dynamic reference such as {{resolve:ssm-secure:/posthog/api-key}} when calling SetTypeConfiguration; never put it in plain text.",
+                "type": "string",
+                "minLength": 1
+            },
+            "BaseUrl": {
+                "description": "PostHog API host. Leave unset for PostHog Cloud US (https://us.posthog.com); use https://eu.posthog.com for PostHog Cloud EU, or your instance URL when self-hosting.",
+                "type": "string"
+            }
+        },
+        "additionalProperties": false,
+        "required": [
+            "ApiKey"
+        ]
+    },
+    "properties": {
+        "ProjectId": {
+            "description": "ID of the PostHog project the message category belongs to.",
+            "type": "string",
+            "minLength": 1
+        },
+        "Id": {
+            "description": "The message category ID (UUID). Workflow message steps take it as `message_category_id`.",
+            "type": "string"
+        },
+        "Key": {
+            "description": "Stable identifier for the category, unique within the project, for example `newsletter`. Opt-out lists and preference imports refer to categories by key. Cannot be changed after creation.",
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+        },
+        "Name": {
+            "description": "Display name of the category, shown in the PostHog app.",
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+        },
+        "Description": {
+            "description": "Internal notes about which messages belong to this category. Recipients don't see it.",
+            "type": "string"
+        },
+        "PublicDescription": {
+            "description": "Description that recipients see next to the category on the preferences page.",
+            "type": "string"
+        },
+        "CategoryType": {
+            "description": "`marketing` (the PostHog default): recipients can opt out of it, and sends skip recipients who did. `transactional`: for messages a recipient must get, such as receipts or password resets; sends ignore opt-outs and the category doesn't appear on the preferences page.",
+            "type": "string",
+            "enum": [
+                "marketing",
+                "transactional"
+            ]
+        },
+        "CreatedAt": {
+            "description": "ISO 8601 creation timestamp.",
+            "type": "string"
+        },
+        "UpdatedAt": {
+            "description": "ISO 8601 timestamp of the last change.",
+            "type": "string"
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "ProjectId",
+        "Key",
+        "Name"
+    ],
+    "readOnlyProperties": [
+        "/properties/Id",
+        "/properties/CreatedAt",
+        "/properties/UpdatedAt"
+    ],
+    "createOnlyProperties": [
+        "/properties/ProjectId",
+        "/properties/Key"
+    ],
+    "primaryIdentifier": [
+        "/properties/ProjectId",
+        "/properties/Id"
+    ],
+    "additionalIdentifiers": [
+        [
+            "/properties/ProjectId",
+            "/properties/Key"
+        ]
+    ],
+    "tagging": {
+        "taggable": false
+    },
+    "handlers": {
+        "create": {
+            "permissions": []
+        },
+        "read": {
+            "permissions": []
+        },
+        "update": {
+            "permissions": []
+        },
+        "delete": {
+            "permissions": []
+        },
+        "list": {
+            "permissions": []
+        }
+    }
+}

@@ -1,0 +1,27 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >-
+  Documents a PostHog event and rejects events that don't match its schema.
+  Requires the PostHog::ProductAnalytics::EventDefinition type to be registered
+  and configured with SetTypeConfiguration (ApiKey). If PostHog has already
+  ingested the event, import the existing definition instead of creating it.
+
+Parameters:
+  ProjectId:
+    Type: String
+    Description: PostHog project ID.
+
+Resources:
+  SignedUp:
+    Type: PostHog::ProductAnalytics::EventDefinition
+    Properties:
+      ProjectId: !Ref ProjectId
+      Name: signed_up
+      Description: User finished the sign-up flow
+      Tags: [growth]
+      Verified: true
+      PrimaryProperty: plan
+      EnforcementMode: reject
+
+Outputs:
+  EventDefinitionId:
+    Value: !GetAtt SignedUp.Id

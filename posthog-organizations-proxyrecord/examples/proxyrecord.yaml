@@ -1,0 +1,40 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >-
+  Creates a PostHog managed reverse proxy and its DNS CNAME record in Route 53.
+  Requires the PostHog::Organizations::ProxyRecord type to be registered and
+  configured with SetTypeConfiguration (ApiKey).
+
+Parameters:
+  OrganizationId:
+    Type: String
+    Description: PostHog organization ID (UUID).
+  ProxyDomain:
+    Type: String
+    Description: Subdomain to proxy PostHog through, e.g. e.example.com.
+  HostedZoneId:
+    Type: AWS::Route53::HostedZone::Id
+    Description: Route 53 hosted zone for the subdomain.
+
+Resources:
+  Proxy:
+    Type: PostHog::Organizations::ProxyRecord
+    Properties:
+      OrganizationId: !Ref OrganizationId
+      Domain: !Ref ProxyDomain
+
+  ProxyCname:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      HostedZoneId: !Ref HostedZoneId
+      Name: !Ref ProxyDomain
+      Type: CNAME
+      TTL: "300"
+      ResourceRecords:
+        - !GetAtt Proxy.TargetCname
+
+Outputs:
+  ProxyStatus:
+    Value: !GetAtt Proxy.Status
+  ApiHost:
+    Description: Use as the api_host of your PostHog SDKs once the proxy is valid.
+    Value: !Sub https://${ProxyDomain}

@@ -1,0 +1,173 @@
+{
+    "typeName": "PostHog::ProductAnalytics::Action",
+    "description": "A PostHog action: a named, reusable definition of one or more events (by event name, element selector, text, href or URL) used in insights, cohorts and alerts.",
+    "sourceUrl": "https://github.com/johndavisdev/posthog-iac",
+    "documentationUrl": "https://posthog.com/docs/data/actions",
+    "definitions": {
+        "Step": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "Event": {
+                    "description": "Event name to match, e.g. $pageview, $autocapture or a custom event.",
+                    "type": "string"
+                },
+                "Selector": {
+                    "description": "CSS selector of the target element, e.g. div > button.cta.",
+                    "type": "string"
+                },
+                "TagName": {
+                    "description": "HTML tag name to match, e.g. button.",
+                    "type": "string"
+                },
+                "Text": {
+                    "description": "Element text to match.",
+                    "type": "string"
+                },
+                "TextMatching": {
+                    "description": "How to match the value. `exact`, `contains` or `regex`.",
+                    "type": "string",
+                    "enum": [
+                        "exact",
+                        "contains",
+                        "regex"
+                    ]
+                },
+                "Href": {
+                    "description": "Link href to match.",
+                    "type": "string"
+                },
+                "HrefMatching": {
+                    "description": "How to match the value. `exact`, `contains` or `regex`.",
+                    "type": "string",
+                    "enum": [
+                        "exact",
+                        "contains",
+                        "regex"
+                    ]
+                },
+                "Url": {
+                    "description": "Page URL to match.",
+                    "type": "string"
+                },
+                "UrlMatching": {
+                    "description": "How to match the value. `exact`, `contains` or `regex`.",
+                    "type": "string",
+                    "enum": [
+                        "exact",
+                        "contains",
+                        "regex"
+                    ]
+                },
+                "Properties": {
+                    "description": "Event or person property filters as a JSON array (use Fn::ToJsonString), e.g. [{\"key\": \"plan\", \"value\": \"pro\", \"operator\": \"exact\", \"type\": \"person\"}].",
+                    "type": "string"
+                }
+            }
+        }
+    },
+    "typeConfiguration": {
+        "properties": {
+            "ApiKey": {
+                "description": "PostHog personal API key (phx_...) with the scopes this resource type needs. Pass it with a dynamic reference such as {{resolve:ssm-secure:/posthog/api-key}} when calling SetTypeConfiguration; never put it in plain text.",
+                "type": "string",
+                "minLength": 1
+            },
+            "BaseUrl": {
+                "description": "PostHog API host. Leave unset for PostHog Cloud US (https://us.posthog.com); use https://eu.posthog.com for PostHog Cloud EU, or your instance URL when self-hosting.",
+                "type": "string"
+            }
+        },
+        "additionalProperties": false,
+        "required": [
+            "ApiKey"
+        ]
+    },
+    "properties": {
+        "ProjectId": {
+            "description": "ID of the PostHog project the action belongs to.",
+            "type": "string",
+            "minLength": 1
+        },
+        "Id": {
+            "description": "The PostHog action ID.",
+            "type": "string"
+        },
+        "Name": {
+            "description": "Name of the action. Must be unique within the project.",
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 400
+        },
+        "Description": {
+            "description": "Human-readable description of what the action represents.",
+            "type": "string"
+        },
+        "Tags": {
+            "description": "Tags on the action.",
+            "type": "array",
+            "insertionOrder": false,
+            "uniqueItems": true,
+            "items": {
+                "type": "string"
+            }
+        },
+        "PostToSlack": {
+            "description": "Whether to post a message to the project's Slack/webhook integration when the action is triggered.",
+            "type": "boolean"
+        },
+        "SlackMessageFormat": {
+            "description": "Custom message format for Slack/webhook notifications.",
+            "type": "string",
+            "maxLength": 1200
+        },
+        "Steps": {
+            "description": "Match conditions. The action matches an event that satisfies any one step.",
+            "type": "array",
+            "insertionOrder": true,
+            "items": {
+                "$ref": "#/definitions/Step"
+            }
+        },
+        "CreatedAt": {
+            "description": "ISO 8601 creation timestamp.",
+            "type": "string"
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "ProjectId",
+        "Name"
+    ],
+    "readOnlyProperties": [
+        "/properties/Id",
+        "/properties/CreatedAt"
+    ],
+    "primaryIdentifier": [
+        "/properties/ProjectId",
+        "/properties/Id"
+    ],
+    "tagging": {
+        "taggable": false
+    },
+    "handlers": {
+        "create": {
+            "permissions": []
+        },
+        "read": {
+            "permissions": []
+        },
+        "update": {
+            "permissions": []
+        },
+        "delete": {
+            "permissions": []
+        },
+        "list": {
+            "permissions": []
+        }
+    },
+    "createOnlyProperties": [
+        "/properties/ProjectId"
+    ]
+}

@@ -1,0 +1,123 @@
+{
+    "typeName": "PostHog::Surveys::ProductTour",
+    "description": "A PostHog product tour: a sequence of in-app steps (tooltips, modals, banners) shown by posthog-js to targeted users.",
+    "sourceUrl": "https://github.com/johndavisdev/posthog-iac",
+    "documentationUrl": "https://posthog.com/docs/product-tours",
+    "definitions": {},
+    "typeConfiguration": {
+        "properties": {
+            "ApiKey": {
+                "description": "PostHog personal API key (phx_...) with the scopes this resource type needs. Pass it with a dynamic reference such as {{resolve:ssm-secure:/posthog/api-key}} when calling SetTypeConfiguration; never put it in plain text.",
+                "type": "string",
+                "minLength": 1
+            },
+            "BaseUrl": {
+                "description": "PostHog API host. Leave unset for PostHog Cloud US (https://us.posthog.com); use https://eu.posthog.com for PostHog Cloud EU, or your instance URL when self-hosting.",
+                "type": "string"
+            }
+        },
+        "additionalProperties": false,
+        "required": [
+            "ApiKey"
+        ]
+    },
+    "properties": {
+        "ProjectId": {
+            "description": "ID of the PostHog project the product tour belongs to.",
+            "type": "string",
+            "minLength": 1
+        },
+        "Id": {
+            "description": "The PostHog product tour ID (UUID).",
+            "type": "string"
+        },
+        "Name": {
+            "description": "Name of the product tour.",
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 400
+        },
+        "Description": {
+            "description": "Description of the product tour.",
+            "type": "string"
+        },
+        "Content": {
+            "description": "Tour content as a JSON object (use Fn::ToJsonString). It holds the tour `steps` (each with its type, target selector, title and body) and display settings such as `appearance`.",
+            "type": "string"
+        },
+        "TargetingFlagFilters": {
+            "description": "Targeting as a JSON feature-flag filters object (use Fn::ToJsonString), e.g. {\"groups\": [{\"properties\": [{\"key\": \"plan\", \"value\": [\"pro\"], \"operator\": \"exact\", \"type\": \"person\"}], \"rollout_percentage\": 100}]}. PostHog keeps it on an internal targeting flag.",
+            "type": "string"
+        },
+        "LinkedFlagId": {
+            "description": "ID of a feature flag linked to the tour: the tour is shown only to users with the flag enabled.",
+            "type": "string"
+        },
+        "AutoLaunch": {
+            "description": "Whether posthog-js launches the tour automatically for matching users.",
+            "type": "boolean"
+        },
+        "StartDate": {
+            "description": "ISO 8601 launch time. Setting it launches the tour.",
+            "type": "string"
+        },
+        "EndDate": {
+            "description": "ISO 8601 end time. Setting it stops the tour.",
+            "type": "string"
+        },
+        "Archived": {
+            "description": "Whether the tour is archived.",
+            "type": "boolean"
+        },
+        "InternalTargetingFlagId": {
+            "description": "ID of the internal targeting flag PostHog manages for the tour.",
+            "type": "string"
+        },
+        "CreatedAt": {
+            "description": "ISO 8601 creation timestamp.",
+            "type": "string"
+        },
+        "UpdatedAt": {
+            "description": "ISO 8601 last-update timestamp.",
+            "type": "string"
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "ProjectId",
+        "Name"
+    ],
+    "readOnlyProperties": [
+        "/properties/Id",
+        "/properties/InternalTargetingFlagId",
+        "/properties/CreatedAt",
+        "/properties/UpdatedAt"
+    ],
+    "createOnlyProperties": [
+        "/properties/ProjectId"
+    ],
+    "primaryIdentifier": [
+        "/properties/ProjectId",
+        "/properties/Id"
+    ],
+    "tagging": {
+        "taggable": false
+    },
+    "handlers": {
+        "create": {
+            "permissions": []
+        },
+        "read": {
+            "permissions": []
+        },
+        "update": {
+            "permissions": []
+        },
+        "delete": {
+            "permissions": []
+        },
+        "list": {
+            "permissions": []
+        }
+    }
+}

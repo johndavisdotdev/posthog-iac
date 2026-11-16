@@ -1,0 +1,881 @@
+[
+ {
+  "type": "PostHog::Organizations::Project",
+  "dir": "posthog-organizations-project",
+  "collection": "/api/organizations/{organization_id}/projects/",
+  "item": "/api/organizations/{organization_id}/projects/{id}/",
+  "id_param": "id",
+  "item_methods": [
+   "GET",
+   "PUT",
+   "PATCH",
+   "DELETE"
+  ],
+  "create_schema": "ProjectCreateRequest",
+  "response_schema": "ProjectBackwardCompat",
+  "patch_schema": "PatchedProjectBackwardCompat",
+  "linear": "RHI-1583",
+  "delete_mode": "hard"
+ },
+ {
+  "type": "PostHog::Organizations::Domain",
+  "dir": "posthog-organizations-domain",
+  "collection": "/api/organizations/{organization_id}/domains/",
+  "item": "/api/organizations/{organization_id}/domains/{id}/",
+  "id_param": "id",
+  "item_methods": [
+   "GET",
+   "PUT",
+   "PATCH",
+   "DELETE"
+  ],
+  "create_schema": "OrganizationDomain",
+  "response_schema": "OrganizationDomain",
+  "patch_schema": "PatchedOrganizationDomain",
+  "linear": "RHI-1584",
+  "delete_mode": "hard"
+ },
+ {
+  "type": "PostHog::Organizations::Role",
+  "dir": "posthog-organizations-role",
+  "collection": "/api/organizations/{organization_id}/roles/",
+  "item": "/api/organizations/{organization_id}/roles/{id}/",
+  "id_param": "id",
+  "item_methods": [
+   "GET",
+   "PUT",
+   "PATCH",
+   "DELETE"
+  ],
+  "create_schema": "Role",
+  "response_schema": "Role",
+  "patch_schema": "PatchedRole",
+  "linear": "RHI-1585",
+  "delete_mode": "hard"
+ },
+ {
+  "type": "PostHog::Organizations::RoleMembership",
+  "dir": "posthog-organizations-rolemembership",
+  "collection": "/api/organizations/{organization_id}/roles/{role_id}/role_memberships/",
+  "item": "/api/organizations/{organization_id}/roles/{role_id}/role_memberships/{id}/",
+  "id_param": "id",
+  "item_methods": [
+   "GET",
+   "DELETE"
+  ],
+  "create_schema": "RoleMembership",
+  "response_schema": "RoleMembership",
+  "patch_schema": "",
+  "linear": "RHI-1586",
+  "delete_mode": "hard"
+ },
+ {
+  "type": "PostHog::Organizations::ProxyRecord",
+  "dir": "posthog-organizations-proxyrecord",
+  "collection": "/api/organizations/{organization_id}/proxy_records/",
+  "item": "/api/organizations/{organization_id}/proxy_records/{id}/",
+  "id_param": "id",
+  "item_methods": [
+   "GET",
+   "PATCH",
+   "DELETE"
+  ],
+  "create_schema": "ProxyRecord",
+  "response_schema": "ProxyRecord",
+  "patch_schema": "PatchedProxyRecordUpdate",
+  "linear": "RHI-1587",
+  "delete_mode": "hard"
+ },
+ {
+  "type": "PostHog::Organizations::IdentityProviderConfig",
+  "dir": "posthog-organizations-identityproviderconfig",
+  "collection": "/api/organizations/{organization_id}/identity_provider_configs/",
+  "item": "/api/organizations/{organization_id}/identity_provider_configs/{id}/",
+  "id_param": "id",
+  "item_methods": [
+   "GET",
+   "PUT",
+   "PATCH",
+   "DELETE"
+  ],
+  "create_schema": "IdentityProviderConfig",
+  "response_schema": "IdentityProviderConfig",
+  "patch_schema": "PatchedIdentityProviderConfig",
+  "linear": "RHI-1588",
+  "delete_mode": "hard"
+ },
+ {
+  "type": "PostHog::Projects::SecretApiKey",
+  "dir": "posthog-projects-secretapikey",
+  "collection": "/api/projects/{project_id}/project_secret_api_keys/",
+  "item": "/api/projects/{project_id}/project_secret_api_keys/{id}/",
+  "id_param": "id",
+  "item_methods": [
+   "GET",
+   "PUT",
+   "PATCH",
+   "DELETE"
+  ],
+  "create_schema": "ProjectSecretAPIKey",
+  "response_schema": "ProjectSecretAPIKey",
+  "patch_schema": "PatchedProjectSecretAPIKey",
+  "linear": "RHI-1589",
+  "delete_mode": "hard"
+ },
+ {
+  "type": "PostHog::Projects::ApprovalPolicy",
+  "dir": "posthog-projects-approvalpolicy",
+  "collection": "/api/projects/{project_id}/approval_policies/",
+  "item": "/api/projects/{project_id}/approval_policies/{id}/",
+  "id_param": "id",
+  "item_methods": [
+   "GET",
+   "PUT",
+   "PATCH",
+   "DELETE"
+  ],
+  "create_schema": "ApprovalPolicy",
+  "response_schema": "ApprovalPolicy",
+  "patch_schema": "PatchedApprovalPolicy",
+  "linear": "RHI-1590",
+  "delete_mode": "hard"
+ },
+ {
+  "type": "PostHog::ProductAnalytics::Action",
+  "dir": "posthog-productanalytics-action",
+  "collection": "/api/projects/{project_id}/actions/",
+  "item": "/api/projects/{project_id}/actions/{id}/",
+  "id_param": "id",
+  "item_methods": [
+   "GET",
+   "PUT",
+   "PATCH",
+   "DELETE"
+  ],
+  "create_schema": "Action",
+  "response_schema": "Action",
+  "patch_schema": "PatchedAction",
+  "linear": "RHI-1591",
+  "delete_mode": "soft"
+ },
+ {
+  "type": "PostHog::ProductAnalytics::Annotation",
+  "dir": "posthog-productanalytics-annotation",
+  "collection": "/api/projects/{project_id}/annotations/",
+  "item": "/api/projects/{project_id}/annotations/{id}/",
+  "id_param": "id",
+  "item_methods": [
+   "GET",
+   "PUT",
+   "PATCH",
+   "DELETE"
+  ],
+  "create_schema": "Annotation",
+  "response_schema": "Annotation",
+  "patch_schema": "PatchedAnnotation",
+  "linear": "RHI-1592",
+  "delete_mode": "soft"
+ },
+ {
+  "type": "PostHog::ProductAnalytics::Cohort",
+  "dir": "posthog-productanalytics-cohort",
+  "collection": "/api/projects/{project_id}/cohorts/",
+  "item": "/api/projects/{project_id}/cohorts/{id}/",
+  "id_param": "id",
+  "item_methods": [
+   "GET",
+   "PUT",
+   "PATCH",
+   "DELETE"
+  ],
+  "create_schema": "Cohort",
+  "response_schema": "Cohort",
+  "patch_schema": "PatchedCohort",
+  "linear": "RHI-1593",
+  "delete_mode": "soft"
+ },
+ {
+  "type": "PostHog::ProductAnalytics::Dashboard",
+  "dir": "posthog-productanalytics-dashboard",
+  "collection": "/api/projects/{project_id}/dashboards/",
+  "item": "/api/projects/{project_id}/dashboards/{id}/",
+  "id_param": "id",
+  "item_methods": [
+   "GET",
+   "PUT",
+   "PATCH",
+   "DELETE"
+  ],
+  "create_schema": "Dashboard",
+  "response_schema": "Dashboard",
+  "patch_schema": "PatchedPatchedDashboardOpenApi",
+  "linear": "RHI-1594",
+  "delete_mode": "soft"
+ },
+ {
+  "type": "PostHog::ProductAnalytics::DashboardTemplate",
+  "dir": "posthog-productanalytics-dashboardtemplate",
+  "collection": "/api/projects/{project_id}/dashboard_templates/",
+  "item": "/api/projects/{project_id}/dashboard_templates/{id}/",
+  "id_param": "id",
+  "item_methods": [
+   "GET",
+   "PUT",
+   "PATCH",
+   "DELETE"
+  ],
+  "create_schema": "DashboardTemplate",
+  "response_schema": "DashboardTemplate",
+  "patch_schema": "PatchedDashboardTemplate",
+  "linear": "RHI-1595",
+  "delete_mode": "soft"
+ },
+ {
+  "type": "PostHog::ProductAnalytics::Insight",
+  "dir": "posthog-productanalytics-insight",
+  "collection": "/api/projects/{project_id}/insights/",
+  "item": "/api/projects/{project_id}/insights/{id}/",
+  "id_param": "id",
+  "item_methods": [
+   "GET",
+   "PUT",
+   "PATCH",
+   "DELETE"
+  ],
+  "create_schema": "Insight",
+  "response_schema": "Insight",
+  "patch_schema": "PatchedInsight",
+  "linear": "RHI-1596",
+  "delete_mode": "soft"
+ },
+ {
+  "type": "PostHog::ProductAnalytics::InsightVariable",
+  "dir": "posthog-productanalytics-insightvariable",
+  "collection": "/api/projects/{project_id}/insight_variables/",
+  "item": "/api/projects/{project_id}/insight_variables/{id}/",
+  "id_param": "id",
+  "item_methods": [
+   "GET",
+   "PUT",
+   "PATCH",
+   "DELETE"
+  ],
+  "create_schema": "InsightVariable",
+  "response_schema": "InsightVariable",
+  "patch_schema": "PatchedInsightVariable",
+  "linear": "RHI-1597",
+  "delete_mode": "hard"
+ },
+ {
+  "type": "PostHog::ProductAnalytics::Alert",
+  "dir": "posthog-productanalytics-alert",
+  "collection": "/api/projects/{project_id}/alerts/",
+  "item": "/api/projects/{project_id}/alerts/{id}/",
+  "id_param": "id",
+  "item_methods": [
+   "GET",
+   "PUT",
+   "PATCH",
+   "DELETE"
+  ],
+  "create_schema": "Alert",
+  "response_schema": "Alert",
+  "patch_schema": "PatchedAlert",
+  "linear": "RHI-1598",
+  "delete_mode": "hard"
+ },
+ {
+  "type": "PostHog::ProductAnalytics::Subscription",
+  "dir": "posthog-productanalytics-subscription",
+  "collection": "/api/projects/{project_id}/subscriptions/",
+  "item": "/api/projects/{project_id}/subscriptions/{id}/",
+  "id_param": "id",
+  "item_methods": [
+   "GET",
+   "PUT",
+   "PATCH",
+   "DELETE"
+  ],
+  "create_schema": "SubscriptionWrite",
+  "response_schema": "Subscription",
+  "patch_schema": "PatchedSubscriptionWrite",
+  "linear": "RHI-1599",
+  "delete_mode": "soft"
+ },
+ {
+  "type": "PostHog::ProductAnalytics::EventDefinition",
+  "dir": "posthog-productanalytics-eventdefinition",
+  "collection": "/api/projects/{project_id}/event_definitions/",
+  "item": "/api/projects/{project_id}/event_definitions/{id}/",
+  "id_param": "id",
+  "item_methods": [
+   "GET",
+   "PUT",
+   "PATCH",
+   "DELETE"
+  ],
+  "create_schema": "EnterpriseEventDefinitionRequest",
+  "response_schema": "EnterpriseEventDefinition",
+  "patch_schema": "PatchedEnterpriseEventDefinition",
+  "linear": "RHI-1600",
+  "delete_mode": "hard"
+ },
+ {
+  "type": "PostHog::ProductAnalytics::SchemaPropertyGroup",
+  "dir": "posthog-productanalytics-schemapropertygroup",
+  "collection": "/api/projects/{project_id}/schema_property_groups/",
+  "item": "/api/projects/{project_id}/schema_property_groups/{id}/",
+  "id_param": "id",
+  "item_methods": [
+   "GET",
+   "PUT",
+   "PATCH",
+   "DELETE"
+  ],
+  "create_schema": "SchemaPropertyGroup",
+  "response_schema": "SchemaPropertyGroup",
+  "patch_schema": "PatchedSchemaPropertyGroup",
+  "linear": "RHI-1601",
+  "delete_mode": "hard"
+ },
+ {
+  "type": "PostHog::ProductAnalytics::DataColorTheme",
+  "dir": "posthog-productanalytics-datacolortheme",
+  "collection": "/api/projects/{project_id}/data_color_themes/",
+  "item": "/api/projects/{project_id}/data_color_themes/{id}/",
+  "id_param": "id",
+  "item_methods": [
+   "GET",
+   "PUT",
+   "PATCH",
+   "DELETE"
+  ],
+  "create_schema": "DataColorTheme",
+  "response_schema": "DataColorTheme",
+  "patch_schema": "PatchedDataColorTheme",
+  "linear": "RHI-1602",
+  "delete_mode": "hard"
+ },
+ {
+  "type": "PostHog::SessionReplay::Playlist",
+  "dir": "posthog-sessionreplay-playlist",
+  "collection": "/api/projects/{project_id}/session_recording_playlists/",
+  "item": "/api/projects/{project_id}/session_recording_playlists/{short_id}/",
+  "id_param": "short_id",
+  "item_methods": [
+   "GET",
+   "PUT",
+   "PATCH",
+   "DELETE"
+  ],
+  "create_schema": "SessionRecordingPlaylist",
+  "response_schema": "SessionRecordingPlaylist",
+  "patch_schema": "PatchedSessionRecordingPlaylist",
+  "linear": "RHI-1603",
+  "delete_mode": "soft"
+ },
+ {
+  "type": "PostHog::FeatureFlags::FeatureFlag",
+  "dir": "posthog-featureflags-featureflag",
+  "collection": "/api/projects/{project_id}/feature_flags/",
+  "item": "/api/projects/{project_id}/feature_flags/{id}/",
+  "id_param": "id",
+  "item_methods": [
+   "GET",
+   "PUT",
+   "PATCH",
+   "DELETE"
+  ],
+  "create_schema": "FeatureFlagCreateRequestSchema",
+  "response_schema": "FeatureFlag",
+  "patch_schema": "PatchedFeatureFlagPartialUpdateRequestSchema",
+  "linear": "RHI-1604",
+  "delete_mode": "soft"
+ },
+ {
+  "type": "PostHog::FeatureFlags::EarlyAccessFeature",
+  "dir": "posthog-featureflags-earlyaccessfeature",
+  "collection": "/api/projects/{project_id}/early_access_feature/",
+  "item": "/api/projects/{project_id}/early_access_feature/{id}/",
+  "id_param": "id",
+  "item_methods": [
+   "GET",
+   "PUT",
+   "PATCH",
+   "DELETE"
+  ],
+  "create_schema": "EarlyAccessFeatureSerializerCreateOnly",
+  "response_schema": "EarlyAccessFeatureSerializerCreateOnly",
+  "patch_schema": "PatchedEarlyAccessFeature",
+  "linear": "RHI-1605",
+  "delete_mode": "hard"
+ },
+ {
+  "type": "PostHog::FeatureFlags::ScheduledChange",
+  "dir": "posthog-featureflags-scheduledchange",
+  "collection": "/api/projects/{project_id}/scheduled_changes/",
+  "item": "/api/projects/{project_id}/scheduled_changes/{id}/",
+  "id_param": "id",
+  "item_methods": [
+   "GET",
+   "PUT",
+   "PATCH",
+   "DELETE"
+  ],
+  "create_schema": "ScheduledChange",
+  "response_schema": "ScheduledChange",
+  "patch_schema": "PatchedScheduledChange",
+  "linear": "RHI-1606",
+  "delete_mode": "hard"
+ },
+ {
+  "type": "PostHog::Experiments::Experiment",
+  "dir": "posthog-experiments-experiment",
+  "collection": "/api/projects/{project_id}/experiments/",
+  "item": "/api/projects/{project_id}/experiments/{id}/",
+  "id_param": "id",
+  "item_methods": [
+   "GET",
+   "PUT",
+   "PATCH",
+   "DELETE"
+  ],
+  "create_schema": "ExperimentWrite",
+  "response_schema": "Experiment",
+  "patch_schema": "PatchedExperimentWrite",
+  "linear": "RHI-1607",
+  "delete_mode": "soft"
+ },
+ {
+  "type": "PostHog::Experiments::Holdout",
+  "dir": "posthog-experiments-holdout",
+  "collection": "/api/projects/{project_id}/experiment_holdouts/",
+  "item": "/api/projects/{project_id}/experiment_holdouts/{id}/",
+  "id_param": "id",
+  "item_methods": [
+   "GET",
+   "PUT",
+   "PATCH",
+   "DELETE"
+  ],
+  "create_schema": "ExperimentHoldout",
+  "response_schema": "ExperimentHoldout",
+  "patch_schema": "PatchedExperimentHoldout",
+  "linear": "RHI-1608",
+  "delete_mode": "hard"
+ },
+ {
+  "type": "PostHog::Experiments::SavedMetric",
+  "dir": "posthog-experiments-savedmetric",
+  "collection": "/api/projects/{project_id}/experiment_saved_metrics/",
+  "item": "/api/projects/{project_id}/experiment_saved_metrics/{id}/",
+  "id_param": "id",
+  "item_methods": [
+   "GET",
+   "PUT",
+   "PATCH",
+   "DELETE"
+  ],
+  "create_schema": "ExperimentSavedMetric",
+  "response_schema": "ExperimentSavedMetric",
+  "patch_schema": "PatchedExperimentSavedMetric",
+  "linear": "RHI-1609",
+  "delete_mode": "hard"
+ },
+ {
+  "type": "PostHog::Experiments::WebExperiment",
+  "dir": "posthog-experiments-webexperiment",
+  "collection": "/api/projects/{project_id}/web_experiments/",
+  "item": "/api/projects/{project_id}/web_experiments/{id}/",
+  "id_param": "id",
+  "item_methods": [
+   "GET",
+   "PUT",
+   "PATCH",
+   "DELETE"
+  ],
+  "create_schema": "WebExperimentsAPI",
+  "response_schema": "WebExperimentsAPI",
+  "patch_schema": "PatchedWebExperimentsAPI",
+  "linear": "RHI-1610",
+  "delete_mode": "hard"
+ },
+ {
+  "type": "PostHog::Surveys::Survey",
+  "dir": "posthog-surveys-survey",
+  "collection": "/api/projects/{project_id}/surveys/",
+  "item": "/api/projects/{project_id}/surveys/{id}/",
+  "id_param": "id",
+  "item_methods": [
+   "GET",
+   "PUT",
+   "PATCH",
+   "DELETE"
+  ],
+  "create_schema": "SurveySerializerCreateUpdateOnlySchema",
+  "response_schema": "SurveySerializerCreateUpdateOnly",
+  "patch_schema": "PatchedSurveySerializerCreateUpdateOnlySchema",
+  "linear": "RHI-1611",
+  "delete_mode": "hard"
+ },
+ {
+  "type": "PostHog::Surveys::ProductTour",
+  "dir": "posthog-surveys-producttour",
+  "collection": "/api/projects/{project_id}/product_tours/",
+  "item": "/api/projects/{project_id}/product_tours/{id}/",
+  "id_param": "id",
+  "item_methods": [
+   "GET",
+   "PUT",
+   "PATCH",
+   "DELETE"
+  ],
+  "create_schema": "ProductTourSerializerCreateUpdateOnly",
+  "response_schema": "ProductTourSerializerCreateUpdateOnly",
+  "patch_schema": "PatchedProductTourSerializerCreateUpdateOnly",
+  "linear": "RHI-1612",
+  "delete_mode": "hard"
+ },
+ {
+  "type": "PostHog::CDP::HogFunction",
+  "dir": "posthog-cdp-hogfunction",
+  "collection": "/api/projects/{project_id}/hog_functions/",
+  "item": "/api/projects/{project_id}/hog_functions/{id}/",
+  "id_param": "id",
+  "item_methods": [
+   "GET",
+   "PUT",
+   "PATCH",
+   "DELETE"
+  ],
+  "create_schema": "HogFunction",
+  "response_schema": "HogFunction",
+  "patch_schema": "PatchedHogFunction",
+  "linear": "RHI-1613",
+  "delete_mode": "soft"
+ },
+ {
+  "type": "PostHog::Workflows::HogFlow",
+  "dir": "posthog-workflows-hogflow",
+  "collection": "/api/projects/{project_id}/hog_flows/",
+  "item": "/api/projects/{project_id}/hog_flows/{id}/",
+  "id_param": "id",
+  "item_methods": [
+   "GET",
+   "PUT",
+   "PATCH",
+   "DELETE"
+  ],
+  "create_schema": "HogFlow",
+  "response_schema": "HogFlow",
+  "patch_schema": "PatchedHogFlowUpdate",
+  "linear": "RHI-1614",
+  "delete_mode": "hard"
+ },
+ {
+  "type": "PostHog::Workflows::MessageTemplate",
+  "dir": "posthog-workflows-messagetemplate",
+  "collection": "/api/projects/{project_id}/messaging_templates/",
+  "item": "/api/projects/{project_id}/messaging_templates/{id}/",
+  "id_param": "id",
+  "item_methods": [
+   "GET",
+   "PUT",
+   "PATCH",
+   "DELETE"
+  ],
+  "create_schema": "MessageTemplate",
+  "response_schema": "MessageTemplate",
+  "patch_schema": "PatchedMessageTemplate",
+  "linear": "RHI-1615",
+  "delete_mode": "soft"
+ },
+ {
+  "type": "PostHog::Workflows::MessageCategory",
+  "dir": "posthog-workflows-messagecategory",
+  "collection": "/api/projects/{project_id}/messaging_categories/",
+  "item": "/api/projects/{project_id}/messaging_categories/{id}/",
+  "id_param": "id",
+  "item_methods": [
+   "GET",
+   "PUT",
+   "PATCH",
+   "DELETE"
+  ],
+  "create_schema": "MessageCategory",
+  "response_schema": "MessageCategory",
+  "patch_schema": "PatchedMessageCategory",
+  "linear": "RHI-1616",
+  "delete_mode": "soft"
+ },
+ {
+  "type": "PostHog::BatchExports::BatchExport",
+  "dir": "posthog-batchexports-batchexport",
+  "collection": "/api/projects/{project_id}/batch_exports/",
+  "item": "/api/projects/{project_id}/batch_exports/{id}/",
+  "id_param": "id",
+  "item_methods": [
+   "GET",
+   "PUT",
+   "PATCH",
+   "DELETE"
+  ],
+  "create_schema": "BatchExportRequest",
+  "response_schema": "BatchExport",
+  "patch_schema": "PatchedBatchExportRequest",
+  "linear": "RHI-1617",
+  "delete_mode": "hard"
+ },
+ {
+  "type": "PostHog::DataWarehouse::Source",
+  "dir": "posthog-datawarehouse-source",
+  "collection": "/api/projects/{project_id}/external_data_sources/",
+  "item": "/api/projects/{project_id}/external_data_sources/{id}/",
+  "id_param": "id",
+  "item_methods": [
+   "GET",
+   "PUT",
+   "PATCH",
+   "DELETE"
+  ],
+  "create_schema": "ExternalDataSourceCreate",
+  "response_schema": "ExternalDataSourceCreateResponse",
+  "patch_schema": "PatchedExternalDataSourceSerializers",
+  "linear": "RHI-1618",
+  "delete_mode": "hard"
+ },
+ {
+  "type": "PostHog::DataWarehouse::SavedQuery",
+  "dir": "posthog-datawarehouse-savedquery",
+  "collection": "/api/projects/{project_id}/warehouse_saved_queries/",
+  "item": "/api/projects/{project_id}/warehouse_saved_queries/{id}/",
+  "id_param": "id",
+  "item_methods": [
+   "GET",
+   "PUT",
+   "PATCH",
+   "DELETE"
+  ],
+  "create_schema": "DataWarehouseSavedQuery",
+  "response_schema": "DataWarehouseSavedQuery",
+  "patch_schema": "PatchedDataWarehouseSavedQuery",
+  "linear": "RHI-1619",
+  "delete_mode": "hard"
+ },
+ {
+  "type": "PostHog::DataWarehouse::Table",
+  "dir": "posthog-datawarehouse-table",
+  "collection": "/api/projects/{project_id}/warehouse_tables/",
+  "item": "/api/projects/{project_id}/warehouse_tables/{id}/",
+  "id_param": "id",
+  "item_methods": [
+   "GET",
+   "PUT",
+   "PATCH",
+   "DELETE"
+  ],
+  "create_schema": "Table",
+  "response_schema": "Table",
+  "patch_schema": "PatchedTable",
+  "linear": "RHI-1620",
+  "delete_mode": "hard"
+ },
+ {
+  "type": "PostHog::DataWarehouse::ViewLink",
+  "dir": "posthog-datawarehouse-viewlink",
+  "collection": "/api/projects/{project_id}/warehouse_view_links/",
+  "item": "/api/projects/{project_id}/warehouse_view_links/{id}/",
+  "id_param": "id",
+  "item_methods": [
+   "GET",
+   "PUT",
+   "PATCH",
+   "DELETE"
+  ],
+  "create_schema": "ViewLink",
+  "response_schema": "ViewLink",
+  "patch_schema": "PatchedViewLink",
+  "linear": "RHI-1621",
+  "delete_mode": "hard"
+ },
+ {
+  "type": "PostHog::DataWarehouse::Endpoint",
+  "dir": "posthog-datawarehouse-endpoint",
+  "collection": "/api/projects/{project_id}/endpoints/",
+  "item": "/api/projects/{project_id}/endpoints/{name}/",
+  "id_param": "name",
+  "item_methods": [
+   "GET",
+   "PUT",
+   "PATCH",
+   "DELETE"
+  ],
+  "create_schema": "EndpointRequest",
+  "response_schema": "EndpointResponse",
+  "patch_schema": "PatchedEndpointRequest",
+  "linear": "RHI-1622",
+  "delete_mode": "hard"
+ },
+ {
+  "type": "PostHog::ErrorTracking::AssignmentRule",
+  "dir": "posthog-errortracking-assignmentrule",
+  "collection": "/api/projects/{project_id}/error_tracking/assignment_rules/",
+  "item": "/api/projects/{project_id}/error_tracking/assignment_rules/{id}/",
+  "id_param": "id",
+  "item_methods": [
+   "GET",
+   "PUT",
+   "PATCH",
+   "DELETE"
+  ],
+  "create_schema": "ErrorTrackingAssignmentRuleCreateRequest",
+  "response_schema": "ErrorTrackingAssignmentRule",
+  "patch_schema": "PatchedErrorTrackingAssignmentRuleUpdateRequest",
+  "linear": "RHI-1623",
+  "delete_mode": "hard"
+ },
+ {
+  "type": "PostHog::ErrorTracking::GroupingRule",
+  "dir": "posthog-errortracking-groupingrule",
+  "collection": "/api/projects/{project_id}/error_tracking/grouping_rules/",
+  "item": "/api/projects/{project_id}/error_tracking/grouping_rules/{id}/",
+  "id_param": "id",
+  "item_methods": [
+   "GET",
+   "PUT",
+   "PATCH",
+   "DELETE"
+  ],
+  "create_schema": "ErrorTrackingGroupingRuleCreateRequest",
+  "response_schema": "ErrorTrackingGroupingRule",
+  "patch_schema": "PatchedErrorTrackingGroupingRuleUpdateRequest",
+  "linear": "RHI-1624",
+  "delete_mode": "hard"
+ },
+ {
+  "type": "PostHog::ErrorTracking::SuppressionRule",
+  "dir": "posthog-errortracking-suppressionrule",
+  "collection": "/api/projects/{project_id}/error_tracking/suppression_rules/",
+  "item": "/api/projects/{project_id}/error_tracking/suppression_rules/{id}/",
+  "id_param": "id",
+  "item_methods": [
+   "GET",
+   "PUT",
+   "PATCH",
+   "DELETE"
+  ],
+  "create_schema": "ErrorTrackingSuppressionRuleCreateRequest",
+  "response_schema": "ErrorTrackingSuppressionRule",
+  "patch_schema": "PatchedErrorTrackingSuppressionRuleUpdateRequest",
+  "linear": "RHI-1625",
+  "delete_mode": "hard"
+ },
+ {
+  "type": "PostHog::ErrorTracking::Alert",
+  "dir": "posthog-errortracking-alert",
+  "collection": "/api/projects/{project_id}/error_tracking/alerts/",
+  "item": "/api/projects/{project_id}/error_tracking/alerts/{id}/",
+  "id_param": "id",
+  "item_methods": [
+   "GET",
+   "PUT",
+   "PATCH",
+   "DELETE"
+  ],
+  "create_schema": "ErrorTrackingAlertCreateRequest",
+  "response_schema": "ErrorTrackingAlert",
+  "patch_schema": "PatchedErrorTrackingAlertUpdateRequest",
+  "linear": "RHI-1626",
+  "delete_mode": "hard"
+ },
+ {
+  "type": "PostHog::Logs::Alert",
+  "dir": "posthog-logs-alert",
+  "collection": "/api/projects/{project_id}/logs/alerts/",
+  "item": "/api/projects/{project_id}/logs/alerts/{id}/",
+  "id_param": "id",
+  "item_methods": [
+   "GET",
+   "PUT",
+   "PATCH",
+   "DELETE"
+  ],
+  "create_schema": "LogsAlertConfiguration",
+  "response_schema": "LogsAlertConfiguration",
+  "patch_schema": "PatchedLogsAlertConfiguration",
+  "linear": "RHI-1627",
+  "delete_mode": "hard"
+ },
+ {
+  "type": "PostHog::Logs::RetentionRule",
+  "dir": "posthog-logs-retentionrule",
+  "collection": "/api/projects/{project_id}/logs/retention_rules/",
+  "item": "/api/projects/{project_id}/logs/retention_rules/{id}/",
+  "id_param": "id",
+  "item_methods": [
+   "GET",
+   "PUT",
+   "PATCH",
+   "DELETE"
+  ],
+  "create_schema": "LogsRetentionRule",
+  "response_schema": "LogsRetentionRule",
+  "patch_schema": "PatchedLogsRetentionRule",
+  "linear": "RHI-1628",
+  "delete_mode": "hard"
+ },
+ {
+  "type": "PostHog::Logs::SamplingRule",
+  "dir": "posthog-logs-samplingrule",
+  "collection": "/api/projects/{project_id}/logs/sampling_rules/",
+  "item": "/api/projects/{project_id}/logs/sampling_rules/{id}/",
+  "id_param": "id",
+  "item_methods": [
+   "GET",
+   "PUT",
+   "PATCH",
+   "DELETE"
+  ],
+  "create_schema": "LogsSamplingRule",
+  "response_schema": "LogsSamplingRule",
+  "patch_schema": "PatchedLogsSamplingRule",
+  "linear": "RHI-1629",
+  "delete_mode": "hard"
+ },
+ {
+  "type": "PostHog::LLMAnalytics::Evaluation",
+  "dir": "posthog-llmanalytics-evaluation",
+  "collection": "/api/projects/{project_id}/evaluations/",
+  "item": "/api/projects/{project_id}/evaluations/{id}/",
+  "id_param": "id",
+  "item_methods": [
+   "GET",
+   "PUT",
+   "PATCH",
+   "DELETE"
+  ],
+  "create_schema": "Evaluation",
+  "response_schema": "Evaluation",
+  "patch_schema": "PatchedEvaluation",
+  "linear": "RHI-1630",
+  "delete_mode": "soft"
+ },
+ {
+  "type": "PostHog::LLMAnalytics::ProviderKey",
+  "dir": "posthog-llmanalytics-providerkey",
+  "collection": "/api/projects/{project_id}/llm_analytics/provider_keys/",
+  "item": "/api/projects/{project_id}/llm_analytics/provider_keys/{id}/",
+  "id_param": "id",
+  "item_methods": [
+   "GET",
+   "PUT",
+   "PATCH",
+   "DELETE"
+  ],
+  "create_schema": "LLMProviderKey",
+  "response_schema": "LLMProviderKey",
+  "patch_schema": "PatchedLLMProviderKey",
+  "linear": "RHI-1631",
+  "delete_mode": "hard"
+ }
+]

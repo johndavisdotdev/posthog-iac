@@ -1,0 +1,8 @@
+{
+    "ProjectId": "1",
+    "ActionKey": "feature_flag.update",
+    "ApproverConfig": "{\"users\": [1], \"quorum\": 1}",
+    "AllowSelfApprove": true,
+    "ExpiresAfter": "7 00:00:00",
+    "Enabled": false
+}

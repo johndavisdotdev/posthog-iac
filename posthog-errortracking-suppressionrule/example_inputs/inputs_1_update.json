@@ -1,0 +1,6 @@
+{
+    "ProjectId": "1",
+    "Filters": "{\"type\": \"OR\", \"values\": [{\"key\": \"$exception_values\", \"type\": \"event\", \"operator\": \"icontains\", \"value\": \"ResizeObserver loop\"}, {\"key\": \"$exception_values\", \"type\": \"event\", \"operator\": \"icontains\", \"value\": \"Script error.\"}]}",
+    "SamplingRate": 0.5,
+    "OrderKey": 1
+}

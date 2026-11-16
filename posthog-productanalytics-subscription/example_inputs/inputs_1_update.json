@@ -1,0 +1,11 @@
+{
+    "ProjectId": "1",
+    "Title": "cfn-contract-test-subscription-renamed",
+    "Insight": "1",
+    "TargetType": "email",
+    "TargetValue": "cfn-contract-test@example.com",
+    "Frequency": "daily",
+    "Interval": 2,
+    "StartDate": "2026-01-05T09:00:00Z",
+    "Enabled": false
+}

@@ -1,0 +1,97 @@
+{
+    "properties": {
+        "ApiKey": {
+            "description": "PostHog personal API key (phx_...) with the scopes this resource type needs. Pass it with a dynamic reference such as {{resolve:ssm-secure:/posthog/api-key}} when calling SetTypeConfiguration; never put it in plain text.",
+            "type": "string",
+            "minLength": 1
+        },
+        "BaseUrl": {
+            "description": "PostHog API host. Leave unset for PostHog Cloud US (https://us.posthog.com); use https://eu.posthog.com for PostHog Cloud EU, or your instance URL when self-hosting.",
+            "type": "string"
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "ApiKey"
+    ],
+    "definitions": {
+        "Window": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "Mode": {
+                    "type": "string",
+                    "description": "What the report analyzes each run: `since_last_sent` (default, everything since the previous scheduled delivery), `last_n_days` (a trailing window of StartDaysAgo days) or `days_ago_range` (from StartDaysAgo to EndDaysAgo days ago).",
+                    "enum": [
+                        "since_last_sent",
+                        "last_n_days",
+                        "days_ago_range"
+                    ]
+                },
+                "StartDaysAgo": {
+                    "type": "integer",
+                    "description": "Lower bound of the analysis window, in days before the run. Required for `last_n_days` and `days_ago_range`. 1-365.",
+                    "minimum": 1,
+                    "maximum": 365
+                },
+                "EndDaysAgo": {
+                    "type": "integer",
+                    "description": "Upper bound of the analysis window, in days before the run (0 = now). Required for `days_ago_range` and must be less than StartDaysAgo. 0-365.",
+                    "minimum": 0,
+                    "maximum": 365
+                }
+            }
+        },
+        "AiPromptConfig": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "Window": {
+                    "description": "Analysis window for the report. Omitted means `since_last_sent`.",
+                    "$ref": "#/definitions/Window"
+                }
+            }
+        },
+        "Context": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "DashboardId": {
+                    "type": "string",
+                    "description": "ID of a dashboard that grounds the AI report. Set exactly one of DashboardId and InsightId."
+                },
+                "InsightId": {
+                    "type": "string",
+                    "description": "Numeric ID of an insight that grounds the AI report. Set exactly one of DashboardId and InsightId."
+                }
+            }
+        },
+        "DeliveryConfig": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "PostAllInsightsInMainMessage": {
+                    "type": "boolean",
+                    "description": "Slack subscriptions only. Insight and dashboard subscriptions: upload all insight images in the main Slack message instead of threading the rest. AI report subscriptions: post the chart images in the main message with the summary. Defaults to false."
+                },
+                "IncludeImages": {
+                    "type": "boolean",
+                    "description": "AI report subscriptions only: include generated chart images. Defaults to true."
+                },
+                "IncludeFeedback": {
+                    "type": "boolean",
+                    "description": "AI report subscriptions only: include report feedback links. Defaults to true."
+                },
+                "IncludeManageLink": {
+                    "type": "boolean",
+                    "description": "AI report subscriptions only: include a link to manage the subscription. Defaults to true."
+                },
+                "IncludePosthogHint": {
+                    "type": "boolean",
+                    "description": "AI report subscriptions only: include PostHog product guidance (rendered in Slack only). Defaults to true."
+                }
+            }
+        }
+    },
+    "typeName": "PostHog::ProductAnalytics::Subscription"
+}

@@ -1,0 +1,55 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >-
+  Creates a PostHog feature flag with a 50% rollout to example.com users and a
+  multivariate flag with payloads. Requires the PostHog::FeatureFlags::FeatureFlag
+  type to be registered and configured with SetTypeConfiguration (ApiKey).
+
+Parameters:
+  ProjectId:
+    Type: String
+    Description: PostHog project ID.
+
+Resources:
+  NewCheckout:
+    Type: PostHog::FeatureFlags::FeatureFlag
+    Properties:
+      ProjectId: !Ref ProjectId
+      Key: new-checkout
+      Name: New checkout flow
+      Tags: [checkout]
+      Filters:
+        Fn::ToJsonString:
+          groups:
+            - properties:
+                - key: email
+                  value: "@example.com"
+                  operator: icontains
+                  type: person
+              rollout_percentage: 50
+
+  PricingPage:
+    Type: PostHog::FeatureFlags::FeatureFlag
+    Properties:
+      ProjectId: !Ref ProjectId
+      Key: pricing-page-test
+      Name: Pricing page layout test
+      EvaluationRuntime: client
+      Filters:
+        Fn::ToJsonString:
+          groups:
+            - properties: []
+              rollout_percentage: 100
+          multivariate:
+            variants:
+              - key: control
+                rollout_percentage: 50
+              - key: compact
+                rollout_percentage: 50
+          payloads:
+            compact: '{"columns": 2}'
+
+Outputs:
+  NewCheckoutFlagId:
+    Value: !GetAtt NewCheckout.Id
+  PricingPageFlagId:
+    Value: !GetAtt PricingPage.Id

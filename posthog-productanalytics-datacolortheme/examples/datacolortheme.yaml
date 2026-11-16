@@ -1,0 +1,26 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >-
+  Creates a PostHog data color theme with brand colors. Requires the
+  PostHog::ProductAnalytics::DataColorTheme type to be registered and
+  configured with SetTypeConfiguration (ApiKey).
+
+Parameters:
+  ProjectId:
+    Type: String
+    Description: PostHog project ID.
+
+Resources:
+  BrandTheme:
+    Type: PostHog::ProductAnalytics::DataColorTheme
+    Properties:
+      ProjectId: !Ref ProjectId
+      Name: Brand
+      Colors:
+        - "#1d4aff"
+        - "#621da6"
+        - "#42827e"
+        - "#ce0e74"
+
+Outputs:
+  ThemeId:
+    Value: !GetAtt BrandTheme.Id

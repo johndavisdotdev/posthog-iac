@@ -1,0 +1,43 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >-
+  Creates a PostHog project. Requires the PostHog::Organizations::Project type
+  to be registered and configured with SetTypeConfiguration (ApiKey).
+  WARNING: deleting this resource (or the stack) deletes the PostHog project
+  and all of its data. DeletionPolicy Retain below guards against that.
+
+Parameters:
+  OrganizationId:
+    Type: String
+    Description: PostHog organization ID (UUID).
+
+Resources:
+  Production:
+    Type: PostHog::Organizations::Project
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      OrganizationId: !Ref OrganizationId
+      Name: Production
+      ProductDescription: Customer-facing web app
+      Tags: [prod]
+      Timezone: Europe/London
+      WeekStartDay: 1
+      AnonymizeIps: true
+      SessionRecordingOptIn: true
+      SessionRecordingSampleRate: "0.5"
+      RecordingDomains:
+        - https://app.example.com
+      TestAccountFilters:
+        Fn::ToJsonString:
+          - key: email
+            value: "@example.com"
+            operator: not_icontains
+            type: person
+
+Outputs:
+  ProjectId:
+    Description: Use as ProjectId for project-scoped PostHog resources.
+    Value: !GetAtt Production.Id
+  ProjectApiKey:
+    Description: Public project API key for the PostHog SDKs.
+    Value: !GetAtt Production.ApiToken

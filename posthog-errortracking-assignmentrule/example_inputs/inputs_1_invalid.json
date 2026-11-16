@@ -1,0 +1,8 @@
+{
+    "ProjectId": "1",
+    "Filters": "{\"type\":",
+    "Assignee": {
+        "Type": "user",
+        "Id": "1"
+    }
+}

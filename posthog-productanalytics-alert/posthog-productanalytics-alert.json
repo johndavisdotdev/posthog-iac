@@ -1,0 +1,278 @@
+{
+    "typeName": "PostHog::ProductAnalytics::Alert",
+    "description": "A PostHog insight alert: checks an insight's value on a schedule against a threshold (or an anomaly detector) and notifies subscribed users when it fires. Runtime state (state, last checked/notified, check history) is not part of the resource.",
+    "sourceUrl": "https://github.com/johndavisdev/posthog-iac",
+    "documentationUrl": "https://posthog.com/docs/alerts",
+    "definitions": {
+        "Threshold": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "Configuration"
+            ],
+            "properties": {
+                "Name": {
+                    "description": "Optional name for the threshold.",
+                    "type": "string",
+                    "maxLength": 255
+                },
+                "Configuration": {
+                    "description": "Threshold bounds and type.",
+                    "$ref": "#/definitions/ThresholdConfiguration"
+                }
+            }
+        },
+        "ThresholdConfiguration": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "Type"
+            ],
+            "properties": {
+                "Type": {
+                    "description": "Whether bounds are compared as `absolute` values or as `percentage` change from the previous interval.",
+                    "type": "string",
+                    "enum": [
+                        "absolute",
+                        "percentage"
+                    ]
+                },
+                "Bounds": {
+                    "description": "Lower and upper bounds. For threshold-based alerts (no DetectorConfig) at least one must be set.",
+                    "$ref": "#/definitions/Bounds"
+                }
+            }
+        },
+        "Bounds": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "Lower": {
+                    "description": "The alert fires when the value drops below this number.",
+                    "type": "number"
+                },
+                "Upper": {
+                    "description": "The alert fires when the value exceeds this number.",
+                    "type": "number"
+                }
+            }
+        },
+        "Condition": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "Type"
+            ],
+            "properties": {
+                "Type": {
+                    "description": "How the value is evaluated: `absolute_value`, `relative_increase` or `relative_decrease`.",
+                    "type": "string",
+                    "enum": [
+                        "absolute_value",
+                        "relative_increase",
+                        "relative_decrease"
+                    ]
+                }
+            }
+        },
+        "ScheduleRestriction": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "BlockedWindows"
+            ],
+            "properties": {
+                "BlockedWindows": {
+                    "description": "Local time windows (project timezone) when the alert must not run. At most five.",
+                    "type": "array",
+                    "insertionOrder": false,
+                    "maxItems": 5,
+                    "items": {
+                        "$ref": "#/definitions/BlockedWindow"
+                    }
+                }
+            }
+        },
+        "BlockedWindow": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "Start",
+                "End"
+            ],
+            "properties": {
+                "Start": {
+                    "description": "Start time HH:MM (24-hour, project timezone), inclusive.",
+                    "type": "string",
+                    "pattern": "^([01][0-9]|2[0-3]):[0-5][0-9]$"
+                },
+                "End": {
+                    "description": "End time HH:MM (24-hour, project timezone), exclusive. Each window must span at least 30 minutes.",
+                    "type": "string",
+                    "pattern": "^([01][0-9]|2[0-3]):[0-5][0-9]$"
+                }
+            }
+        }
+    },
+    "typeConfiguration": {
+        "properties": {
+            "ApiKey": {
+                "description": "PostHog personal API key (phx_...) with the scopes this resource type needs. Pass it with a dynamic reference such as {{resolve:ssm-secure:/posthog/api-key}} when calling SetTypeConfiguration; never put it in plain text.",
+                "type": "string",
+                "minLength": 1
+            },
+            "BaseUrl": {
+                "description": "PostHog API host. Leave unset for PostHog Cloud US (https://us.posthog.com); use https://eu.posthog.com for PostHog Cloud EU, or your instance URL when self-hosting.",
+                "type": "string"
+            }
+        },
+        "additionalProperties": false,
+        "required": [
+            "ApiKey"
+        ]
+    },
+    "properties": {
+        "ProjectId": {
+            "description": "ID of the PostHog project the alert belongs to.",
+            "type": "string",
+            "minLength": 1
+        },
+        "Id": {
+            "description": "The PostHog alert ID (UUID).",
+            "type": "string"
+        },
+        "InsightId": {
+            "description": "ID of the insight (PostHog::ProductAnalytics::Insight) the alert monitors.",
+            "type": "string",
+            "minLength": 1
+        },
+        "Name": {
+            "description": "Human-readable name for the alert.",
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 255
+        },
+        "SubscribedUsers": {
+            "description": "IDs of the PostHog users notified when the alert fires.",
+            "type": "array",
+            "insertionOrder": false,
+            "uniqueItems": true,
+            "items": {
+                "type": "string"
+            }
+        },
+        "Threshold": {
+            "description": "Threshold configuration with bounds and type for evaluating the alert.",
+            "$ref": "#/definitions/Threshold"
+        },
+        "Condition": {
+            "description": "How the insight value is evaluated against the threshold.",
+            "$ref": "#/definitions/Condition"
+        },
+        "Enabled": {
+            "description": "Whether the alert is actively being evaluated. Defaults to true.",
+            "type": "boolean"
+        },
+        "CalculationInterval": {
+            "description": "How often the alert is checked: `real_time` (Scale+), `every_15_minutes` (Boost+), `hourly`, `daily`, `weekly` or `monthly`.",
+            "type": "string",
+            "enum": [
+                "real_time",
+                "every_15_minutes",
+                "hourly",
+                "daily",
+                "weekly",
+                "monthly"
+            ]
+        },
+        "Config": {
+            "description": "Per-insight-kind alert configuration as JSON (use Fn::ToJsonString), discriminated by `type`, e.g. {\"type\": \"TrendsAlertConfig\", \"series_index\": 0, \"check_ongoing_interval\": false}.",
+            "type": "string"
+        },
+        "DetectorConfig": {
+            "description": "Anomaly detector configuration as JSON (use Fn::ToJsonString), discriminated by `type` (zscore, mad, iqr, threshold, ecod, copod, isolation_forest, knn, hbos, lof, ocsvm, pca, ensemble, forecast, llm, ...). When set, the detector decides when the alert fires instead of the threshold bounds.",
+            "type": "string"
+        },
+        "EvaluationDelayIntervals": {
+            "description": "Skip this many completed insight intervals after excluding the ongoing interval (0-100). Time-series Trends only; a positive delay requires check_ongoing_interval false.",
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100
+        },
+        "ScheduleStartTime": {
+            "description": "Local time (HH:MM) that starts alert checks.",
+            "type": "string",
+            "pattern": "^([01][0-9]|2[0-3]):[0-5][0-9]$"
+        },
+        "SkipWeekend": {
+            "description": "Skip alert evaluation on Saturdays and Sundays (project timezone).",
+            "type": "boolean"
+        },
+        "ScheduleRestriction": {
+            "description": "Quiet hours: local time windows when the alert is not checked.",
+            "$ref": "#/definitions/ScheduleRestriction"
+        },
+        "InvestigationAgentEnabled": {
+            "description": "Run an investigation agent each time the alert fires (up to three times per firing episode); findings are written to a linked notebook.",
+            "type": "boolean"
+        },
+        "InvestigationGatesNotifications": {
+            "description": "Hold the first notification of an episode until the investigation agent produces a verdict, and suppress it when the verdict is a false positive. Requires InvestigationAgentEnabled.",
+            "type": "boolean"
+        },
+        "InvestigationInconclusiveAction": {
+            "description": "How to handle an inconclusive investigation verdict: `notify` (default) or `suppress`.",
+            "type": "string",
+            "enum": [
+                "notify",
+                "suppress"
+            ]
+        },
+        "InsightShortId": {
+            "description": "Short ID of the monitored insight.",
+            "type": "string"
+        },
+        "CreatedAt": {
+            "description": "ISO 8601 creation timestamp.",
+            "type": "string"
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "ProjectId",
+        "InsightId",
+        "Name"
+    ],
+    "readOnlyProperties": [
+        "/properties/Id",
+        "/properties/InsightShortId",
+        "/properties/CreatedAt"
+    ],
+    "primaryIdentifier": [
+        "/properties/ProjectId",
+        "/properties/Id"
+    ],
+    "tagging": {
+        "taggable": false
+    },
+    "handlers": {
+        "create": {
+            "permissions": []
+        },
+        "read": {
+            "permissions": []
+        },
+        "update": {
+            "permissions": []
+        },
+        "delete": {
+            "permissions": []
+        },
+        "list": {
+            "permissions": []
+        }
+    },
+    "createOnlyProperties": [
+        "/properties/ProjectId"
+    ]
+}

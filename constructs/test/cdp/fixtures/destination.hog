@@ -1,0 +1,1 @@
+fetch(inputs.url, {'method': 'POST', 'body': event})

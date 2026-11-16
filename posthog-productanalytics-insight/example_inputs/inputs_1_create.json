@@ -1,0 +1,9 @@
+{
+    "ProjectId": "1",
+    "Name": "cfn-contract-test-insight",
+    "Description": "Created by the CloudFormation contract tests",
+    "Tags": [
+        "cloudformation"
+    ],
+    "Query": "{\"kind\": \"InsightVizNode\", \"source\": {\"kind\": \"TrendsQuery\", \"series\": [{\"kind\": \"EventsNode\", \"event\": \"$pageview\"}]}}"
+}

@@ -1,0 +1,120 @@
+{
+    "typeName": "PostHog::Organizations::ProxyRecord",
+    "description": "A PostHog managed reverse proxy: a custom subdomain you own that proxies PostHog ingestion. After creation, add a CNAME record from Domain to TargetCname; PostHog then verifies the record and provisions the proxy.",
+    "sourceUrl": "https://github.com/johndavisdev/posthog-iac",
+    "documentationUrl": "https://posthog.com/docs/advanced/proxy/managed-reverse-proxy",
+    "definitions": {},
+    "typeConfiguration": {
+        "properties": {
+            "ApiKey": {
+                "description": "PostHog personal API key (phx_...) with the scopes this resource type needs. Pass it with a dynamic reference such as {{resolve:ssm-secure:/posthog/api-key}} when calling SetTypeConfiguration; never put it in plain text.",
+                "type": "string",
+                "minLength": 1
+            },
+            "BaseUrl": {
+                "description": "PostHog API host. Leave unset for PostHog Cloud US (https://us.posthog.com); use https://eu.posthog.com for PostHog Cloud EU, or your instance URL when self-hosting.",
+                "type": "string"
+            }
+        },
+        "additionalProperties": false,
+        "required": [
+            "ApiKey"
+        ]
+    },
+    "properties": {
+        "OrganizationId": {
+            "description": "ID (UUID) of the PostHog organization that owns the proxy.",
+            "type": "string",
+            "minLength": 1
+        },
+        "Id": {
+            "description": "The PostHog proxy record ID (UUID).",
+            "type": "string"
+        },
+        "Domain": {
+            "description": "The custom domain to proxy through, e.g. e.example.com. Must be a subdomain you control.",
+            "type": "string",
+            "minLength": 1
+        },
+        "RootRedirectUrl": {
+            "description": "HTTPS URL that requests to the proxy domain root redirect to. Must use the same registrable domain as the proxy. Omit to disable the redirect.",
+            "type": "string",
+            "maxLength": 1024
+        },
+        "TargetCname": {
+            "description": "The CNAME target. Create a DNS CNAME record from Domain to this value.",
+            "type": "string"
+        },
+        "Status": {
+            "description": "Current provisioning status: waiting (DNS verification pending), issuing (SSL certificate being issued), valid (proxy is live), warning (operational with issues), erroring, deleting or timed_out.",
+            "type": "string",
+            "enum": [
+                "waiting",
+                "issuing",
+                "valid",
+                "warning",
+                "erroring",
+                "deleting",
+                "timed_out"
+            ]
+        },
+        "Message": {
+            "description": "Human-readable status message with details about errors or warnings, if any.",
+            "type": "string"
+        },
+        "RootRedirectSupported": {
+            "description": "Whether this proxy supports a redirect from its root URL.",
+            "type": "boolean"
+        },
+        "CreatedAt": {
+            "description": "ISO 8601 creation timestamp.",
+            "type": "string"
+        },
+        "UpdatedAt": {
+            "description": "ISO 8601 timestamp of the last update.",
+            "type": "string"
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "OrganizationId",
+        "Domain"
+    ],
+    "readOnlyProperties": [
+        "/properties/Id",
+        "/properties/TargetCname",
+        "/properties/Status",
+        "/properties/Message",
+        "/properties/RootRedirectSupported",
+        "/properties/CreatedAt",
+        "/properties/UpdatedAt"
+    ],
+    "createOnlyProperties": [
+        "/properties/OrganizationId",
+        "/properties/Domain"
+    ],
+    "primaryIdentifier": [
+        "/properties/OrganizationId",
+        "/properties/Id"
+    ],
+    "tagging": {
+        "taggable": false
+    },
+    "handlers": {
+        "create": {
+            "permissions": []
+        },
+        "read": {
+            "permissions": []
+        },
+        "update": {
+            "permissions": []
+        },
+        "delete": {
+            "permissions": []
+        },
+        "list": {
+            "permissions": []
+        }
+    }
+}

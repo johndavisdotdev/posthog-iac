@@ -1,0 +1,106 @@
+{
+    "typeName": "PostHog::SessionReplay::Playlist",
+    "description": "A PostHog session replay playlist: either a manually curated collection of recordings or a saved filter view that matches recordings by criteria.",
+    "sourceUrl": "https://github.com/johndavisdev/posthog-iac",
+    "documentationUrl": "https://posthog.com/docs/session-replay/how-to-watch-recordings",
+    "definitions": {},
+    "typeConfiguration": {
+        "properties": {
+            "ApiKey": {
+                "description": "PostHog personal API key (phx_...) with the scopes this resource type needs. Pass it with a dynamic reference such as {{resolve:ssm-secure:/posthog/api-key}} when calling SetTypeConfiguration; never put it in plain text.",
+                "type": "string",
+                "minLength": 1
+            },
+            "BaseUrl": {
+                "description": "PostHog API host. Leave unset for PostHog Cloud US (https://us.posthog.com); use https://eu.posthog.com for PostHog Cloud EU, or your instance URL when self-hosting.",
+                "type": "string"
+            }
+        },
+        "additionalProperties": false,
+        "required": [
+            "ApiKey"
+        ]
+    },
+    "properties": {
+        "ProjectId": {
+            "type": "string",
+            "description": "ID of the PostHog project the playlist belongs to.",
+            "minLength": 1
+        },
+        "ShortId": {
+            "type": "string",
+            "description": "The playlist's short ID, used in its URL and API path."
+        },
+        "Id": {
+            "type": "string",
+            "description": "The playlist's numeric PostHog ID."
+        },
+        "Type": {
+            "type": "string",
+            "description": "Playlist type: `collection` for manually curated recordings or `filters` for a saved filter view. Create-only.",
+            "enum": [
+                "collection",
+                "filters"
+            ]
+        },
+        "Name": {
+            "type": "string",
+            "description": "Human-readable name for the playlist.",
+            "maxLength": 400
+        },
+        "Description": {
+            "type": "string",
+            "description": "Description of the playlist's purpose or contents."
+        },
+        "Pinned": {
+            "type": "boolean",
+            "description": "Whether the playlist is pinned to the top of the list. Defaults to false."
+        },
+        "Filters": {
+            "type": "string",
+            "description": "Recording filter criteria as a JSON object (use Fn::ToJsonString), e.g. {\"date_from\": \"-7d\", \"filter_test_accounts\": true, \"duration\": [{\"key\": \"duration\", \"type\": \"recording\", \"value\": 60, \"operator\": \"gt\"}]}. Only used when Type is `filters`."
+        },
+        "CreatedAt": {
+            "type": "string",
+            "description": "ISO 8601 creation timestamp."
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "ProjectId",
+        "Type"
+    ],
+    "readOnlyProperties": [
+        "/properties/ShortId",
+        "/properties/Id",
+        "/properties/CreatedAt"
+    ],
+    "createOnlyProperties": [
+        "/properties/ProjectId",
+        "/properties/Type"
+    ],
+    "primaryIdentifier": [
+        "/properties/ProjectId",
+        "/properties/ShortId"
+    ],
+    "tagging": {
+        "taggable": false
+    },
+    "handlers": {
+        "create": {
+            "permissions": []
+        },
+        "read": {
+            "permissions": []
+        },
+        "update": {
+            "permissions": []
+        },
+        "delete": {
+            "permissions": []
+        },
+        "list": {
+            "permissions": []
+        }
+    }
+}

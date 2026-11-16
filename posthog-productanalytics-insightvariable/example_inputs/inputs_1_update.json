@@ -1,0 +1,6 @@
+{
+    "ProjectId": "1",
+    "Name": "cfn contract test min revenue",
+    "Type": "Number",
+    "DefaultValue": "250"
+}

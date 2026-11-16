@@ -1,0 +1,6 @@
+{
+    "ProjectId": "1",
+    "Label": "cfn-contract-test",
+    "Scopes": ["feature_flag:read"],
+    "SecretsManagerSecretArn": "arn:aws:secretsmanager:us-east-1:123456789012:secret:posthog/cfn-contract-test-AbCdEf"
+}

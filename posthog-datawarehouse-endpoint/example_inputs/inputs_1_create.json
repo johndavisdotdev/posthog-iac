@@ -1,0 +1,9 @@
+{
+    "ProjectId": "1",
+    "Name": "cfn-contract-test-endpoint",
+    "Query": "{\"kind\": \"HogQLQuery\", \"query\": \"SELECT count() AS pageviews FROM events WHERE event = '$pageview'\"}",
+    "Description": "Created by the CloudFormation contract tests",
+    "Tags": [
+        "cloudformation"
+    ]
+}

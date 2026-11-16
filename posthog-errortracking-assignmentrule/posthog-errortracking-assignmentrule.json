@@ -1,0 +1,118 @@
+{
+    "typeName": "PostHog::ErrorTracking::AssignmentRule",
+    "description": "A PostHog error tracking assignment rule: automatically assigns new issues whose exceptions match a property filter to a user or role.",
+    "sourceUrl": "https://github.com/johndavisdev/posthog-iac",
+    "documentationUrl": "https://posthog.com/docs/error-tracking/assigning-issues",
+    "definitions": {
+        "Assignee": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "Type": {
+                    "description": "Assignee type. `user` for a user ID or `role` for a role UUID.",
+                    "type": "string",
+                    "enum": [
+                        "user",
+                        "role"
+                    ]
+                },
+                "Id": {
+                    "description": "User ID when Type is `user`, or role UUID when Type is `role`.",
+                    "type": "string",
+                    "minLength": 1
+                }
+            },
+            "required": [
+                "Type",
+                "Id"
+            ]
+        }
+    },
+    "typeConfiguration": {
+        "properties": {
+            "ApiKey": {
+                "description": "PostHog personal API key (phx_...) with the scopes this resource type needs. Pass it with a dynamic reference such as {{resolve:ssm-secure:/posthog/api-key}} when calling SetTypeConfiguration; never put it in plain text.",
+                "type": "string",
+                "minLength": 1
+            },
+            "BaseUrl": {
+                "description": "PostHog API host. Leave unset for PostHog Cloud US (https://us.posthog.com); use https://eu.posthog.com for PostHog Cloud EU, or your instance URL when self-hosting.",
+                "type": "string"
+            }
+        },
+        "additionalProperties": false,
+        "required": [
+            "ApiKey"
+        ]
+    },
+    "properties": {
+        "ProjectId": {
+            "description": "ID of the PostHog project the rule belongs to.",
+            "type": "string",
+            "minLength": 1
+        },
+        "Id": {
+            "description": "The PostHog assignment rule ID (UUID).",
+            "type": "string"
+        },
+        "Filters": {
+            "description": "JSON (use Fn::ToJsonString). Property-group filter that defines which incoming error events the rule matches, e.g. {\"type\": \"AND\", \"values\": [{\"key\": \"$exception_types\", \"type\": \"event\", \"operator\": \"exact\", \"value\": [\"TypeError\"]}]}.",
+            "type": "string",
+            "minLength": 1
+        },
+        "Assignee": {
+            "description": "User or role to assign matching issues to.",
+            "$ref": "#/definitions/Assignee"
+        },
+        "OrderKey": {
+            "description": "Evaluation priority among assignment rules; lower is evaluated first and the first matching rule wins. PostHog defaults it to 0.",
+            "type": "integer"
+        },
+        "CreatedAt": {
+            "description": "ISO 8601 creation timestamp.",
+            "type": "string"
+        },
+        "UpdatedAt": {
+            "description": "ISO 8601 last-update timestamp.",
+            "type": "string"
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "ProjectId",
+        "Filters",
+        "Assignee"
+    ],
+    "readOnlyProperties": [
+        "/properties/Id",
+        "/properties/CreatedAt",
+        "/properties/UpdatedAt"
+    ],
+    "createOnlyProperties": [
+        "/properties/ProjectId"
+    ],
+    "primaryIdentifier": [
+        "/properties/ProjectId",
+        "/properties/Id"
+    ],
+    "tagging": {
+        "taggable": false
+    },
+    "handlers": {
+        "create": {
+            "permissions": []
+        },
+        "read": {
+            "permissions": []
+        },
+        "update": {
+            "permissions": []
+        },
+        "delete": {
+            "permissions": []
+        },
+        "list": {
+            "permissions": []
+        }
+    }
+}

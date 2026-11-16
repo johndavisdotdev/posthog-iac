@@ -1,0 +1,181 @@
+{
+    "typeName": "PostHog::CDP::HogFunction",
+    "description": "A PostHog hog function (CDP): a destination, transformation, site app or webhook source that runs Hog code on events, configured with inputs and event filters.",
+    "sourceUrl": "https://github.com/johndavisdev/posthog-iac",
+    "documentationUrl": "https://posthog.com/docs/cdp",
+    "definitions": {
+        "Masking": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "Hash",
+                "Ttl"
+            ],
+            "properties": {
+                "Hash": {
+                    "description": "Hog expression used to compute the masking hash, e.g. {person.id}.",
+                    "type": "string",
+                    "minLength": 1
+                },
+                "Ttl": {
+                    "description": "Time-to-live in seconds (60 to 86400) during which repeat events with the same hash are masked.",
+                    "type": "integer",
+                    "minimum": 60,
+                    "maximum": 86400
+                },
+                "Threshold": {
+                    "description": "Optional number of matches before masking applies.",
+                    "type": "integer"
+                }
+            }
+        }
+    },
+    "typeConfiguration": {
+        "properties": {
+            "ApiKey": {
+                "description": "PostHog personal API key (phx_...) with the scopes this resource type needs. Pass it with a dynamic reference such as {{resolve:ssm-secure:/posthog/api-key}} when calling SetTypeConfiguration; never put it in plain text.",
+                "type": "string",
+                "minLength": 1
+            },
+            "BaseUrl": {
+                "description": "PostHog API host. Leave unset for PostHog Cloud US (https://us.posthog.com); use https://eu.posthog.com for PostHog Cloud EU, or your instance URL when self-hosting.",
+                "type": "string"
+            }
+        },
+        "additionalProperties": false,
+        "required": [
+            "ApiKey"
+        ]
+    },
+    "properties": {
+        "ProjectId": {
+            "description": "ID of the PostHog project the function belongs to.",
+            "type": "string",
+            "minLength": 1
+        },
+        "Id": {
+            "description": "The hog function ID (UUID).",
+            "type": "string"
+        },
+        "Type": {
+            "description": "Function type. Cannot be changed after creation.",
+            "type": "string",
+            "enum": [
+                "destination",
+                "site_destination",
+                "internal_destination",
+                "source_webhook",
+                "warehouse_source_webhook",
+                "site_app",
+                "transformation",
+                "transformation_log"
+            ]
+        },
+        "Name": {
+            "description": "Display name for the function.",
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 400
+        },
+        "Description": {
+            "description": "Human-readable description of what this function does.",
+            "type": "string"
+        },
+        "Enabled": {
+            "description": "Whether the function is active and processing events.",
+            "type": "boolean"
+        },
+        "TemplateId": {
+            "description": "ID of the template to create this function from, e.g. template-slack or template-webhook. PostHog copies the template's code, inputs schema and defaults. Can only be set on create.",
+            "type": "string",
+            "maxLength": 400
+        },
+        "Hog": {
+            "description": "Source code: Hog for most types, TypeScript for site_destination and site_app. When TemplateId is set and Hog is omitted, the template's code is used.",
+            "type": "string"
+        },
+        "InputsSchema": {
+            "description": "Schema of the function's configurable inputs as a JSON array (use Fn::ToJsonString): [{\"key\", \"type\", \"label\"?, \"required\"?, \"secret\"?, \"default\"?, ...}]. When TemplateId is set and this is omitted, the template's schema is used.",
+            "type": "string"
+        },
+        "Inputs": {
+            "description": "Values of the non-secret inputs as a JSON object keyed by input key (use Fn::ToJsonString), e.g. {\"url\": {\"value\": \"https://example.com/hook\"}}. Wrap each value in {\"value\": ...}. Inputs that the schema marks secret go in SecretInputs instead.",
+            "type": "string"
+        },
+        "SecretInputs": {
+            "description": "Values of the secret inputs (API tokens, passwords), as a JSON object in the same shape as Inputs (use Fn::ToJsonString with a dynamic reference, e.g. {\"api_key\": {\"value\": \"{{resolve:secretsmanager:...}}\"}}). Each key must be marked \"secret\": true in the inputs schema. Write-only: never returned by Read.",
+            "type": "string"
+        },
+        "Filters": {
+            "description": "Event filters that control which events trigger the function, as a JSON object (use Fn::ToJsonString): {\"events\": [...], \"actions\": [...], \"properties\": [...], \"filter_test_accounts\": bool, \"source\": \"events\"}.",
+            "type": "string"
+        },
+        "Mappings": {
+            "description": "Event-to-destination mappings as a JSON array (use Fn::ToJsonString): [{\"name\", \"filters\", \"inputs\", \"inputs_schema\"}]. Only for destination and site_destination types.",
+            "type": "string"
+        },
+        "Masking": {
+            "description": "PII masking: suppress repeat events with the same hash within the TTL.",
+            "$ref": "#/definitions/Masking"
+        },
+        "IconUrl": {
+            "description": "URL of the icon displayed in the PostHog UI.",
+            "type": "string"
+        },
+        "ExecutionOrder": {
+            "description": "Execution priority for transformations. Lower values run first.",
+            "type": "integer"
+        },
+        "CreatedAt": {
+            "description": "ISO 8601 creation timestamp.",
+            "type": "string"
+        },
+        "UpdatedAt": {
+            "description": "ISO 8601 timestamp of the last change.",
+            "type": "string"
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "ProjectId",
+        "Type",
+        "Name"
+    ],
+    "readOnlyProperties": [
+        "/properties/Id",
+        "/properties/CreatedAt",
+        "/properties/UpdatedAt"
+    ],
+    "writeOnlyProperties": [
+        "/properties/SecretInputs"
+    ],
+    "createOnlyProperties": [
+        "/properties/ProjectId",
+        "/properties/Type",
+        "/properties/TemplateId"
+    ],
+    "primaryIdentifier": [
+        "/properties/ProjectId",
+        "/properties/Id"
+    ],
+    "tagging": {
+        "taggable": false
+    },
+    "handlers": {
+        "create": {
+            "permissions": []
+        },
+        "read": {
+            "permissions": []
+        },
+        "update": {
+            "permissions": []
+        },
+        "delete": {
+            "permissions": []
+        },
+        "list": {
+            "permissions": []
+        }
+    }
+}

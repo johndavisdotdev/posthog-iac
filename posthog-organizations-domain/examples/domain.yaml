@@ -1,0 +1,38 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >-
+  Claims an email domain for a PostHog organization and publishes the
+  verification TXT record in Route 53. Requires the PostHog::Organizations::Domain
+  type to be registered and configured with SetTypeConfiguration (ApiKey).
+
+Parameters:
+  OrganizationId:
+    Type: String
+    Description: PostHog organization ID (UUID).
+  DomainName:
+    Type: String
+    Description: Email domain to claim, e.g. example.com.
+  HostedZoneId:
+    Type: AWS::Route53::HostedZone::Id
+    Description: Route 53 hosted zone for the domain.
+
+Resources:
+  CompanyDomain:
+    Type: PostHog::Organizations::Domain
+    Properties:
+      OrganizationId: !Ref OrganizationId
+      Domain: !Ref DomainName
+      JitProvisioningEnabled: true
+
+  VerificationRecord:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      HostedZoneId: !Ref HostedZoneId
+      Name: !Sub _posthog-challenge.${DomainName}
+      Type: TXT
+      TTL: "300"
+      ResourceRecords:
+        - !Sub '"${CompanyDomain.VerificationChallenge}"'
+
+Outputs:
+  DomainId:
+    Value: !GetAtt CompanyDomain.Id

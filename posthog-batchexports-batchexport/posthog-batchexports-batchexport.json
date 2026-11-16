@@ -1,0 +1,204 @@
+{
+    "typeName": "PostHog::BatchExports::BatchExport",
+    "description": "A PostHog batch export: a scheduled export of events, persons, sessions or a HogQL query to a destination such as S3, Snowflake, BigQuery, Postgres, Redshift, Databricks or Azure Blob Storage.",
+    "sourceUrl": "https://github.com/johndavisdev/posthog-iac",
+    "documentationUrl": "https://posthog.com/docs/cdp/batch-exports",
+    "definitions": {},
+    "typeConfiguration": {
+        "properties": {
+            "ApiKey": {
+                "description": "PostHog personal API key (phx_...) with the scopes this resource type needs. Pass it with a dynamic reference such as {{resolve:ssm-secure:/posthog/api-key}} when calling SetTypeConfiguration; never put it in plain text.",
+                "type": "string",
+                "minLength": 1
+            },
+            "BaseUrl": {
+                "description": "PostHog API host. Leave unset for PostHog Cloud US (https://us.posthog.com); use https://eu.posthog.com for PostHog Cloud EU, or your instance URL when self-hosting.",
+                "type": "string"
+            }
+        },
+        "additionalProperties": false,
+        "required": [
+            "ApiKey"
+        ]
+    },
+    "properties": {
+        "ProjectId": {
+            "description": "ID of the PostHog project the batch export belongs to.",
+            "type": "string",
+            "minLength": 1
+        },
+        "Id": {
+            "description": "The batch export ID (UUID).",
+            "type": "string"
+        },
+        "Name": {
+            "description": "Human-readable name for the batch export.",
+            "type": "string",
+            "minLength": 1
+        },
+        "Model": {
+            "description": "Which data model to export: `events` (the PostHog default), `persons`, `sessions`, or `hogql` (the results of HogqlQuery).",
+            "type": "string",
+            "enum": [
+                "events",
+                "persons",
+                "sessions",
+                "hogql"
+            ]
+        },
+        "Interval": {
+            "description": "How often the batch export runs.",
+            "type": "string",
+            "enum": [
+                "hour",
+                "day",
+                "week",
+                "every 5 minutes",
+                "every 15 minutes"
+            ]
+        },
+        "Paused": {
+            "description": "Whether the batch export is paused.",
+            "type": "boolean"
+        },
+        "DestinationType": {
+            "description": "Destination type. Cannot be changed after creation.",
+            "type": "string",
+            "enum": [
+                "AwsS3",
+                "S3Compatible",
+                "Snowflake",
+                "Postgres",
+                "Redshift",
+                "BigQuery",
+                "Databricks",
+                "AzureBlob"
+            ]
+        },
+        "DestinationIntegrationId": {
+            "description": "ID of the team-scoped PostHog integration that provides the destination's credentials (aws-s3, s3-compatible, snowflake, postgresql, aws-redshift, google-cloud-service-account, databricks or azure-blob kind). PostHog requires it for every destination type.",
+            "type": "string"
+        },
+        "DestinationConfig": {
+            "description": "Non-secret destination settings as a JSON object (use Fn::ToJsonString). Fields depend on DestinationType, e.g. AwsS3: {\"bucket_name\", \"region\", \"prefix\", \"file_format\", \"compression\", ...}; Snowflake: {\"database\", \"warehouse\", \"schema\", \"table_name\", \"role\"}; Postgres/Redshift: {\"database\", \"schema\", \"table_name\", ...}; BigQuery: {\"dataset_id\", \"table_id\"}.",
+            "type": "string",
+            "minLength": 2
+        },
+        "DestinationSecretConfig": {
+            "description": "Secret destination settings (credentials such as aws_secret_access_key, password or private_key) as a JSON object (use Fn::ToJsonString with dynamic references). Merged into the destination config on create and update. Write-only: never returned by Read. Prefer DestinationIntegrationId, which keeps credentials in a PostHog integration.",
+            "type": "string"
+        },
+        "HogqlQuery": {
+            "description": "HogQL SELECT query whose results are exported when Model is `hogql`. May reference the {data_interval_start} and {data_interval_end} placeholders.",
+            "type": "string"
+        },
+        "HogqlModifiers": {
+            "description": "HogQL modifiers for the query as a JSON object (use Fn::ToJsonString), e.g. {\"convertToProjectTimezone\": true}. Only supported when Model is `hogql`.",
+            "type": "string"
+        },
+        "PrimaryKey": {
+            "description": "Column or columns of the HogQL query that make up the primary key. Required when IncrementalMode is `MERGE`.",
+            "type": "array",
+            "insertionOrder": true,
+            "items": {
+                "type": "string"
+            }
+        },
+        "VersionKey": {
+            "description": "Column or columns of the HogQL query that make up the version key.",
+            "type": "array",
+            "insertionOrder": true,
+            "items": {
+                "type": "string"
+            }
+        },
+        "IncrementalMode": {
+            "description": "How the batch export handles incremental updates: `APPEND` or `MERGE`.",
+            "type": "string",
+            "enum": [
+                "APPEND",
+                "MERGE"
+            ]
+        },
+        "Filters": {
+            "description": "Property filters restricting which events are exported, as a JSON array (use Fn::ToJsonString) of HogQL property filters with type event, hogql or person, e.g. [{\"key\": \"$browser\", \"operator\": \"exact\", \"type\": \"event\", \"value\": [\"Firefox\"]}].",
+            "type": "string"
+        },
+        "Timezone": {
+            "description": "IANA timezone name (e.g. Europe/London) controlling daily and weekly interval boundaries. PostHog defaults to UTC.",
+            "type": "string"
+        },
+        "OffsetDay": {
+            "description": "Day-of-week offset for weekly intervals (0 = Sunday, 6 = Saturday).",
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 6
+        },
+        "OffsetHour": {
+            "description": "Hour-of-day offset (0-23) for daily and weekly intervals.",
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 23
+        },
+        "StartAt": {
+            "description": "ISO 8601 time before which no runs are triggered.",
+            "type": "string"
+        },
+        "EndAt": {
+            "description": "ISO 8601 time after which no runs are triggered.",
+            "type": "string"
+        },
+        "CreatedAt": {
+            "description": "ISO 8601 creation timestamp.",
+            "type": "string"
+        },
+        "LastUpdatedAt": {
+            "description": "ISO 8601 timestamp of the last change.",
+            "type": "string"
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "ProjectId",
+        "Name",
+        "Interval",
+        "DestinationType",
+        "DestinationConfig"
+    ],
+    "readOnlyProperties": [
+        "/properties/Id",
+        "/properties/CreatedAt",
+        "/properties/LastUpdatedAt"
+    ],
+    "writeOnlyProperties": [
+        "/properties/DestinationSecretConfig"
+    ],
+    "createOnlyProperties": [
+        "/properties/ProjectId",
+        "/properties/DestinationType"
+    ],
+    "primaryIdentifier": [
+        "/properties/ProjectId",
+        "/properties/Id"
+    ],
+    "tagging": {
+        "taggable": false
+    },
+    "handlers": {
+        "create": {
+            "permissions": []
+        },
+        "read": {
+            "permissions": []
+        },
+        "update": {
+            "permissions": []
+        },
+        "delete": {
+            "permissions": []
+        },
+        "list": {
+            "permissions": []
+        }
+    }
+}

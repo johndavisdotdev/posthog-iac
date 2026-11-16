@@ -1,0 +1,28 @@
+{
+    "artifact_type": "RESOURCE",
+    "typeName": "PostHog::Workflows::HogFlow",
+    "language": "go",
+    "runtime": "provided.al2",
+    "entrypoint": "bootstrap",
+    "testEntrypoint": "bootstrap",
+    "settings": {
+        "version": false,
+        "subparser_name": "go",
+        "verbose": 0,
+        "force": false,
+        "type_name": "PostHog::Workflows::HogFlow",
+        "artifact_type": "RESOURCE",
+        "endpoint_url": null,
+        "region": null,
+        "target_schemas": [],
+        "profile": null,
+        "import_path": "github.com/johndavisdev/posthog-iac/posthog-workflows-hogflow",
+        "language": "go",
+        "protocolVersion": "2.0.0"
+    },
+    "canarySettings": {
+        "contract_test_file_names": [
+            "inputs_1.json"
+        ]
+    }
+}
