@@ -1,0 +1,23 @@
+{
+  "name": "infra",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "typecheck": "tsc",
+    "build": "tsc && cdk synth -o cdk.out -q",
+    "synth": "cdk synth -o cdk.out",
+    "diff": "cdk diff",
+    "deploy": "cdk deploy"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.1",
+    "aws-cdk": "2.1148.1",
+    "tsx": "^4.23.0",
+    "typescript": "~7.0.2"
+  },
+  "dependencies": {
+    "@posthog/cdk-constructs": "file:../constructs",
+    "aws-cdk-lib": "^2.277.0",
+    "constructs": "^10.5.0"
+  }
+}
